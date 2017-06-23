@@ -1,0 +1,111 @@
+{
+  "name": "cleanquirer",
+  "version": "0.0.0",
+  "description": "Create a cli tool from a documented javascript API",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "lint": "eslint --ext js ./sources",
+    "watch": "npm-watch",
+    "extra-dep": "dependency-check ./package.json --extra",
+    "check-dependencies": "dependency-check ./package.json",
+    "test": "npm run lint && npm run check-dependencies && npm run coverage",
+    "watch-test": "ava --watch --timeout=$npm_package_ava_timeout",
+    "coverage": "nyc ava --timeout=$npm_package_ava_timeout && npm run report",
+    "update-coverage": "npm run coverage && node build/update-coverage",
+    "dev-server": "concurrently \"ttab npm run dev-server-coverage\" \"npm run dev-server-documentation\"",
+    "dev-server-coverage": "here -w -d ./coverage",
+    "dev-server-documentation": "here -w -d ./documentation",
+    "entries": "node build/generate-entries",
+    "readme": "rm -f README.md && node build/generate-readme.view.js && mustache tmp/build/readme.view.json build/readme.tpl.md > README.md && documentation readme index.js -s Documentation && rm -f tmp/build/readme.view.json",
+    "html-doc": "documentation build index.js -f html -o documentation -t build/documentation-theme && node build/generate-readme-html",
+    "documentation": "npm run readme && npm run html-doc",
+    "report": "nyc report --reporter=html --reporter=lcov",
+    "build": "npm run entries && npm run documentation",
+    "dev": "concurrently \"ttab npm run update-coverage\" \"ttab npm run watch-test\" \"ttab npm run watch\" \"ttab npm run dev-server\"",
+    "release": "node node_modules/@alexistessier/node-module-starterkit-release-dep",
+    "release-first": "npm run release -- -- first"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexisTessier/cleanquirer.git"
+  },
+  "keywords": [
+    "inquirer",
+    "cli",
+    "api",
+    "tool"
+  ],
+  "author": {
+    "name": "Alexis Tessier",
+    "email": "alexistessierdev@gmail.com",
+    "github": "https://github.com/AlexisTessier",
+    "npm": "https://www.npmjs.com/~alexistessier",
+    "login": {
+      "github": "AlexisTessier",
+      "npm": "alexistessier"
+    }
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlexisTessier/cleanquirer/issues"
+  },
+  "homepage": "https://github.com/AlexisTessier/cleanquirer#readme",
+  "watch": {
+    "lint": "./sources",
+    "build": {
+      "patterns": [
+        "package.json",
+        "./sources",
+        "./build"
+      ],
+      "extensions": "js,yaml,md,json"
+    }
+  },
+  "licenseDate": "2017-present",
+  "devDependencies": {
+    "@alexistessier/es-lint-config": "^1.2.1",
+    "@alexistessier/node-module-starterkit-release-dep": "^1.2.0",
+    "ava": "^0.18.2",
+    "capitalize": "^1.0.0",
+    "concurrently": "^3.5.0",
+    "coveralls": "^2.12.0",
+    "dashify": "^0.2.2",
+    "dependency-check": "^2.9.1",
+    "documentation": "^4.0.0-rc.1",
+    "eslint": "^3.18.0",
+    "git-repo-info": "^1.4.1",
+    "github-markdown-css": "^2.8.0",
+    "glob": "^7.1.1",
+    "jsonfile": "^3.0.0",
+    "marked": "^0.3.6",
+    "mkdirp": "^0.5.1",
+    "mustache": "^2.3.0",
+    "npm-watch": "^0.1.8",
+    "nyc": "^10.2.0",
+    "oss-license-name-to-url": "^1.2.1",
+    "read-yaml": "^1.1.0",
+    "serve-here": "^3.2.0",
+    "shelljs": "^0.7.8"
+  },
+  "ava": {
+    "source": [
+      "sources/**/*.js"
+    ],
+    "timeout": 5000
+  },
+  "nyc": {
+    "exclude": [
+      "tests/**/*.js",
+      "**/node_modules/*"
+    ]
+  },
+  "dependencies": {
+    "better-assert": "^1.0.2"
+  },
+  "optionalDependencies": {
+    "ttab": "^0.6.0"
+  }
+}
