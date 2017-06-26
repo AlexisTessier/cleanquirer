@@ -88,7 +88,8 @@
     "oss-license-name-to-url": "^1.2.1",
     "read-yaml": "^1.1.0",
     "serve-here": "^3.2.0",
-    "shelljs": "^0.7.8"
+    "shelljs": "^0.7.8",
+    "sinon": "^2.3.5"
   },
   "ava": {
     "source": [
