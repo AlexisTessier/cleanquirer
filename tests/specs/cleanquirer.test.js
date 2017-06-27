@@ -102,7 +102,7 @@ function synchronousCommandFromSimpleCommandObjectMacro(t, core) {
 }
 
 synchronousCommandFromSimpleCommandObjectMacro.title = providedTitle => (
-	`Creating then using a synchronous command from a simple command object - ${providedTitle}`);
+	`Synchronous command from a simple command object - ${providedTitle}`);
 
 test('Synchronous usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {
 	cli(['command']);
@@ -134,7 +134,50 @@ test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, a
 	});
 });
 
-test.todo('synchronous command throwing an error');
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function synchronousCommandThrowingErrorFromSimpleCommandObjectMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'errormycli',
+		commands: [
+			{
+				name: 'error-command',
+				action(){
+					throw new Error('error command error');
+				}
+			}
+		]
+	});
+
+	const error = t.throws(()=>{
+		core(t, myCli);
+	});
+
+	t.is(error.message, `Error happen when using the errormycli command "error-command" : error command error`);
+}
+
+synchronousCommandThrowingErrorFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Synchronous command throwing an error from a simple command object - ${providedTitle}`)
+
+test('Synchronous usage', synchronousCommandThrowingErrorFromSimpleCommandObjectMacro, (t, cli) => {
+	cli(['error-command'])
+});
+
+test('Callback usage', synchronousCommandThrowingErrorFromSimpleCommandObjectMacro, (t, cli) => {
+	cli(['error-command'], err => {
+		t.fail();
+	})
+});
+
+test('Promise usage', synchronousCommandThrowingErrorFromSimpleCommandObjectMacro, (t, cli) => {
+	cli(['error-command']).then(()=>{
+		t.fail();
+	});
+});
 
 /*---------------------------*/
 /*---------------------------*/
@@ -183,7 +226,7 @@ function ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObject
 }
 
 ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro.title = providedTitle => (
-	`Throw error when creating then using a synchronous callback command from a simple command object - ${providedTitle}`);
+	`Throw error when using a synchronous callback command from a simple command object - ${providedTitle}`);
 
 test('Synchronous usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
 	cli(['callback']);
@@ -235,7 +278,7 @@ function ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpl
 }
 
 ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro.title = providedTitle => (
-	`Throw error when creating then using a both callback and promise command from a simple command object - ${providedTitle}`);
+	`Throw error when using a both callback and promise command from a simple command object - ${providedTitle}`);
 
 test('Synchronous usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
 	cli(['callback-promise']);

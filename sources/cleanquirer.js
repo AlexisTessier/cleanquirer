@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const check = require('better-assert');
 
 function cleanquirer({
 	name,
@@ -28,7 +29,7 @@ function cleanquirer({
 		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
 		
 		const cliCallbackIsAFunction = typeof cliCallback === 'function';
-		assert(cliCallbackIsAFunction || !cliCallback);
+		check(cliCallbackIsAFunction || !cliCallback);
 
 		const cliPromise = cliCallbackIsAFunction ? null : new Promise(resolve => {
 			cliCallback = err => {
@@ -46,23 +47,33 @@ function cleanquirer({
 		}
 
 		const action = actions[command].action;
-		const actionResult = action(options, done);
 
 		const actionUseCallback = action.length >= 2;
+		let actionResult = null;
+		
+		try{
+			actionResult = action(options, done);
+		}
+		catch(err){
+			throw new Error(
+				`Error happen when using the ${name} command "${command}" : ${err.message}`
+			);
+		}
+
 		const actionUsePromise = actionResult instanceof Promise;
 
 		if (actionUseCallback && actionUsePromise) {
-			throw new Error(`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+			throw new Error(
+				`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`
+			);
 		}
-
-		if(actionUseCallback && doneCalled){
+		else if (!actionUseCallback && !actionUsePromise) {
+			cliCallback(null);
+		}
+		else if(actionUseCallback && doneCalled){
 			throw new Error(
 				`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
 			);
-		}
-		
-		if(!actionUseCallback){
-			cliCallback(null);
 		}
 
 		return cliPromise;
