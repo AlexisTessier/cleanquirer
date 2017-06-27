@@ -134,6 +134,8 @@ test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, a
 	});
 });
 
+test.todo('synchronous command throwing an error');
+
 /*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
@@ -143,6 +145,14 @@ function asynchronousCommandCallbackFromSimpleCommandObjectMacro(t, core) {
 }
 
 test.todo('asynchronousCommandCallbackFromSimpleCommandObjectMacro');
+test.todo('asynchronous command callback with error');
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+test.todo('asynchronousCommandPromiseFromSimpleCommandObjectMacro');
+test.todo('asynchronous command promise with error');
 
 /*---------------------------*/
 /*---------------------------*/
@@ -243,7 +253,7 @@ test('Promise usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOpera
 	t.plan(2);
 
 	cli(['callback-promise']).then(()=>{
-		t.pass();
+		t.fail();
 	});
 });
 
