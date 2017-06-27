@@ -2,6 +2,7 @@
 
 const test = require('ava');
 const assert = require('assert');
+const check = require('better-assert');
 
 const requireFromIndex = require('../utils/require-from-index');
 const mockFunction = require('../mocks/mock-function');
@@ -80,30 +81,75 @@ test(noNameParameterMacro, {name: []});
 /*---------------------------*/
 /*---------------------------*/
 
-test('Creating then using a synchronous command from a simple command object', t => {
+function synchronousCommandFromSimpleCommandObjectMacro(t, core) {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	const action = mockFunction();
+	const actionFunction = mockFunction();
 
 	const myCli = cleanquirer({
 		name: 'mycli',
 		commands: [
 			{
 				name: 'command',
-				action
+				action(){
+					actionFunction();
+				}
 			}
 		]
 	});
 
-	myCli(['command']);
+	return core(t, myCli, actionFunction);
+}
+
+synchronousCommandFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Creating then using a synchronous command from a simple command object - ${providedTitle}`);
+
+test('Synchronous usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {
+	cli(['command']);
 
 	t.true(action.calledOnce);
 });
 
-test('Creating then using a synchronous callback command from a simple command object', t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
+test.cb('Callback usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(1);
 
-	const actionFunction = mockFunction();
+	cli(['command'], err => {
+		assert.equal(err, null);
+
+		t.true(action.calledOnce);
+
+		t.end();
+	});
+});
+
+test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(1);
+
+	const cliPromise = cli(['command']);
+
+	assert(cliPromise instanceof Promise);
+
+	return cliPromise.then(() => {
+		t.true(action.calledOnce);
+	});
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function asynchronousCommandCallbackFromSimpleCommandObjectMacro(t, core) {
+
+}
+
+test.todo('asynchronousCommandCallbackFromSimpleCommandObjectMacro');
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro(t, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const myCli = cleanquirer({
 		name: 'mycli',
@@ -111,40 +157,94 @@ test('Creating then using a synchronous callback command from a simple command o
 			{
 				name: 'callback',
 				action(options, done){
-					actionFunction();
 					done();
 				}
 			}
 		]
 	});
 
-	myCli(['callback']);
+	const useCallbackInSynchronousWayError = t.throws(()=>{
+		core(t, myCli);
+	});
 
-	t.true(actionFunction.calledOnce);
+	t.is(useCallbackInSynchronousWayError.message, 
+		`The mycli command "callback" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
+	);
+}
+
+ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Throw error when creating then using a synchronous callback command from a simple command object - ${providedTitle}`);
+
+test('Synchronous usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
+	cli(['callback']);
 });
 
-test('Creating then using a synchronous promise command from a simple command object', t => {
+test('Callback usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
+	t.plan(3);
+
+	cli(['callback'], err => {
+		t.pass();
+	});
+});
+
+test('Promise usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
+	t.plan(2);
+
+	cli(['callback']).then(()=>{
+		t.fail();
+	});
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro(t, core) {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	const actionFunction = mockFunction();
-
 	const myCli = cleanquirer({
-		name: 'mycli',
+		name: 'myclii',
 		commands: [
 			{
-				name: 'callback',
-				action(options){
+				name: 'callback-promise',
+				action(options, done){
 					return new Promise((resolve, reject) => {
-						actionFunction();
+						resolve();
 					});
 				}
 			}
 		]
 	});
 
-	myCli(['callback']);
+	const useCallbackAndPromiseError = t.throws(()=>{
+		core(t, myCli);
+	});
 
-	t.true(actionFunction.calledOnce);
+	t.is(useCallbackAndPromiseError.message, 
+		`The myclii command "callback-promise" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+}
+
+ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Throw error when creating then using a both callback and promise command from a simple command object - ${providedTitle}`);
+
+test('Synchronous usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
+	cli(['callback-promise']);
+});
+
+test('Callback usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
+	t.plan(2);
+
+	cli(['callback-promise'], err => {
+		t.fail();
+	});
+});
+
+test('Promise usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
+	t.plan(2);
+
+	cli(['callback-promise']).then(()=>{
+		t.pass();
+	});
 });
 
 /*---------------------------*/
@@ -162,7 +262,7 @@ function wrongCliInputMacro(t, wrongInput) {
 		myCli(wrongInput);
 	});
 
-	t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2)`);
+	t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
 }
 
 wrongCliInputMacro.title = (providedTitle, input) => (
