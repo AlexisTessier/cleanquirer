@@ -184,18 +184,172 @@ test('Promise usage', synchronousCommandThrowingErrorFromSimpleCommandObjectMacr
 /*---------------------------*/
 
 function asynchronousCommandCallbackFromSimpleCommandObjectMacro(t, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
+	const actionFunction = mockFunction();
+
+	t.context.asyncTimeout = 50;
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'callback-command',
+				action(options, done){
+					setTimeout(()=>{
+						actionFunction();
+						done();
+					}, t.context.asyncTimeout);
+				}
+			}
+		]
+	});
+
+	return core(t, myCli, actionFunction);
 }
 
-test.todo('asynchronousCommandCallbackFromSimpleCommandObjectMacro');
-test.todo('asynchronous command callback with error');
+asynchronousCommandCallbackFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Asynchronous callback command from simple command object - ${providedTitle}`);
+
+test.cb('Synchronous usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(2);
+
+	cli(['callback-command']);
+
+	t.true(action.notCalled);
+
+	setTimeout(()=>{
+		t.true(action.calledOnce);
+
+		t.end();
+	}, t.context.asyncTimeout*2);
+});
+
+test.cb('Callback usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(2);
+
+	cli(['callback-command'], () => {
+		t.true(action.calledOnce);
+		t.end();
+	});
+
+	t.true(action.notCalled);
+});
+
+test('Promise usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(3);
+
+	const cliPromise = cli(['callback-command']);
+
+	t.true(cliPromise instanceof Promise);
+	t.true(action.notCalled);
+
+	return cliPromise.then(()=>{
+		t.true(action.calledOnce);
+	});
+});
+
 
 /*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
+
+function asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro(t, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunction = mockFunction();
+
+	t.context.asyncTimeout = 50;
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'callback-command',
+				action(options, done){
+					setTimeout(()=>{
+						actionFunction();
+						done(new Error('callback error'));
+						actionFunction();
+					}, t.context.asyncTimeout);
+				}
+			}
+		]
+	});
+
+	return core(t, myCli, actionFunction);
+}
+
+asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Asynchronous callback command with error from simple command object - ${providedTitle}`);
+
+test.cb('Synchronous usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(2);
+
+	cli(['callback-command']).then(()=>{}).catch(()=>{});
+
+	t.true(action.notCalled);
+
+	setTimeout(()=>{
+		t.true(action.calledTwice);
+
+		t.end();
+	}, t.context.asyncTimeout*2);
+});
+
+test.cb('Callback usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(5);
+
+	cli(['callback-command'], err => {
+		t.true(action.calledOnce);
+
+		t.true(err instanceof Error);
+		t.is(err.message, `mycli callback-command error: callback error`);
+	});
+
+	t.true(action.notCalled);
+
+	setTimeout(()=>{
+		t.true(action.calledTwice);
+
+		t.end();
+	}, t.context.asyncTimeout*2);
+});
+
+test('Promise usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(5);
+
+	const cliPromise = cli(['callback-command']);
+	
+	t.true(cliPromise instanceof Promise);
+	t.true(action.notCalled);
+
+	return cliPromise.then(()=>{t.fail()}).catch(err => {
+		t.true(action.calledTwice);
+
+		t.true(err instanceof Error);
+		t.is(err.message, `mycli callback-command error: callback error`);
+	});
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+test.todo('asynchronousCommandCallbackThrowingErrorFromSimpleCommandObjectMacro');
 
 test.todo('asynchronousCommandPromiseFromSimpleCommandObjectMacro');
 test.todo('asynchronous command promise with error');
+
+test.todo('asynchronousCommandPromiseThrowingErrorFromSimpleCommandObjectMacro');
 
 /*---------------------------*/
 /*---------------------------*/

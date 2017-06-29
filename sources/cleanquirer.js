@@ -31,7 +31,7 @@ function cleanquirer({
 		const cliCallbackIsAFunction = typeof cliCallback === 'function';
 		check(cliCallbackIsAFunction || !cliCallback);
 
-		const cliPromise = cliCallbackIsAFunction ? null : new Promise(resolve => {
+		const cliPromise = cliCallbackIsAFunction ? null : new Promise((resolve, reject) => {
 			cliCallback = err => {
 				err ? reject(err) : resolve();
 			};
@@ -41,9 +41,15 @@ function cleanquirer({
 		const options = {};
 
 		let doneCalled = false;
-		function done() {
+		function done(err) {
 			doneCalled = true;
-			cliCallback(null);
+
+			if (err) {
+				cliCallback(new Error(`${name} ${command} error: ${err.message}`));
+			}
+			else{
+				cliCallback();
+			}
 		}
 
 		const action = actions[command].action;
