@@ -104,7 +104,8 @@
     ]
   },
   "dependencies": {
-    "better-assert": "^1.0.2"
+    "better-assert": "^1.0.2",
+    "documentation": "^4.0.0-rc.1"
   },
   "optionalDependencies": {
     "ttab": "^0.6.0"
