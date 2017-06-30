@@ -81,6 +81,9 @@ function cleanquirer({
 				`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
 			);
 		}
+		else if(actionUsePromise){
+			actionResult.then(() => done()).catch(err => done(err));
+		}
 
 		return cliPromise;
 	}

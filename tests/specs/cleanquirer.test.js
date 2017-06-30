@@ -344,12 +344,173 @@ test('Promise usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjec
 /*---------------------------*/
 /*---------------------------*/
 
-test.todo('asynchronousCommandCallbackThrowingErrorFromSimpleCommandObjectMacro');
+function asynchronousCommandPromiseFromSimpleCommandObjectMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-test.todo('asynchronousCommandPromiseFromSimpleCommandObjectMacro');
-test.todo('asynchronous command promise with error');
+	const actionFunction = mockFunction();
 
-test.todo('asynchronousCommandPromiseThrowingErrorFromSimpleCommandObjectMacro');
+	t.context.asyncTimeout = 50;
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'promise-command',
+				action(){
+					actionFunction();
+
+					return new Promise(resolve => {
+						actionFunction();
+						setTimeout(()=>{
+							actionFunction();
+							resolve();
+							actionFunction();
+						}, t.context.asyncTimeout);
+					});
+				}
+			}
+		]
+	});
+
+	return core(t, myCli, actionFunction);
+}
+
+asynchronousCommandPromiseFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Asynchronous promise command from simple command object - ${providedTitle}`);
+
+test.cb('Synchronous usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(2);
+
+	cli(['promise-command']);
+
+	t.true(action.calledTwice);
+
+	setTimeout(()=>{
+		t.is(action.callCount, 4);
+
+		t.end();
+	}, t.context.asyncTimeout*2);
+});
+
+test.cb('Callback usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(3);
+
+	cli(['promise-command'], ()=>{
+		t.is(action.callCount, 4);
+	});
+
+	t.true(action.calledTwice);
+
+	setTimeout(()=>{
+		t.is(action.callCount, 4);
+
+		t.end();
+	}, t.context.asyncTimeout*2);
+});
+
+test('Promise usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(3);
+
+	const cliPromise = cli(['promise-command']);
+
+	t.true(cliPromise instanceof Promise);
+
+	t.true(action.calledTwice);
+
+	return cliPromise.then(()=>{
+		t.is(action.callCount, 4);
+	});
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro(t, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunction = mockFunction();
+
+	t.context.asyncTimeout = 50;
+
+	const myCli = cleanquirer({
+		name: 'myerrorcli',
+		commands: [
+			{
+				name: 'promise-error-command',
+				action(){
+					actionFunction();
+
+					return new Promise((resolve, reject) => {
+						actionFunction();
+						setTimeout(()=>{
+							actionFunction();
+							reject(new Error(`promise command rejected error`));
+							actionFunction();
+						}, t.context.asyncTimeout);
+					});
+				}
+			}
+		]
+	});
+
+	return core(t, myCli, actionFunction);
+}
+
+asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro.title = providedTitle => (
+	`Asynchronous promise command with rejection from simple command object - ${providedTitle}`);
+
+test.cb('Synchronous usage', asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
+	assert(typeof t.context.asyncTimeout === 'number');
+
+	t.plan(2);
+
+	cli(['promise-error-command']).then(()=>{}).catch(()=>{});
+
+	t.true(action.calledTwice);
+
+	setTimeout(()=>{
+		t.is(action.callCount, 4);
+
+		t.end();
+	}, t.context.asyncTimeout*2);	
+});
+
+test.cb('Callback usage', asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(4);
+
+	cli(['promise-error-command'], err => {
+		t.is(action.callCount, 4);
+
+		t.true(err instanceof Error);
+		t.is(err.message, 'myerrorcli promise-error-command error: promise command rejected error');
+
+		t.end();
+	});
+
+	t.true(action.calledTwice);
+});
+
+test('Promise usage', asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
+	t.plan(5);
+
+	const cliPromise = cli(['promise-error-command']);
+
+	t.true(cliPromise instanceof Promise);
+
+	t.true(action.calledTwice);
+
+	return cliPromise.then(()=>t.fail()).catch(err => {
+		t.is(action.callCount, 4);
+
+		t.true(err instanceof Error);
+		t.is(err.message, 'myerrorcli promise-error-command error: promise command rejected error');
+	});
+});
 
 /*---------------------------*/
 /*---------------------------*/
@@ -485,3 +646,9 @@ test(wrongCliInputMacro, null);
 test(wrongCliInputMacro, '  ');
 test(wrongCliInputMacro, 'wrong input');
 test(wrongCliInputMacro, function () {});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+
