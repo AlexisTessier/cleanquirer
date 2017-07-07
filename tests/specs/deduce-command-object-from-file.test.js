@@ -42,6 +42,36 @@ test(deduceWithWrongFilePathMacro, 'non/absolute/path.js');
 
 /*------------------------*/
 
+function deduceNoFunctionModuleMacro(t, type, modulePath) {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	const fullModulePath = pathFromIndex('tests/mocks/mock-commands', modulePath);
+
+	const noFunctionModuleError = t.throws(()=>{
+		deduce(fullModulePath);
+	});
+
+	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function`);
+}
+
+deduceNoFunctionModuleMacro.title = (providedTitle, modulePath, type) => (
+	`${providedTitle} - error trying to deduce no function module - ${type} module`);
+
+test(deduceNoFunctionModuleMacro, 'object', 'object-module.js');
+test(deduceNoFunctionModuleMacro, 'object', 'array-module.js');
+test(deduceNoFunctionModuleMacro, 'string', 'empty-string-module.js');
+test(deduceNoFunctionModuleMacro, 'string', 'string-module.js');
+test(deduceNoFunctionModuleMacro, 'undefined', 'undefined-module.js');
+test(deduceNoFunctionModuleMacro, 'object', 'no-export-module.js');
+test(deduceNoFunctionModuleMacro, 'null', 'null-module.js');
+test(deduceNoFunctionModuleMacro, 'number', 'number-module.js');
+
+/*------------------------*/
+
+test.todo('error trying to deduce from a no javascript file');
+
+/*------------------------*/
+
 function deduceFromCommandFileMacro(t, commandFile, core) {
 	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
 
@@ -54,9 +84,6 @@ function deduceFromCommandFileMacro(t, commandFile, core) {
 
 deduceFromCommandFileMacro.title = providedTitle => (
 	`deduce from command file - ${providedTitle}`);
-
-test.todo('error trying to deduce no function module');
-test.todo('error trying to deduce from a no javascript file');
 
 test('return promise', deduceFromCommandFileMacro, 'no-doc.js');
 
@@ -77,3 +104,9 @@ test('deduce command name with doc', deduceFromCommandFileMacro, 'doc.js', (t, d
 test.todo('deduce command name from multi comments files');
 test.todo('deduce command name from undocumented multi-functions files');
 test.todo('deduce command name from documented multi-functions files');
+
+test.todo('deduce command action with no doc');
+test.todo('deduce command action with doc');
+test.todo('deduce command action from multi comments files');
+test.todo('deduce command action from undocumented multi-functions files');
+test.todo('deduce command action from documented multi-functions files');

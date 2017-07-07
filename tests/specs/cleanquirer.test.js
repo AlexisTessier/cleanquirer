@@ -2,7 +2,6 @@
 
 const test = require('ava');
 const assert = require('assert');
-const check = require('better-assert');
 
 const requireFromIndex = require('../utils/require-from-index');
 const mockFunction = require('../mocks/mock-function');

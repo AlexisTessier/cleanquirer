@@ -20,6 +20,10 @@ function getCommandInfosFromComments(comments){
 function deduceCommandObjectFromFile(filepath) {
 	assert(typeof filepath === 'string' && path.isAbsolute(filepath), `${filepath} is of type ${typeof filepath}. The filepath argument must be an absolute path.`);
 
+	const action = require(filepath);
+
+	assert(typeof action === 'function', `${filepath} exports ${action === null ? 'null' : typeof action}. Valid commands module file must export a function`);
+
 	return new Promise((resolve, reject) => {
 
 		//defaults

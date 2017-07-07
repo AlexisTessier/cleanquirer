@@ -63,6 +63,7 @@ module.exports = cli;
  * + command aliases
  * + deduce command aliases from documented files
  * + valid cases
+ * + default command
  * + command timeout option
  * + deduce command timeout option from documented files
  */
