@@ -66,30 +66,29 @@
   },
   "licenseDate": "2017-present",
   "devDependencies": {
-    "@alexistessier/es-lint-config": "^1.2.1",
-    "@alexistessier/node-module-starterkit-release-dep": "^1.2.0",
-    "ava": "^0.18.2",
-    "capitalize": "^1.0.0",
-    "concurrently": "^3.5.0",
-    "coveralls": "^2.12.0",
-    "dashify": "^0.2.2",
-    "dependency-check": "^2.9.1",
-    "documentation": "^4.0.0-rc.1",
-    "eslint": "^3.18.0",
-    "git-repo-info": "^1.4.1",
-    "github-markdown-css": "^2.8.0",
-    "glob": "^7.1.1",
-    "jsonfile": "^3.0.0",
-    "marked": "^0.3.6",
-    "mkdirp": "^0.5.1",
-    "mustache": "^2.3.0",
-    "npm-watch": "^0.1.8",
-    "nyc": "^10.2.0",
-    "oss-license-name-to-url": "^1.2.1",
-    "read-yaml": "^1.1.0",
-    "serve-here": "^3.2.0",
-    "shelljs": "^0.7.8",
-    "sinon": "^2.3.5"
+    "@alexistessier/es-lint-config": "1.2.1",
+    "@alexistessier/node-module-starterkit-release-dep": "1.2.0",
+    "ava": "0.22.0",
+    "capitalize": "1.0.0",
+    "concurrently": "3.5.0",
+    "coveralls": "2.13.1",
+    "dashify": "0.2.2",
+    "dependency-check": "2.9.1",
+    "eslint": "4.4.1",
+    "git-repo-info": "1.4.1",
+    "github-markdown-css": "2.8.0",
+    "glob": "7.1.2",
+    "jsonfile": "3.0.1",
+    "marked": "0.3.6",
+    "mkdirp": "0.5.1",
+    "mustache": "2.3.0",
+    "npm-watch": "0.2.0",
+    "nyc": "11.1.0",
+    "oss-license-name-to-url": "1.2.1",
+    "read-yaml": "1.1.0",
+    "serve-here": "3.2.0",
+    "shelljs": "0.7.8",
+    "sinon": "3.2.0"
   },
   "ava": {
     "source": [
@@ -104,10 +103,10 @@
     ]
   },
   "dependencies": {
-    "better-assert": "^1.0.2",
-    "documentation": "^4.0.0-rc.1"
+    "better-assert": "1.0.2",
+    "documentation": "5.2.1"
   },
   "optionalDependencies": {
-    "ttab": "^0.6.0"
+    "ttab": "0.6.0"
   }
 }

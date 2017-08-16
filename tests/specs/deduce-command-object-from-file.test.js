@@ -2,8 +2,6 @@
 
 const test = require('ava');
 
-const assert = require('assert');
-
 const requireFromIndex = require('../utils/require-from-index');
 const pathFromIndex = require('../utils/path-from-index');
 
@@ -11,8 +9,8 @@ test('type and api', t => {
 	const deduceFromIndex = requireFromIndex('deduce-command-object-from-file');
 	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
 
-	assert.equal(typeof deduce, 'function');
-	assert.equal(deduceFromIndex, deduce);
+	t.is(typeof deduce, 'function');
+	t.is(deduceFromIndex, deduce);
 });
 
 /*------------------------*/
@@ -89,15 +87,15 @@ test('return promise', deduceFromCommandFileMacro, 'no-doc.js');
 
 test('deduce command name with no doc', deduceFromCommandFileMacro, 'no-doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {
-		assert.equal(typeof commandObject, 'object');
-		assert.equal(commandObject.name, 'no-doc');
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'no-doc');
 	});
 });
 
 test('deduce command name with doc', deduceFromCommandFileMacro, 'doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {
-		assert.equal(typeof commandObject, 'object');
-		assert.equal(commandObject.name, 'doc-name');
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'doc-name');
 	});
 });
 

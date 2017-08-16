@@ -1,7 +1,5 @@
 'use strict';
 
-const assert = require('assert');
-
 const fs = require('fs');
 const path = require('path');
 
@@ -33,6 +31,7 @@ test('ensure all files are tested', t => {
 					resolve();
 				});
 			}))).then(()=>{
+				t.pass();
 				resolve();
 			});
 		});

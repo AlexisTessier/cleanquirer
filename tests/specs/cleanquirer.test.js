@@ -1,7 +1,6 @@
 'use strict';
 
 const test = require('ava');
-const assert = require('assert');
 
 const requireFromIndex = require('../utils/require-from-index');
 const mockFunction = require('../mocks/mock-function');
@@ -10,14 +9,14 @@ test('type and basic api', t => {
 	const cleanquirerFromIndex = requireFromIndex('index');
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	assert.equal(cleanquirerFromIndex, cleanquirer);
-	assert.equal(typeof cleanquirer, 'function');
+	t.is(cleanquirerFromIndex, cleanquirer);
+	t.is(typeof cleanquirer, 'function');
 
 	const myCli = cleanquirer({
 		name: 'mycli'
 	});
 
-	assert.equal(typeof myCli, 'function');
+	t.is(typeof myCli, 'function');
 });
 
 /*---------------------------*/
@@ -110,10 +109,10 @@ test('Synchronous usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cl
 });
 
 test.cb('Callback usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.plan(1);
+	t.plan(2);
 
 	cli(['command'], err => {
-		assert.equal(err, null);
+		t.is(err, null);
 
 		t.true(action.calledOnce);
 
@@ -122,11 +121,11 @@ test.cb('Callback usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cl
 });
 
 test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.plan(1);
+	t.plan(2);
 
 	const cliPromise = cli(['command']);
 
-	assert(cliPromise instanceof Promise);
+	t.true(cliPromise instanceof Promise);
 
 	return cliPromise.then(() => {
 		t.true(action.calledOnce);
@@ -211,9 +210,9 @@ asynchronousCommandCallbackFromSimpleCommandObjectMacro.title = providedTitle =>
 	`Asynchronous callback command from simple command object - ${providedTitle}`);
 
 test.cb('Synchronous usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(2);
+	t.plan(3);
 
 	cli(['callback-command']);
 
@@ -285,9 +284,9 @@ asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro.title = provide
 	`Asynchronous callback command with error from simple command object - ${providedTitle}`);
 
 test.cb('Synchronous usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(2);
+	t.plan(3);
 
 	cli(['callback-command']).then(()=>{}).catch(()=>{});
 
@@ -301,9 +300,9 @@ test.cb('Synchronous usage', asynchronousCommandCallbackWithErrorFromSimpleComma
 });
 
 test.cb('Callback usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(5);
+	t.plan(6);
 
 	cli(['callback-command'], err => {
 		t.true(action.calledOnce);
@@ -322,9 +321,9 @@ test.cb('Callback usage', asynchronousCommandCallbackWithErrorFromSimpleCommandO
 });
 
 test('Promise usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(5);
+	t.plan(6);
 
 	const cliPromise = cli(['callback-command']);
 	
@@ -378,9 +377,9 @@ asynchronousCommandPromiseFromSimpleCommandObjectMacro.title = providedTitle => 
 	`Asynchronous promise command from simple command object - ${providedTitle}`);
 
 test.cb('Synchronous usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(2);
+	t.plan(3);
 
 	cli(['promise-command']);
 
@@ -394,9 +393,9 @@ test.cb('Synchronous usage', asynchronousCommandPromiseFromSimpleCommandObjectMa
 });
 
 test.cb('Callback usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(3);
+	t.plan(4);
 
 	cli(['promise-command'], ()=>{
 		t.is(action.callCount, 4);
@@ -464,9 +463,9 @@ asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro.title = provided
 	`Asynchronous promise command with rejection from simple command object - ${providedTitle}`);
 
 test.cb('Synchronous usage', asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
-	assert(typeof t.context.asyncTimeout === 'number');
+	t.true(typeof t.context.asyncTimeout === 'number');
 
-	t.plan(2);
+	t.plan(3);
 
 	cli(['promise-error-command']).then(()=>{}).catch(()=>{});
 
