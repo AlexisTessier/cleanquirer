@@ -1,20 +1,37 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
+const acorn = require('acorn');
 const documentation = require('documentation');
 
-function getCommandInfosFromComments(comments){
+function getCommandInfosFromComment(comment){
 	const commandObject = {};
 
-	if (comments.length) {
-		const commandFunctionComment = comments[0];
-
-		commandObject.name = commandFunctionComment.name;
-	}
+	commandObject.name = comment.name;
 
 	return commandObject;
+}
+
+function parseFile(filepath){
+	const content = fs.readFileSync(filepath, {encoding: 'utf-8'});
+
+	console.log('=====')
+	const comments = [];
+	const ast = acorn.parse(content, {
+		sourceType: 'module',
+		onComment: comments,
+	});
+	console.log(ast)
+	console.log(comments)
+}
+
+function getComment(comments, filepath){
+	const ast = parseFile(filepath);
+
+	return null;
 }
 
 function deduceCommandObjectFromFile(filepath) {
@@ -32,7 +49,12 @@ function deduceCommandObjectFromFile(filepath) {
 		};
 
 		documentation.build(filepath, {}).then(comments => {
-			const fromDoc = getCommandInfosFromComments(comments);
+			let fromDoc = {};
+
+			if (comments.length) {
+				const comment = getComment(comments, filepath);
+				fromDoc = comment ? getCommandInfosFromComment(comment) : fromDoc;
+			}
 
 			resolve(Object.assign({}, commandObject, fromDoc));
 		});

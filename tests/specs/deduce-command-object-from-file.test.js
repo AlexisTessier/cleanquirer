@@ -99,8 +99,26 @@ test('deduce command name with doc', deduceFromCommandFileMacro, 'doc.js', (t, d
 	});
 });
 
-test.todo('deduce command name from multi comments files');
-test.todo('deduce command name from undocumented multi-functions files');
+test('deduce command name from multi comments files', deduceFromCommandFileMacro, 'multi-comments.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'multi-comments-name');
+	});
+});
+
+test('deduce command name from undocumented multi-functions files', deduceFromCommandFileMacro, 'multi-functions-file-no-doc.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'multi-functions-file-no-doc');
+	});
+});
+
+test('deduce command name from undocumented multi-functions files (mixed with documented functions)', deduceFromCommandFileMacro, 'multi-functions-file-no-doc-mixed.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'multi-functions-file-no-doc-mixed');
+	});
+});
 test.todo('deduce command name from documented multi-functions files');
 
 test.todo('deduce command action with no doc');
