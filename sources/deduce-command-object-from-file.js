@@ -8,6 +8,81 @@ const acorn = require('acorn');
 const documentation = require('documentation');
 const lineColumn = require('line-column');
 
+function deduceCommandObjectFromFile(filepath) {
+	assert(typeof filepath === 'string' && path.isAbsolute(filepath), `${filepath} is of type ${typeof filepath}. The filepath argument must be an absolute path.`);
+
+	const extname = path.extname(filepath);
+
+	if (extname.length === 0) {
+		throw new Error(`"${filepath}" has no extension. Valid commands module file must be a javascript file (.js).`);
+	}
+	else if(extname !== '.js'){
+		throw new Error(`"${filepath}" is a ${extname} file. Valid commands module file must be a javascript file (.js).`);
+	}
+
+	const action = require(filepath);
+
+	assert(typeof action === 'function', `${filepath} exports ${action === null ? 'null' : typeof action}. Valid commands module file must export a function.`);
+
+	return new Promise((resolve, reject) => {
+
+		//defaults
+		const commandObject = {
+			name: path.basename(filepath, '.js'),
+			action
+		};
+
+		getExportsValueComment(filepath).then(attachedComment => {
+			let fromComment = {};
+
+			if (attachedComment) {
+				fromComment.name = getTagValue('name', attachedComment);
+			}
+
+			resolve(Object.assign({}, commandObject, fromComment));
+		}).catch(err => {
+			reject(err);
+		});
+	});
+}
+
+function getTagValue(title, comment) {
+	assert(typeof title === 'string');
+	assert(typeof comment === 'object');
+	assert(Array.isArray(comment.tags));
+
+	const tag = comment.tags.filter(tag => tag.title === title)[0] || {};
+
+	return tag[title] || tag.description || null;
+}
+
+function getExportsValueComment(filepath) {
+	assert(typeof filepath === 'string');
+
+	return parseFile(filepath).then(ast => (new Promise((resolve, reject) => {
+		const exportsNode = findExportsNode(ast);
+		const exportsType = exportsNode.right.type;
+
+		let exportsValueNode = null;
+
+		switch(exportsType){
+			case 'Identifier':
+				exportsValueNode = findIdentifierValueNode(exportsNode.right.name, ast);
+				break;
+
+			default:
+				return reject(new Error(`The file "${filepath}" exports a node of type ${exportsType}. This type of exports not handled by cleanquirer.`));
+				break;
+		}
+
+		if (exportsValueNode) {
+			return findNodeAttachedDoc(exportsValueNode, filepath).then(doc => resolve(doc)).catch(err => reject(err));
+		}
+
+		return resolve(null);
+	})));
+}
+
 function findExportsNode(ast) {
 	assert(typeof ast === 'object');
 	assert(Array.isArray(ast.body));
@@ -25,7 +100,7 @@ function findExportsNode(ast) {
 
 function findIdentifierValueNode(id, ast) {
 	assert(typeof id === 'string');
-	
+
 	assert(typeof ast === 'object');
 	assert(Array.isArray(ast.body));
 
@@ -46,25 +121,19 @@ function findIdentifierValueNode(id, ast) {
 		})[0];
 }
 
-function parseFile(filepath){
-	return new Promise((resolve, reject) => {
-		fs.readFile(filepath, {encoding: 'utf-8'}, (err, content) => {
-			if(err){reject(err)}
-			else{
-				resolve({
-					ast: acorn.parse(content, {
-						sourceType: 'module'
-					}),
-					raw: content
-				})
-			}
-		});
-	});
-}
+function findNodeAttachedDoc(node, filepath) {
+	assert(typeof node === 'object');
+	assert(typeof filepath === 'string');
 
-function findNodeAttachedDoc(node, fileContent, filepath) {
 	return new Promise((resolve, reject) => {
-		documentation.build(filepath, {}).then(comments => {
+		let comments = null;
+		let fileContent = null;
+
+		Promise.all([
+			documentation.build(filepath, {}).then(_comments => { comments = _comments }),
+			getFileContent(filepath).then(_fileContent => { fileContent = _fileContent })
+		]).then(()=>{
+
 			if(comments.length){
 				const nodePosition = lineColumn(fileContent, node.start);
 				nodePosition.column = nodePosition.col - 1;
@@ -82,68 +151,58 @@ function findNodeAttachedDoc(node, fileContent, filepath) {
 			}
 
 			return resolve(null);
+
 		}).catch(err => reject(err));
 	});
 }
 
-function getExportsValueComment(filepath) {
-	return parseFile(filepath).then(({ast, raw}) => (new Promise((resolve, reject) => {
-		const exportsNode = findExportsNode(ast);
-		const exportsType = exportsNode.right.type;
+function getFileContent(filepath){
+	assert(typeof filepath === 'string');
 
-		let exportsValueNode = null;
-
-		switch(exportsType){
-			case 'Identifier':
-				exportsValueNode = findIdentifierValueNode(exportsNode.right.name, ast);
-				break;
-
-			default:
-				return reject(new Error(`The file "${filepath}" exports a node of type ${exportsType}. This type of exports not handled by cleanquirer.`));
-				break;
-		}
-
-		if (exportsValueNode) {
-			return findNodeAttachedDoc(exportsValueNode, raw, filepath).then(doc => resolve(doc)).catch(err => reject(err));
-		}
-
-		return resolve(null);
-	})));
-}
-
-function getTag(title, tags) {
-	const tag = tags.filter(tag => tag.title === title)[0] || {};
-
-	return tag[title] || tag.description || null;
-}
-
-function deduceCommandObjectFromFile(filepath) {
-	assert(typeof filepath === 'string' && path.isAbsolute(filepath), `${filepath} is of type ${typeof filepath}. The filepath argument must be an absolute path.`);
-
-	const action = require(filepath);
-
-	assert(typeof action === 'function', `${filepath} exports ${action === null ? 'null' : typeof action}. Valid commands module file must export a function`);
+	getFileContent.cache = getFileContent.cache || {};
 
 	return new Promise((resolve, reject) => {
+		const cache = getFileContent.cache[filepath];
 
-		//defaults
-		const commandObject = {
-			name: path.basename(filepath, '.js')
-		};
+		if (cache) {
+			resolve(cache)
+		}
+		else{
+			fs.readFile(filepath, {encoding: 'utf-8'}, (err, content) => {
+				if(err){
+					reject(err)
+				}
+				else{
+					getFileContent.cache[filepath] = content;
+					resolve(content);
+				}
+			});
+		}
+	});
+}
 
-		getExportsValueComment(filepath).then(attachedDoc => {
-			let fromDoc = {};
+function parseFile(filepath){
+	assert(typeof filepath === 'string');
 
-			if (attachedDoc) {
-				const tags = attachedDoc.tags;
-				
-				fromDoc.name = getTag('name', tags);
-			}
+	parseFile.cache = parseFile.cache || {};
 
-			resolve(Object.assign({}, commandObject, fromDoc));
-		}).catch(err => {
-			reject(err);
-		});
+	return new Promise((resolve, reject) => {
+		const cache = parseFile.cache[filepath];
+
+		if (cache) {
+			resolve(cache)
+		}
+		else{
+			getFileContent(filepath).then(content => {
+				const ast = acorn.parse(content, {
+					sourceType: 'module'
+				});
+
+				parseFile.cache[filepath] = ast;
+
+				resolve(ast);
+			}).catch(err => reject(err));
+		}
 	});
 }
 

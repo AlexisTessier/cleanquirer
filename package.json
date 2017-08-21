@@ -74,7 +74,7 @@
     "coveralls": "2.13.1",
     "dashify": "0.2.2",
     "dependency-check": "2.9.1",
-    "eslint": "4.4.1",
+    "eslint": "4.5.0",
     "git-repo-info": "1.4.1",
     "github-markdown-css": "2.8.0",
     "glob": "7.1.2",
@@ -88,7 +88,7 @@
     "read-yaml": "1.1.0",
     "serve-here": "3.2.0",
     "shelljs": "0.7.8",
-    "sinon": "3.2.0"
+    "sinon": "3.2.1"
   },
   "ava": {
     "source": [

@@ -49,7 +49,7 @@ function deduceNoFunctionModuleMacro(t, type, modulePath) {
 		deduce(fullModulePath);
 	});
 
-	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function`);
+	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function.`);
 }
 
 deduceNoFunctionModuleMacro.title = (providedTitle, modulePath, type) => (
@@ -66,7 +66,20 @@ test(deduceNoFunctionModuleMacro, 'number', 'number-module.js');
 
 /*------------------------*/
 
-test.todo('error trying to deduce from a no javascript file');
+function deduceNoJsFileMacro(t, wrongFile, errorMessageStart) {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	const noJsFilePath = pathFromIndex('tests/mocks/mock-commands', wrongFile);
+
+	const noJsFileError = t.throws(()=>{
+		deduce(noJsFilePath);
+	});
+
+	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
+}
+
+test(deduceNoJsFileMacro, 'no-js.txt', 'is a .txt file');
+test(deduceNoJsFileMacro, 'no-js', 'has no extension');
 
 /*------------------------*/
 
@@ -119,10 +132,52 @@ test('deduce command name from undocumented multi-functions files (mixed with do
 		t.is(commandObject.name, 'multi-functions-file-no-doc-mixed');
 	});
 });
-test.todo('deduce command name from documented multi-functions files');
 
-test.todo('deduce command action with no doc');
-test.todo('deduce command action with doc');
-test.todo('deduce command action from multi comments files');
-test.todo('deduce command action from undocumented multi-functions files');
-test.todo('deduce command action from documented multi-functions files');
+test('deduce command name from documented multi-functions files', deduceFromCommandFileMacro, 'multi-functions-file.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'main-doc-name');
+	});
+});
+
+test('deduce command action with no doc', deduceFromCommandFileMacro, 'no-doc.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/no-doc.js'));
+	});
+});
+
+test('deduce command action with doc', deduceFromCommandFileMacro, 'doc.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/doc.js'));
+	});
+});
+
+test('deduce command action from multi comments files', deduceFromCommandFileMacro, 'multi-comments.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-comments.js'));
+	});
+});
+
+test('deduce command action from undocumented multi-functions files', deduceFromCommandFileMacro, 'multi-functions-file-no-doc.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-functions-file-no-doc.js'));
+	});
+});
+
+test('deduce command action from undocumented multi-functions files (mixed with documented functions)', deduceFromCommandFileMacro, 'multi-functions-file-no-doc-mixed.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-functions-file-no-doc-mixed.js'));
+	});
+});
+
+test('deduce command action from documented multi-functions files', deduceFromCommandFileMacro, 'multi-functions-file.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-functions-file.js'));
+	});
+});

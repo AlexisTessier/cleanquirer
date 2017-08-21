@@ -50,7 +50,7 @@ module.exports = cli;
  * -----
  *
  * + name/action command object => DONE
- * + deduce commands from documented files
+ * + deduce commands from documented files => deduce function ok, need to make it work from cleanquirer
  * + name/action/options command object
  * + deduce options from documented files
  * + help command
