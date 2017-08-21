@@ -104,8 +104,8 @@
   },
   "dependencies": {
     "acorn": "5.1.1",
-    "better-assert": "1.0.2",
-    "documentation": "5.2.1"
+    "documentation": "5.2.1",
+    "line-column": "1.0.2"
   },
   "optionalDependencies": {
     "ttab": "0.6.0"

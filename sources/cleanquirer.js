@@ -1,7 +1,6 @@
 'use strict';
 
 const assert = require('assert');
-const check = require('better-assert');
 
 function cleanquirer({
 	name,
@@ -29,7 +28,7 @@ function cleanquirer({
 		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
 		
 		const cliCallbackIsAFunction = typeof cliCallback === 'function';
-		check(cliCallbackIsAFunction || !cliCallback);
+		assert(cliCallbackIsAFunction || !cliCallback);
 
 		const cliPromise = cliCallbackIsAFunction ? null : new Promise((resolve, reject) => {
 			cliCallback = err => {
