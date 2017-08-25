@@ -104,8 +104,11 @@
   },
   "dependencies": {
     "acorn": "5.1.1",
-    "documentation": "5.2.1",
-    "line-column": "1.0.2"
+    "documentation": "5.2.2",
+    "fs-extra": "4.0.1",
+    "line-column": "1.0.2",
+    "p-memoize": "1.0.0",
+    "temp-write": "3.3.0"
   },
   "optionalDependencies": {
     "ttab": "0.6.0"

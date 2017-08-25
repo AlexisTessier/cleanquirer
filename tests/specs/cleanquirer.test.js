@@ -2,8 +2,10 @@
 
 const test = require('ava');
 
+const pathFromIndex = require('../utils/path-from-index');
 const requireFromIndex = require('../utils/require-from-index');
 const mockFunction = require('../mocks/mock-function');
+const mockCommandFile = require('../mocks/mock-command-file');
 
 test('type and basic api', t => {
 	const cleanquirerFromIndex = requireFromIndex('index');
@@ -130,6 +132,73 @@ test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, a
 	return cliPromise.then(() => {
 		t.true(action.calledOnce);
 	});
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function commandFromFileMacro(t, type, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	mockCommandFile(type).then(filepath => {
+		const actionFunction = require(filepath);
+
+		const myCli = cleanquirer({
+			name: 'mycli',
+			commands: [
+				filepath
+			]
+		});
+
+		core(t, myCli, actionFunction);
+	});
+}
+
+commandFromFileMacro.title = providedTitle => (
+	`Command from a file - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandFromUndocumentedFileMacro(t, core) {
+	return commandFromFileMacro(t, 'no-doc.js', core);
+}
+
+commandFromUndocumentedFileMacro.title = providedTitle => (
+	`Command from an undocumented file - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandFromUndocumentedFileMacro, (t, myCli, actionFunction) => {
+	myCli(['no-doc']);
+
+	t.is(actionFunction.callCount, 0);
+	t.end();
+});
+
+test.cb('Callback usage', commandFromUndocumentedFileMacro, (t, myCli, actionFunction) => {
+	t.plan(3);
+
+	myCli(['no-doc'], err => {
+		t.is(err, null);
+		t.is(actionFunction.callCount, 1);
+		t.end();
+	});
+
+	t.is(actionFunction.callCount, 0);
+});
+
+test.cb('Promise usage', commandFromUndocumentedFileMacro, (t, myCli, actionFunction) => {
+	t.plan(3);
+
+	const cliPromise = myCli(['no-doc']);
+
+	t.true(cliPromise instanceof Promise);
+
+	cliPromise.then(()=>{
+		t.is(actionFunction.callCount, 1);
+		t.end();
+	});
+
+	t.is(actionFunction.callCount, 0);
 });
 
 /*---------------------------*/
@@ -550,7 +619,7 @@ test('Callback usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpl
 
 	cli(['callback'], err => {
 		t.pass();
-	});
+	});	
 });
 
 test('Promise usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
@@ -648,5 +717,4 @@ test(wrongCliInputMacro, function () {});
 /*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
-
 

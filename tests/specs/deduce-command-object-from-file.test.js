@@ -83,6 +83,60 @@ test(deduceNoJsFileMacro, 'no-js', 'has no extension');
 
 /*------------------------*/
 
+test('deduce from a syntax error file', t => {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	const syntaxErrorFileError = t.throws(()=>{
+		deduce(pathFromIndex('tests/mocks/mock-commands/syntax-error.js'));
+	});
+
+	t.is(syntaxErrorFileError.message, 'Invalid or unexpected token');
+});
+
+test('deduce from an unhandled exports definition file', t => {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/unhandled-exports-file.js');
+
+	return deduce(fullPath).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, `Cleanquirer doesn't found any exports node in the file "${fullPath}".`);
+	});
+});
+
+test('deduce from an unhandled exports type file', t => {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/unhandled-exports-type-file.js');
+
+	return deduce(fullPath).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, `The file "${fullPath}" exports a node of type FunctionExpression. This type of exports is not handled by cleanquirer.`);
+	});
+});
+
+test('deduce from an unhandled exports value origin file', t => {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/unhandled-exports-value-origin-file.js');
+
+	return deduce(fullPath).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, `Cleanquirer doesn\'t found the exports value node in the file "${fullPath}".`);
+	});
+});
+
+/*------------------------*/
+
 function deduceFromCommandFileMacro(t, commandFile, core) {
 	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
 
@@ -97,6 +151,14 @@ deduceFromCommandFileMacro.title = providedTitle => (
 	`deduce from command file - ${providedTitle}`);
 
 test('return promise', deduceFromCommandFileMacro, 'no-doc.js');
+test('return promise skipping the file extension', deduceFromCommandFileMacro, 'no-doc');
+
+test('deduce command name from empty comment doc', deduceFromCommandFileMacro, 'empty-comment-doc.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'empty-comment-doc');
+	});
+});
 
 test('deduce command name with no doc', deduceFromCommandFileMacro, 'no-doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {

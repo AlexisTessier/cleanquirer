@@ -1,6 +1,9 @@
 'use strict';
 
 const assert = require('assert');
+const path = require('path');
+
+const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 function cleanquirer({
 	name,
@@ -20,11 +23,44 @@ function cleanquirer({
 	/*----------------*/
 
 	const actions = {};
-	commands.forEach(command => {
-		actions[command.name] = command;
+	function addAction(commandObject, index) {
+		assert(typeof commandObject === 'object',
+			`The provided ${name} command object at index ${index} must be an object. Currently, it's of type ${typeof commandObject}.`);
+		
+		assert(typeof commandObject.name === 'string',
+			`The provided ${name} command object at index ${index} has no name.`)
+
+		actions[commandObject.name] = commandObject;
+	}
+
+	const actionsFromFile = [];
+	commands.forEach((command, i) => {
+		assert(typeof command === 'object' || typeof command === 'string');
+
+		if (typeof command === 'string') {
+			assert(path.isAbsolute(command), `The provided ${name} command path "${command}" at index ${i} is not an absolute path.`);
+		
+			actionsFromFile.push(deduceCommandObjectFromFile(command).then(commandObject => {
+				addAction(commandObject, `${i} (${command}`);
+			}));
+		}
+		else{
+			addAction(command, i);
+		}
 	});
 
+	let cliReady = !actionsFromFile.length;
+
+	const readyPromise = cliReady ? null : Promise.all(actionsFromFile).then(()=>cliReady = true);
+
 	function cli(inputs, cliCallback) {
+		if (cliReady) {
+			return _cli(inputs, cliCallback);
+		}
+		return readyPromise.then(()=>_cli(inputs, cliCallback));
+	}
+
+	function _cli(inputs, cliCallback) {
 		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
 		
 		const cliCallbackIsAFunction = typeof cliCallback === 'function';
