@@ -2,6 +2,8 @@
 
 const test = require('ava');
 
+const path = require('path');
+
 const pathFromIndex = require('../utils/path-from-index');
 const requireFromIndex = require('../utils/require-from-index');
 const mockFunction = require('../mocks/mock-function');
@@ -140,9 +142,12 @@ test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, a
 
 function commandFromFileMacro(t, type, core) {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const [template, skipExtension] = Array.isArray(type) ? type : [type, false];
 
-	mockCommandFile(type).then(filepath => {
-		const actionFunction = require(filepath);
+	mockCommandFile(template).then(filepath => {
+		const actionFunction = require(skipExtension === 'skipExtension' ? (
+			path.join(path.dirname(filepath), path.basename(filepath, path.extname(filepath)))
+		): filepath);
 
 		const myCli = cleanquirer({
 			name: 'mycli',
@@ -158,6 +163,65 @@ function commandFromFileMacro(t, type, core) {
 commandFromFileMacro.title = providedTitle => (
 	`Command from a file - ${providedTitle}`);
 
+test.cb('return promise', commandFromFileMacro, 'no-doc.js', (t, myCli) => {
+	const commandPromise = myCli(['no-doc']);
+
+	t.true(commandPromise instanceof Promise);
+
+	t.end();
+});
+
+test.cb('return promise skipping the file extension', commandFromFileMacro, ['no-doc.js', 'skipExtension'], (t, myCli) => {
+	const commandPromise = myCli(['no-doc']);
+
+	t.true(commandPromise instanceof Promise);
+
+	t.end();
+});
+
+/*---------------------------*/
+
+function commandFromFileSynchronousUsageCore(command) {
+	return (t, myCli, actionFunction) => {
+		myCli([command]);
+
+		t.is(actionFunction.callCount, 0);
+		t.end();
+	}
+}
+
+function commandFromFileCallbackUsageCore(command) {
+	return (t, myCli, actionFunction) => {
+		t.plan(3);
+
+		myCli([command], err => {
+			t.is(err, null);
+			t.is(actionFunction.callCount, 1);
+			t.end();
+		});
+
+		t.is(actionFunction.callCount, 0);
+	}
+}
+
+function commandFromFilePromiseUsageCore(command) {
+	return (t, myCli, actionFunction) => {
+		t.plan(3);
+
+		const cliPromise = myCli([command]);
+
+		t.true(cliPromise instanceof Promise);
+
+		cliPromise.then(()=>{
+			t.is(actionFunction.callCount, 1);
+			t.end();
+		});
+
+		t.is(actionFunction.callCount, 0);
+	}
+}
+
+
 /*---------------------------*/
 
 function commandFromUndocumentedFileMacro(t, core) {
@@ -167,39 +231,35 @@ function commandFromUndocumentedFileMacro(t, core) {
 commandFromUndocumentedFileMacro.title = providedTitle => (
 	`Command from an undocumented file - ${providedTitle}`);
 
-test.cb('Synchronous usage', commandFromUndocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['no-doc']);
+test.cb('Synchronous usage', commandFromUndocumentedFileMacro, commandFromFileSynchronousUsageCore('no-doc'));
+test.cb('Callback usage', commandFromUndocumentedFileMacro, commandFromFileCallbackUsageCore('no-doc'));
+test.cb('Promise usage', commandFromUndocumentedFileMacro, commandFromFilePromiseUsageCore('no-doc'));
 
-	t.is(actionFunction.callCount, 0);
-	t.end();
-});
+/*---------------------------*/
 
-test.cb('Callback usage', commandFromUndocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+function commandFromFileWithEmptyCommentMacro(t, core) {
+	return commandFromFileMacro(t, 'empty-comment-doc.js', core);
+}
 
-	myCli(['no-doc'], err => {
-		t.is(err, null);
-		t.is(actionFunction.callCount, 1);
-		t.end();
-	});
+commandFromFileWithEmptyCommentMacro.title = providedTitle => (
+	`Command from a file with empty comment - ${providedTitle}`);
 
-	t.is(actionFunction.callCount, 0);
-});
+test.cb('Synchronous usage', commandFromFileWithEmptyCommentMacro, commandFromFileSynchronousUsageCore('empty-comment-doc'));
+test.cb('Callback usage', commandFromFileWithEmptyCommentMacro, commandFromFileCallbackUsageCore('empty-comment-doc'));
+test.cb('Promise usage', commandFromFileWithEmptyCommentMacro, commandFromFilePromiseUsageCore('empty-comment-doc'));
 
-test.cb('Promise usage', commandFromUndocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+/*---------------------------*/
 
-	const cliPromise = myCli(['no-doc']);
+function commandFromFileWithDocMacro(t, core) {
+	return commandFromFileMacro(t, 'doc.js', core);
+}
 
-	t.true(cliPromise instanceof Promise);
+commandFromFileWithDocMacro.title = providedTitle => (
+	`Command from a file with comment - ${providedTitle}`);
 
-	cliPromise.then(()=>{
-		t.is(actionFunction.callCount, 1);
-		t.end();
-	});
-
-	t.is(actionFunction.callCount, 0);
-});
+test.cb('Synchronous usage', commandFromFileWithDocMacro, commandFromFileSynchronousUsageCore('doc-name'));
+test.cb('Callback usage', commandFromFileWithDocMacro, commandFromFileCallbackUsageCore('doc-name'));
+test.cb('Promise usage', commandFromFileWithDocMacro, commandFromFilePromiseUsageCore('doc-name'));
 
 /*---------------------------*/
 /*---------------------------*/

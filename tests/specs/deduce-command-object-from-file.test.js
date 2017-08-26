@@ -153,17 +153,17 @@ deduceFromCommandFileMacro.title = providedTitle => (
 test('return promise', deduceFromCommandFileMacro, 'no-doc.js');
 test('return promise skipping the file extension', deduceFromCommandFileMacro, 'no-doc');
 
-test('deduce command name from empty comment doc', deduceFromCommandFileMacro, 'empty-comment-doc.js', (t, deduce) => {
-	return deduce.then(commandObject => {
-		t.is(typeof commandObject, 'object');
-		t.is(commandObject.name, 'empty-comment-doc');
-	});
-});
-
 test('deduce command name with no doc', deduceFromCommandFileMacro, 'no-doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {
 		t.is(typeof commandObject, 'object');
 		t.is(commandObject.name, 'no-doc');
+	});
+});
+
+test('deduce command name from empty comment doc', deduceFromCommandFileMacro, 'empty-comment-doc.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'empty-comment-doc');
 	});
 });
 

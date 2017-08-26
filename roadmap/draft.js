@@ -48,24 +48,52 @@ module.exports = cli;
 /**
  * TO DO
  * -----
- *
+
+ * release
+ * -------
  * + name/action command object => DONE
  * + deduce commands from documented files => deduce function ok, need to make it work from cleanquirer
- * + name/action/options command object
- * + deduce options from documented files
+ * + multiple commands definition
  * + version option
  * + version command
+ * + undefined command handling
+
+ * release
+ * -------
+ * + name/action/options command object
+ * + deduce options from documented files
+
+ * release
+ * -------
  * + help command
  * + name/action/options/help command object
  * + deduce help from documented files
+
+ * release
+ * -------
  * + options aliases
  * + deduce options aliases from documented files
+
+ * release
+ * -------
  * + global options
  * + deduce global options from documented files
+
+ * release
+ * -------
  * + command aliases
  * + deduce command aliases from documented files
+
+ * release
+ * -------
  * + valid cases
+
+ * release
+ * -------
  * + default command
+
+ * release
+ * -------
  * + command timeout option
  * + deduce command timeout option from documented files
  */
