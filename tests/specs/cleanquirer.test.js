@@ -262,6 +262,63 @@ test.cb('Callback usage', commandFromFileWithDocMacro, commandFromFileCallbackUs
 test.cb('Promise usage', commandFromFileWithDocMacro, commandFromFilePromiseUsageCore('doc-name'));
 
 /*---------------------------*/
+
+function commandFromFileWithMultipleCommentsMacro(t, core) {
+	return commandFromFileMacro(t, 'multi-comments.js', core);
+}
+
+commandFromFileWithMultipleCommentsMacro.title = providedTitle => (
+	`Command from a file with multiple comments - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandFromFileWithMultipleCommentsMacro, commandFromFileSynchronousUsageCore('multi-comments-name'));
+test.cb('Callback usage', commandFromFileWithMultipleCommentsMacro, commandFromFileCallbackUsageCore('multi-comments-name'));
+test.cb('Promise usage', commandFromFileWithMultipleCommentsMacro, commandFromFilePromiseUsageCore('multi-comments-name'));
+
+/*---------------------------*/
+
+function commandFromUndocumentedFileWithMultipleFunctionsMacro(t, core) {
+	return commandFromFileMacro(t, 'multi-functions-file-no-doc.js', core);
+}
+
+commandFromUndocumentedFileWithMultipleFunctionsMacro.title = providedTitle => (
+	`Command from an undocumented file with multiple functions - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandFromUndocumentedFileWithMultipleFunctionsMacro, commandFromFileSynchronousUsageCore('multi-functions-file-no-doc'));
+test.cb('Callback usage', commandFromUndocumentedFileWithMultipleFunctionsMacro, commandFromFileCallbackUsageCore('multi-functions-file-no-doc'));
+test.cb('Promise usage', commandFromUndocumentedFileWithMultipleFunctionsMacro, commandFromFilePromiseUsageCore('multi-functions-file-no-doc'));
+
+/*---------------------------*/
+
+function commandFromFileWithMultipleFunctionAndSomeCommentsMacro(t, core) {
+	return commandFromFileMacro(t, 'multi-functions-file-no-doc-mixed.js', core);
+}
+
+commandFromFileWithMultipleFunctionAndSomeCommentsMacro.title = providedTitle => (
+	`Command from a file with multiple functions and some comments - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandFromFileWithMultipleFunctionAndSomeCommentsMacro, commandFromFileSynchronousUsageCore('multi-functions-file-no-doc-mixed'));
+test.cb('Callback usage', commandFromFileWithMultipleFunctionAndSomeCommentsMacro, commandFromFileCallbackUsageCore('multi-functions-file-no-doc-mixed'));
+test.cb('Promise usage', commandFromFileWithMultipleFunctionAndSomeCommentsMacro, commandFromFilePromiseUsageCore('multi-functions-file-no-doc-mixed'));
+
+/*---------------------------*/
+
+function commandFromFileWithMultipleFunctionMacro(t, core) {
+	return commandFromFileMacro(t, 'multi-functions-file.js', core);
+}
+
+commandFromFileWithMultipleFunctionMacro.title = providedTitle => (
+	`Command from a file with multiple functions - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandFromFileWithMultipleFunctionMacro, commandFromFileSynchronousUsageCore('main-doc-name'));
+test.cb('Callback usage', commandFromFileWithMultipleFunctionMacro, commandFromFileCallbackUsageCore('main-doc-name'));
+test.cb('Promise usage', commandFromFileWithMultipleFunctionMacro, commandFromFilePromiseUsageCore('main-doc-name'));
+
+/*---------------------------*/
+
+test.todo('Error from documented command files');
+test.todo('Command from documented command files throwing or resolving error');
+
+/*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
 

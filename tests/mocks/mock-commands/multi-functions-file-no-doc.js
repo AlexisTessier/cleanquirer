@@ -1,8 +1,8 @@
 'use strict';
 
-function otherFunction1({
+function otherFunction({
 	option
-}) {
+} = {}) {
 }
 
 function otherFunction2({
@@ -13,8 +13,11 @@ function otherFunction2({
 function mainNoDocCommand({
 	option
 }) {
+	mainNoDocCommand.callCount++;
 	otherFunction();
 }
+
+mainNoDocCommand.callCount = 0;
 
 function otherFunction3({
 	option

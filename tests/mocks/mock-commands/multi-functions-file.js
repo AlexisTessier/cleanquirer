@@ -1,8 +1,8 @@
 'use strict';
 
-function otherFunction1({
+function otherFunction({
 	option
-}) {
+} = {}) {
 }
 
 /**
@@ -20,7 +20,11 @@ function mainDocCommand({
 	option
 }) {
 	otherFunction();
+
+	mainDocCommand.callCount++;
 }
+
+mainDocCommand.callCount = 0;
 
 /**
  * @name other function-name-3

@@ -15,7 +15,11 @@ function multiCommentsCommand({
 	 */
 	function wrong() {
 	}
+
+	multiCommentsCommand.callCount++;
 }
+
+multiCommentsCommand.callCount = 0;
 
 /**
  * @name multi-comments-name-wrong

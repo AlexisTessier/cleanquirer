@@ -1,8 +1,8 @@
 'use strict';
 
-function otherFunction1({
+function otherFunction({
 	option
-}) {
+} = {}) {
 }
 
 /**
@@ -17,7 +17,11 @@ function mainNoDocMixedCommand({
 	option
 }) {
 	otherFunction();
+
+	mainNoDocMixedCommand.callCount++;
 }
+
+mainNoDocMixedCommand.callCount = 0;
 
 /**
  * @name other function-name-3
