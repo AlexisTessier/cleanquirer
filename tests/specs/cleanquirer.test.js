@@ -315,9 +315,22 @@ test.cb('Promise usage', commandFromFileWithMultipleFunctionMacro, commandFromFi
 
 /*---------------------------*/
 
-test.todo('Error from documented command files');
-test.todo('Command from documented command files throwing or resolving error');
+test.cb.todo('Command from documented command files synchronously throwing error');
+test.cb.todo('Command from documented command files synchronously calling the callback with an error');
+test.cb.todo('Command from documented command files asynchronously calling the callback with an error');
+test.cb.todo('Command from documented command files resolving an error');
+test.todo('Wrong cli input when defining commands from files');
 
+/*---------------------------*/
+
+test.todo('Error using a wrong filepath defining a command from file');
+test.todo('Error using a no function module defining a command from file');
+test.todo('Error using a no js file defining a command from file');
+test.todo('Error using a no js file defining a command from file - skipping extension');
+test.todo('Error using a file which contains a syntax error when defining a command from file');
+test.todo('Error using an unhandled exports definition defining a command from file');
+test.todo('Error using an unhandled exports type defining a command from file');
+test.todo('Error using an unhandled exports origin defining a command from file');
 /*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
@@ -834,4 +847,20 @@ test(wrongCliInputMacro, function () {});
 /*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
+
+test.todo('Multiple commands definition from objects');
+test.todo('Multiple commands definition from files');
+
+test.todo('Command definition from glob');
+test.todo('Command definition from no-matching glob');
+test.todo('Multiple commands definition from glob');
+
+test.todo('Multiple commands definition from files and objects');
+test.todo('Multiple commands definition from files and globs');
+test.todo('Multiple commands definition from files, globs and objects');
+test.todo('Multiple commands definition from globs and objects');
+
+test.todo('undefined command handling');
+test.todo('version option');
+test.todo('version command');
 
