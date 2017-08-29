@@ -58,9 +58,13 @@ function cleanquirer({
 			return _cli(inputs, cliCallback);
 		}
 
-		return readyPromise.then(()=>{
-			_cli(inputs, cliCallback);
-		});
+		const cliPromise = readyPromise.then(()=> _cli(inputs, cliCallback));
+
+		if (typeof cliCallback === 'function') {
+			cliPromise.catch(err => cliCallback(err));
+		}
+		
+		return cliPromise;
 	}
 
 	function _cli(inputs, cliCallback) {
@@ -115,6 +119,10 @@ function cleanquirer({
 			cliCallback(null);
 		}
 		else if(actionUseCallback && doneCalled){
+			if (cliPromise) {
+				cliPromise.catch(err => {/* Avoid unhandled promise rejection */});
+			}
+
 			throw new Error(
 				`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
 			);

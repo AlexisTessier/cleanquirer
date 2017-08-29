@@ -315,7 +315,21 @@ test.cb('Promise usage', commandFromFileWithMultipleFunctionMacro, commandFromFi
 
 /*---------------------------*/
 
-test.cb('Command from documented command files synchronously throwing error', commandFromFileMacro, 'throwing-error-command.js', (t, myCli, actionFunction) => {
+function commandFromDocumentedFileSynchronouslyThrowingErrorMacro(t, core) {
+	commandFromFileMacro(t, 'throwing-error-command.js', core);
+}
+
+commandFromDocumentedFileSynchronouslyThrowingErrorMacro.title = providedTitle => (
+	`Command from documented command files synchronously throwing error - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandFromDocumentedFileSynchronouslyThrowingErrorMacro, (t, myCli, actionFunction) => {
+	myCli(['throwing-error-command']).catch(err => {});
+
+	t.is(actionFunction.callCount, 0);
+	t.end()
+});
+
+test.cb('Promise usage', commandFromDocumentedFileSynchronouslyThrowingErrorMacro, (t, myCli, actionFunction) => {
 	t.plan(3);
 
 	myCli(['throwing-error-command']).then(()=>{
@@ -327,25 +341,54 @@ test.cb('Command from documented command files synchronously throwing error', co
 		t.end();
 	});
 });
-test.cb.todo('callback usage');
-test.cb.todo('synchronous usage');
 
-test.cb.skip('Command from documented command files synchronously calling the callback with an error', commandFromFileMacro, 'synchronous-callback-call-command.js', (t, myCli, actionFunction) => {
+test.cb('Callback usage', commandFromDocumentedFileSynchronouslyThrowingErrorMacro, (t, myCli, actionFunction) => {
 	t.plan(3);
 
-	myCli(['synchronous-callback-call-command']).then(()=>{
+	myCli(['throwing-error-command'], err => {
+		t.truthy(err);
+		t.is(actionFunction.callCount, 1);
+		t.is(err.message, 'Error happen when using the mycli command "throwing-error-command" : throwing-error-command-error');
+		t.end();
+	});
+});
+
+/*---------------------------*/
+
+test.cb('Command from documented command files synchronously calling the callback with an error', commandFromFileMacro, 'synchronous-callback-call-with-error-command.js', (t, myCli, actionFunction) => {
+	t.plan(3);
+
+	myCli(['synchronous-callback-call-with-error-command']).then(()=>{
 		t.fail();
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "synchronous-callback-call-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.message, `The mycli command "synchronous-callback-call-with-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
 		t.end();
 	});
 });
 test.cb.todo('callback usage');
 test.cb.todo('synchronous usage');
 
-test.cb.todo('Command from documented command files asynchronously calling the callback with an error');
+/*---------------------------*/
+
+test.cb('Command from documented command files asynchronously calling the callback with an error', commandFromFileMacro, 'asynchronous-callback-call-with-error-command.js', (t, myCli, actionFunction) => {
+	t.plan(3);
+
+	myCli(['asynchronous-callback-call-with-error-command']).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(actionFunction.callCount, 1);
+		t.truthy(err);
+		t.is(err.message, `mycli asynchronous-callback-call-with-error-command error: asynchronous-callback-call-with-error-command-error`);
+		t.end();
+	});
+});
+test.cb.todo('callback usage');
+test.cb.todo('synchronous usage');
+
+/*---------------------------*/
+
 test.cb.todo('Command from documented command files resolving an error');
 test.todo('Wrong cli input when defining commands from files');
 
