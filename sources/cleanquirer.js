@@ -57,7 +57,10 @@ function cleanquirer({
 		if (cliReady) {
 			return _cli(inputs, cliCallback);
 		}
-		return readyPromise.then(()=>_cli(inputs, cliCallback));
+
+		return readyPromise.then(()=>{
+			_cli(inputs, cliCallback);
+		});
 	}
 
 	function _cli(inputs, cliCallback) {
