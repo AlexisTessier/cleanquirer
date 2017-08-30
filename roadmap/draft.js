@@ -18,7 +18,7 @@ const cli = cleanquirer({
 		'module/simple-action.js',
 		{
 			name: 'enter',
-			action: cli.immersiveMode
+			extends: cli.immersiveMode
 		},
 		{
 			name: 'action',
@@ -55,8 +55,10 @@ module.exports = cli;
  * + deduce commands from documented files => deduce function ok, need to make it work from cleanquirer
  * + multiple commands definition
  * + version option
+ * + default version option
  * + version command
  * + undefined command handling
+ * + optimisation => only wait for the required command to be ready before running cli
 
  * release
  * -------
@@ -66,6 +68,7 @@ module.exports = cli;
  * release
  * -------
  * + help command
+ * + description option and default description
  * + name/action/options/help command object
  * + deduce help from documented files
 
@@ -96,6 +99,15 @@ module.exports = cli;
  * -------
  * + command timeout option
  * + deduce command timeout option from documented files
+ 
+ * release
+ * -------
+ * + extends command object
+
+ * release
+ * -------
+ * + extends as Promise resolving command object
+
  */
 
 require('../cli')().then( command => {

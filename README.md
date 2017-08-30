@@ -14,25 +14,85 @@
 
 Create a cli tool from a documented javascript API
 
--   [Section Name](#section-name)
+-   [Introduction](#introduction)
+-   [Get started](#get-started)
 -   [Documentation](#documentation)
 -   [License](#license)
 
-## Section Name
+## Introduction
 
-### Title
+This module provides a way to easily generate node CLI modules, eventually using files documented with [documentation.js](http://documentation.js.org/).
 
-#### Subtitle
+## Get started
 
-paragraph content
+### Create and use a simple CLI
+
+First, implement one or more commands with documentation using the following pattern (one file for each command):
 
 ```javascript
-// javascript code
+// path/to/command/file.js
+
+/**
+ * @name my-cli-command
+ */
+function cliCommand({
+    option,
+    option2 = 'default-value'
+} = {}){
+    // do some asynchronous stuffs
+}
+
+module.exports = cliCommand
 ```
 
-    // cli code
+Now, you have to create a cli function using cleanquirer:
 
--   list element
+```javascript
+// path/to/cli-function.js
+
+const path = require('path');
+
+const cleanquirer = require('cleanquirer');
+
+module.exports = cleanquirer({
+    name: 'cli-name',
+    commands: [
+        path.join(__dirname, 'path/to/command/file.js'),
+        path.join(__dirname, 'path/to/other/command/file.js'),
+        path.join(__dirname, 'glob/matching/multiple/commands/file/*.js')
+    ]
+})
+```
+
+You can use the exported function to call methods of the cli api directly in javascript
+
+```javascript
+// path/to/a/file.js
+
+const myCli = require('path/to/cli-function.js');
+
+myCli(['my-cli-command', 'option="option value"']).then(()=>{
+    // do stuffs after the command was executed
+})
+```
+
+Then you just have to create a bin file which will do the link between myCli and the terminal input
+
+```javascript
+path/to/bin/myCli
+#!/usr/bin/env node
+
+'use strict';
+
+require('path/to/cli-function.js')(process.argv.slice(2));
+```
+
+And fill the bin field in your module package.json
+
+    // package.json
+    "bin": {
+      "cli-name": "path/to/bin/myCli"
+    }
 
 ## Documentation
 

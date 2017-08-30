@@ -326,7 +326,7 @@ test.cb('Synchronous usage', commandFromDocumentedFileSynchronouslyThrowingError
 	myCli(['throwing-error-command']).catch(err => {});
 
 	t.is(actionFunction.callCount, 0);
-	t.end()
+	t.end();
 });
 
 test.cb('Promise usage', commandFromDocumentedFileSynchronouslyThrowingErrorMacro, (t, myCli, actionFunction) => {
@@ -355,7 +355,21 @@ test.cb('Callback usage', commandFromDocumentedFileSynchronouslyThrowingErrorMac
 
 /*---------------------------*/
 
-test.cb('Command from documented command files synchronously calling the callback with an error', commandFromFileMacro, 'synchronous-callback-call-with-error-command.js', (t, myCli, actionFunction) => {
+function commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'synchronous-callback-call-with-error-command.js', core);
+}
+
+commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro.title = providedTitle => (
+	`Command from documented command files synchronously calling the callback with an error - ${providedTitle}`);
+
+test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
+	myCli(['synchronous-callback-call-with-error-command']).catch(err => {});
+
+	t.is(actionFunction.callCount, 0);
+	t.end()
+});
+
+test.cb('Promise usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	t.plan(3);
 
 	myCli(['synchronous-callback-call-with-error-command']).then(()=>{
@@ -367,8 +381,23 @@ test.cb('Command from documented command files synchronously calling the callbac
 		t.end();
 	});
 });
-test.cb.todo('callback usage');
-test.cb.todo('synchronous usage');
+
+test.cb('callback usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
+	t.plan(3);
+
+	myCli(['synchronous-callback-call-with-error-command'], err => {
+		t.truthy(err);
+		t.is(actionFunction.callCount, 1);
+		t.is(err.message, `The mycli command "synchronous-callback-call-with-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.end();
+	});
+});
+
+/*---------------------------*/
+
+test.todo('command using both internally callback and promise from file');
+test.todo('Callback usage');
+test.todo('Synchronous usage');
 
 /*---------------------------*/
 
@@ -389,8 +418,34 @@ test.cb.todo('synchronous usage');
 
 /*---------------------------*/
 
-test.cb.todo('Command from documented command files resolving an error');
+function commandReturningRejectingPromiseFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'rejecting-promise-command.js', core);
+}
+
+commandReturningRejectingPromiseFromDocumentedFileMacro.title = providedTitle => (
+	`Command returning rejecting Promise from documented file - ${providedTitle}`)
+
+test.cb('Promise usage', commandReturningRejectingPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
+	t.plan(3);
+
+	myCli(['rejecting-promise-command']).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(actionFunction.callCount, 1);
+		t.truthy(err);
+		t.is(err.message, `mycli rejecting-promise-command error: rejecting-promise-command-error`);
+		t.end();
+	});
+
+});
+test.cb.todo('callback usage');
+test.cb.todo('synchronous usage');
+
+/*---------------------------*/
+
 test.todo('Wrong cli input when defining commands from files');
+test.cb.todo('callback usage');
+test.cb.todo('synchronous usage');
 
 /*---------------------------*/
 
@@ -402,6 +457,7 @@ test.todo('Error using a file which contains a syntax error when defining a comm
 test.todo('Error using an unhandled exports definition defining a command from file');
 test.todo('Error using an unhandled exports type defining a command from file');
 test.todo('Error using an unhandled exports origin defining a command from file');
+
 /*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
