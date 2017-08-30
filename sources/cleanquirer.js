@@ -5,6 +5,8 @@ const path = require('path');
 
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
+class CleanquirerImplementationError extends Error{}
+
 function cleanquirer({
 	name,
 	commands = []
@@ -68,11 +70,6 @@ function cleanquirer({
 	}
 
 	function _cli(inputs, cliCallback) {
-		let tickChange = 0;
-		process.nextTick(()=>{
-			tickChange++;
-		})
-
 		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
 		
 		const cliCallbackIsAFunction = typeof cliCallback === 'function';
@@ -85,41 +82,24 @@ function cleanquirer({
 		});
 
 		const command = inputs.shift();
-		const options = {};
 
-		let actionResult = null;
-		let actionUsePromise = null;
-		let doneCalled = false;
+		/*------------------*/
 
-		const action = actions[command].action;
-		const actionUseCallback = action.length >= 2;
+		let tickChange = 0;
 
-		function checkCommandCallbackValidity() {
-			if(actionUseCallback && tickChange === 0 && doneCalled){
-				throw new Error(
-					`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
-				);
-			}
-		}
+		process.nextTick(()=>{
+			tickChange++;
+		});
 
 		function done(commandError) {
-			doneCalled = true;
-			let catchCommandCallbackValidityError = false;
-
-			try{
-				checkCommandCallbackValidity();
-			}
-			catch(commandValidityError){
-				catchCommandCallbackValidityError = true;
-
+			if(tickChange === 0){
 				if (cliPromise) {
 					cliPromise.catch(err => {/* Avoid unhandled promise rejection */});
 				}
-				
-				cliCallback(commandValidityError);
+
+				throw new CleanquirerImplementationError(`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
 			}
-			
-			if (!catchCommandCallbackValidityError) {
+			else{
 				if (commandError) {
 					cliCallback(new Error(`${name} ${command} error: ${commandError.message}`));
 				}
@@ -131,24 +111,28 @@ function cleanquirer({
 
 		/*------------------*/
 
+		const action = actions[command].action;
+		let actionResult = null;
+		
 		try{
-			actionResult = action(options, done);
+			actionResult = action({}, done);
 		}
 		catch(err){
+			if (err instanceof CleanquirerImplementationError) {
+				throw err;
+			}
+
 			throw new Error(
 				`Error happen when using the ${name} command "${command}" : ${err.message}`
 			);
 		}
 
-		/*------------------*/
-		
-		checkCommandCallbackValidity();
-
-		actionUsePromise = actionResult instanceof Promise;
+		const actionUseCallback = action.length >= 2;
+		const actionUsePromise = actionResult instanceof Promise;
 
 		if(actionUsePromise){
 			if (actionUseCallback) {
-				throw new Error(
+				throw new CleanquirerImplementationError(
 					`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`
 				);
 			}

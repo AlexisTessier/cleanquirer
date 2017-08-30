@@ -872,10 +872,10 @@ test('Synchronous usage', ErrorUsingCallbackCommandForSynchronousOperationFromSi
 });
 
 test('Callback usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
-	t.plan(3);
+	t.plan(2);
 
 	cli(['callback'], err => {
-		t.pass();
+		t.fail();
 	});	
 });
 
