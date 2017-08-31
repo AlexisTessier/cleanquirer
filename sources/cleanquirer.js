@@ -5,7 +5,7 @@ const path = require('path');
 
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
-class CleanquirerImplementationError extends Error{}
+class CleanquirerCommandImplementationError extends Error{}
 
 function cleanquirer({
 	name,
@@ -99,7 +99,7 @@ function cleanquirer({
 					cliPromise.catch(err => {/* Avoid unhandled promise rejection */});
 				}
 
-				throw new CleanquirerImplementationError(`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+				throw new CleanquirerCommandImplementationError(`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
 			}
 			else{
 				if (commandError) {
@@ -120,7 +120,7 @@ function cleanquirer({
 			actionResult = action({}, done);
 		}
 		catch(err){
-			if (err instanceof CleanquirerImplementationError) {
+			if (err instanceof CleanquirerCommandImplementationError) {
 				throw err;
 			}
 
@@ -132,7 +132,7 @@ function cleanquirer({
 
 		if(actionUsePromise){
 			if (actionUseCallback) {
-				throw new CleanquirerImplementationError(`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+				throw new CleanquirerCommandImplementationError(`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
 			}
 
 			actionResult.then(() => done()).catch(err => done(err));

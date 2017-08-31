@@ -370,7 +370,7 @@ test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithoutErrorFrom
 });
 
 test.cb('Promise usage', commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['synchronous-callback-call-without-error-command']).then(()=>{
 		t.fail();
@@ -378,17 +378,19 @@ test.cb('Promise usage', commandSynchronouslyCallingCallbackWithoutErrorFromDocu
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "synchronous-callback-call-without-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
 
 test.cb('Callback usage', commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['synchronous-callback-call-without-error-command'], err => {
 		t.truthy(err);
 		t.is(actionFunction.callCount, 1);
 		t.is(err.message, `The mycli command "synchronous-callback-call-without-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
@@ -410,7 +412,7 @@ test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithAnErrorFromD
 });
 
 test.cb('Promise usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['synchronous-callback-call-with-error-command']).then(()=>{
 		t.fail();
@@ -418,17 +420,19 @@ test.cb('Promise usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocum
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "synchronous-callback-call-with-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
 
 test.cb('Callback usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['synchronous-callback-call-with-error-command'], err => {
 		t.truthy(err);
 		t.is(actionFunction.callCount, 1);
 		t.is(err.message, `The mycli command "synchronous-callback-call-with-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
@@ -451,7 +455,7 @@ test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseFromDoc
 
 
 test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['using-both-callback-and-promise-command']).then(()=>{
 		t.fail();
@@ -459,17 +463,19 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseFromDocumen
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
 
 test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['using-both-callback-and-promise-command'], err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
@@ -491,7 +497,7 @@ test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseAndCall
 });
 
 test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-command']).then(()=>{
 		t.fail();
@@ -499,17 +505,19 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingT
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn\'t use neither callback or promise.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
 
 test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-command'], err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn\'t use neither callback or promise.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
@@ -531,7 +539,7 @@ test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseAndCall
 });
 
 test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-asynchronously-command']).then(()=>{
 		t.fail();
@@ -539,17 +547,19 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingT
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
 
 test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(3);
+	t.plan(4);
 
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-asynchronously-command'], err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
 });
@@ -1139,6 +1149,7 @@ function ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObject
 	t.is(useCallbackInSynchronousWayError.message, 
 		`The mycli command "callback" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
 	);
+	t.is(useCallbackInSynchronousWayError.constructor.name, 'CleanquirerCommandImplementationError');
 }
 
 ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro.title = providedTitle => (
@@ -1149,7 +1160,7 @@ test('Synchronous usage', ErrorUsingCallbackCommandForSynchronousOperationFromSi
 });
 
 test('Callback usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
-	t.plan(2);
+	t.plan(3);
 
 	cli(['callback'], err => {
 		t.fail();
@@ -1157,7 +1168,7 @@ test('Callback usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpl
 });
 
 test('Promise usage', ErrorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
-	t.plan(2);
+	t.plan(3);
 
 	cli(['callback']).then(()=>{
 		t.fail();
@@ -1191,6 +1202,7 @@ function ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpl
 
 	t.is(useCallbackAndPromiseError.message, 
 		`The myclii command "callback-promise" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+	t.is(useCallbackAndPromiseError.constructor.name, 'CleanquirerCommandImplementationError');
 }
 
 ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro.title = providedTitle => (
@@ -1201,7 +1213,7 @@ test('Synchronous usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousO
 });
 
 test('Callback usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
-	t.plan(2);
+	t.plan(3);
 
 	cli(['callback-promise'], err => {
 		t.fail();
@@ -1209,7 +1221,7 @@ test('Callback usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOper
 });
 
 test('Promise usage', ErrorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
-	t.plan(2);
+	t.plan(3);
 
 	cli(['callback-promise']).then(()=>{
 		t.fail();
