@@ -56,11 +56,16 @@ function cleanquirer({
 	const readyPromise = cliReady ? null : Promise.all(actionsFromFile).then(()=>cliReady = true);
 
 	function cli(inputs, cliCallback) {
+		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
+
+		const cliCallbackIsAFunction = typeof cliCallback === 'function';
+		assert(cliCallbackIsAFunction || !cliCallback);
+
 		if (cliReady) {
-			return _cli(inputs, cliCallback);
+			return _cli(inputs, cliCallback, cliCallbackIsAFunction);
 		}
 
-		const cliPromise = readyPromise.then(()=> _cli(inputs, cliCallback));
+		const cliPromise = readyPromise.then(()=> _cli(inputs, cliCallback, cliCallbackIsAFunction));
 
 		if (typeof cliCallback === 'function') {
 			cliPromise.catch(err => cliCallback(err));
@@ -69,11 +74,8 @@ function cleanquirer({
 		return cliPromise;
 	}
 
-	function _cli(inputs, cliCallback) {
-		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-		
-		const cliCallbackIsAFunction = typeof cliCallback === 'function';
-		assert(cliCallbackIsAFunction || !cliCallback);
+	function _cli(inputs, cliCallback, cliCallbackIsAFunction) {
+		assert(typeof cliCallbackIsAFunction === 'boolean');
 
 		const cliPromise = cliCallbackIsAFunction ? null : new Promise((resolve, reject) => {
 			cliCallback = err => {
@@ -122,9 +124,7 @@ function cleanquirer({
 				throw err;
 			}
 
-			throw new Error(
-				`Error happen when using the ${name} command "${command}" : ${err.message}`
-			);
+			throw new Error(`Error happen when using the ${name} command "${command}" : ${err.message}`);
 		}
 
 		const actionUseCallback = action.length >= 2;
@@ -132,9 +132,7 @@ function cleanquirer({
 
 		if(actionUsePromise){
 			if (actionUseCallback) {
-				throw new CleanquirerImplementationError(
-					`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`
-				);
+				throw new CleanquirerImplementationError(`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
 			}
 
 			actionResult.then(() => done()).catch(err => done(err));
