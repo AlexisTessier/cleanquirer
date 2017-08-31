@@ -735,8 +735,134 @@ test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, 'wrong inpu
 test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, function () {});
 
 /*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
 
-test.todo('Error using a wrong filepath defining a command from file');
+function wrongFilePathDefiningCommandFromFileMacro(t, errorMessage, wrongFilePath){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const commandWrongFilePathError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				wrongFilePath
+			]
+		});
+	});
+
+	t.is(commandWrongFilePathError.message, errorMessage);
+}
+
+wrongFilePathDefiningCommandFromFileMacro.title = (providedTitle, wrongFilePath) => (
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath}`);
+
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "undefined" at index 0 is neither an object or an absolute path.`);
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "undefined" at index 0 is neither an object or an absolute path.`, undefined);
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "null" at index 0 is neither an object or an absolute path.`, null);
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "5" at index 0 is neither an object or an absolute path.`, 5);
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "() => {}" at index 0 is neither an object or an absolute path.`, ()=>{});
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command object at index 0 has no name.`, []);
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command object at index 0 has no name.`, {});
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "" at index 0 is not an absolute path.`, '');
+test(wrongFilePathDefiningCommandFromFileMacro,
+	`The provided mycli command path "non/absolute/path.js" at index 0 is not an absolute path.`, 'non/absolute/path.js');
+
+/*---------------------------*/
+
+function wrongFilePathDefiningCommandFromFileErrorOrderMacro(t, errorMessage, wrongFilePath){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const commandWrongFilePathError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				wrongFilePath,
+				wrongFilePath
+			]
+		});
+	});
+
+	t.is(commandWrongFilePathError.message, errorMessage);
+}
+
+wrongFilePathDefiningCommandFromFileErrorOrderMacro.title = (providedTitle, wrongFilePath) => (
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath} - check errors order`);
+
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "undefined" at index 0 is neither an object or an absolute path.`);
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "undefined" at index 0 is neither an object or an absolute path.`, undefined);
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "null" at index 0 is neither an object or an absolute path.`, null);
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "5" at index 0 is neither an object or an absolute path.`, 5);
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "() => {}" at index 0 is neither an object or an absolute path.`, ()=>{});
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command object at index 0 has no name.`, []);
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command object at index 0 has no name.`, {});
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "" at index 0 is not an absolute path.`, '');
+test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
+	`The provided mycli command path "non/absolute/path.js" at index 0 is not an absolute path.`, 'non/absolute/path.js');
+
+/*---------------------------*/
+
+function wrongFilePathDefiningCommandAtIndex1FromFileMacro(t, errorMessage, wrongFilePath){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const commandWrongFilePathError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				{
+					name: 'valid-command',
+					action() {
+					}
+				},
+				wrongFilePath
+			]
+		});
+	});
+
+	t.is(commandWrongFilePathError.message, errorMessage);
+}
+
+wrongFilePathDefiningCommandAtIndex1FromFileMacro.title = (providedTitle, wrongFilePath) => (
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command at index 1 from file - (${typeof wrongFilePath}) ${wrongFilePath}`);
+
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "undefined" at index 1 is neither an object or an absolute path.`);
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "undefined" at index 1 is neither an object or an absolute path.`, undefined);
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "null" at index 1 is neither an object or an absolute path.`, null);
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "5" at index 1 is neither an object or an absolute path.`, 5);
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "() => {}" at index 1 is neither an object or an absolute path.`, ()=>{});
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command object at index 1 has no name.`, []);
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command object at index 1 has no name.`, {});
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "" at index 1 is not an absolute path.`, '');
+test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
+	`The provided mycli command path "non/absolute/path.js" at index 1 is not an absolute path.`, 'non/absolute/path.js');
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
 test.todo('Error using a no function module defining a command from file');
 test.todo('Error using a no js file defining a command from file');
 test.todo('Error using a no js file defining a command from file - skipping extension');

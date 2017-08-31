@@ -37,7 +37,7 @@ function cleanquirer({
 
 	const actionsFromFile = [];
 	commands.forEach((command, i) => {
-		assert(typeof command === 'object' || typeof command === 'string');
+		assert(command && typeof command === 'object' || typeof command === 'string', `The provided ${name} command path "${command}" at index ${i} is neither an object or an absolute path.`);
 
 		if (typeof command === 'string') {
 			assert(path.isAbsolute(command), `The provided ${name} command path "${command}" at index ${i} is not an absolute path.`);
