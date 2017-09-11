@@ -52,7 +52,7 @@ function deduceNoFunctionModuleMacro(t, type, modulePath) {
 	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function.`);
 }
 
-deduceNoFunctionModuleMacro.title = (providedTitle, modulePath, type) => (
+deduceNoFunctionModuleMacro.title = (providedTitle, type, modulePath) => (
 	`${providedTitle} - error trying to deduce no function module - ${type} module`);
 
 test(deduceNoFunctionModuleMacro, 'object', 'object-module.js');
@@ -78,19 +78,20 @@ function deduceNoJsFileMacro(t, wrongFile, errorMessageStart) {
 	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
 }
 
-test(deduceNoJsFileMacro, 'no-js.txt', 'is a .txt file');
-test(deduceNoJsFileMacro, 'no-js', 'has no extension');
+test('error trying to deduce from a no js file', deduceNoJsFileMacro, 'no-js.txt', 'is a .txt file');
+test('error trying to deduce from a no js file and skipping the extension', deduceNoJsFileMacro, 'no-js', 'has no extension');
 
 /*------------------------*/
 
 test('deduce from a syntax error file', t => {
 	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
 
+	const syntaxErrorFilePath = pathFromIndex('tests/mocks/mock-commands/syntax-error.js');
 	const syntaxErrorFileError = t.throws(()=>{
-		deduce(pathFromIndex('tests/mocks/mock-commands/syntax-error.js'));
+		deduce(syntaxErrorFilePath);
 	});
 
-	t.is(syntaxErrorFileError.message, 'Invalid or unexpected token');
+	t.is(syntaxErrorFileError.message, `Error found in file at path "${syntaxErrorFilePath}": Invalid or unexpected token`);
 });
 
 test('deduce from an unhandled exports definition file', t => {

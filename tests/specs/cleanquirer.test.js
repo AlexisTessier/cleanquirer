@@ -863,13 +863,142 @@ test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
 /*---------------------------*/
 /*---------------------------*/
 
-test.todo('Error using a no function module defining a command from file');
-test.todo('Error using a no js file defining a command from file');
-test.todo('Error using a no js file defining a command from file - skipping extension');
-test.todo('Error using a file which contains a syntax error when defining a command from file');
-test.todo('Error using an unhandled exports definition defining a command from file');
-test.todo('Error using an unhandled exports type defining a command from file');
-test.todo('Error using an unhandled exports origin defining a command from file');
+function usingNoFunctionModuleWhenDefineACommandFromFileMacro(t, type, modulePath){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const fullModulePath = pathFromIndex('tests/mocks/mock-commands', modulePath);
+
+	const noFunctionModuleError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				fullModulePath
+			]
+		});
+	});
+
+	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function.`);
+}
+
+usingNoFunctionModuleWhenDefineACommandFromFileMacro.title = (providedTitle, type, modulePath) => (
+	`${providedTitle} - error trying to use no function module in order to define a command from file - ${type} module`);
+
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'object', 'object-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'object', 'array-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'string', 'empty-string-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'string', 'string-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'undefined', 'undefined-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'object', 'no-export-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'null', 'null-module.js');
+test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'number', 'number-module.js');
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+function commandFromNoJsFileMacro(t, wrongFile, errorMessageStart) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const noJsFilePath = pathFromIndex('tests/mocks/mock-commands', wrongFile);
+
+	const noJsFileError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				noJsFilePath
+			]
+		});
+	});
+
+	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
+}
+
+test('Error using a no js file defining a command from file', 
+	commandFromNoJsFileMacro, 'no-js.txt', 'is a .txt file');
+
+test('Error using a no js file defining a command from file - skipping extension',
+	commandFromNoJsFileMacro, 'no-js', 'has no extension');
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+test('Error using a file which contains a syntax error when defining a command from file', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const syntaxErrorFilePath = pathFromIndex('tests/mocks/mock-commands/syntax-error.js');
+	const syntaxErrorFileError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				syntaxErrorFilePath
+			]
+		});
+	});
+
+	t.is(syntaxErrorFileError.message, `Error found in file at path "${syntaxErrorFilePath}": Invalid or unexpected token`);
+});
+
+test('Error using an unhandled exports definition defining a command from file', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/unhandled-exports-file.js');
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			fullPath
+		]
+	});
+
+
+	return myCli(['unhandled-exports-file']).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, `Cleanquirer doesn't found any exports node in the file "${fullPath}".`);
+	});
+});
+
+test('Error using an unhandled exports type defining a command from file', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/unhandled-exports-type-file.js');
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			fullPath
+		]
+	});
+
+	return myCli(['unhandled-exports-type-file']).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, `The file "${fullPath}" exports a node of type FunctionExpression. This type of exports is not handled by cleanquirer.`);
+	});
+});
+
+test('Error using an unhandled exports origin defining a command from file', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/unhandled-exports-value-origin-file.js');
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			fullPath
+		]
+	});
+
+	return myCli(['unhandled-exports-value-origin-file']).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, `Cleanquirer doesn\'t found the exports value node in the file "${fullPath}".`);
+	});
+});
 
 /*---------------------------*/
 /*---------------------------*/

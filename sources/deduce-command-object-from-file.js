@@ -54,7 +54,16 @@ function deduceCommandObjectFromFile(filepath) {
 		throw new Error(`"${filepath}" is a ${extname} file. Valid commands module file must be a javascript file (.js).`);
 	}
 
-	const action = require(filepath);
+	let action = null;
+	
+	try{
+		action = require(filepath);
+	}
+	catch(err){
+		err.message = `Error found in file at path "${filepath}": ${err.message}`;
+		throw err;
+	}
+	
 
 	assert(typeof action === 'function', `${filepath} exports ${action === null ? 'null' : typeof action}. Valid commands module file must export a function.`);
 
