@@ -52,10 +52,9 @@ module.exports = cli;
  * release
  * -------
  * + name/action command object => DONE
- * + deduce commands from documented files => deduce function ok, need to make it work from cleanquirer
+ * + deduce commands from documented files => deduce function ok, need to make it work from cleanquirer => DONE
  * + multiple commands definition
  * + undefined command handling
- * + optimisation => only wait for the required command to be ready before running cli
  * + version option
  * + default version option
  * + version command

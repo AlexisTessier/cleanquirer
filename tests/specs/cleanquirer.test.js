@@ -1519,6 +1519,8 @@ test(wrongCliInputMacro, function () {});
 /*---------------------------*/
 /*---------------------------*/
 
+test.todo('Check the execution order of multiple commands defined from files');
+
 test.todo('Multiple commands definition from objects');
 test.todo('Multiple commands definition from files');
 
