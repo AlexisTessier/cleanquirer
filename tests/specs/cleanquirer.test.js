@@ -1519,19 +1519,219 @@ test(wrongCliInputMacro, function () {});
 /*---------------------------*/
 /*---------------------------*/
 
-test.todo('Check the execution order of multiple commands defined from files');
+test('Use a command from object multiple times', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-test.todo('Multiple commands definition from objects');
+	const actionFunction = mockFunction();
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'command',
+				action(){
+					actionFunction();
+				}
+			}
+		]
+	});
+
+	t.true(actionFunction.notCalled);
+
+	myCli(['command']);
+	t.true(actionFunction.calledOnce);
+
+	myCli(['command']);
+	t.true(actionFunction.calledTwice);
+
+	myCli(['command']);
+	t.true(actionFunction.calledThrice);
+
+});
+
+test('Multiple commands definition from objects', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunction_1 = mockFunction();
+	const actionFunction_2 = mockFunction();
+	const actionFunction_3 = mockFunction();
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'one',
+				action(){
+					actionFunction_1();
+				}
+			},
+			{
+				name: 'two',
+				action(){
+					actionFunction_2();
+				}
+			},
+			{
+				name: 'three',
+				action(){
+					actionFunction_3();
+				}
+			}
+		]
+	});
+
+	t.true(actionFunction_1.notCalled);
+	t.true(actionFunction_2.notCalled);
+	t.true(actionFunction_3.notCalled);
+
+	myCli(['one']);
+	t.true(actionFunction_1.calledOnce);
+	t.true(actionFunction_2.notCalled);
+	t.true(actionFunction_3.notCalled);
+
+	myCli(['two']);
+	t.true(actionFunction_1.calledOnce);
+	t.true(actionFunction_2.calledOnce);
+	t.true(actionFunction_3.notCalled);
+
+	myCli(['three']);
+	t.true(actionFunction_1.calledOnce);
+	t.true(actionFunction_2.calledOnce);
+	t.true(actionFunction_3.calledOnce);
+});
+
+test('Use commands from objects multiple times', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunction_1 = mockFunction();
+	const actionFunction_2 = mockFunction();
+	const actionFunction_3 = mockFunction();
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'one',
+				action(){
+					actionFunction_1();
+				}
+			},
+			{
+				name: 'two',
+				action(){
+					actionFunction_2();
+				}
+			},
+			{
+				name: 'three',
+				action(){
+					actionFunction_3();
+				}
+			}
+		]
+	});
+
+	t.true(actionFunction_1.notCalled);
+	t.true(actionFunction_2.notCalled);
+	t.true(actionFunction_3.notCalled);
+
+	myCli(['one']);
+	t.true(actionFunction_1.calledOnce);
+	t.true(actionFunction_2.notCalled);
+	t.true(actionFunction_3.notCalled);
+
+	myCli(['two']);
+	t.true(actionFunction_1.calledOnce);
+	t.true(actionFunction_2.calledOnce);
+	t.true(actionFunction_3.notCalled);
+
+	myCli(['three']);
+	t.true(actionFunction_1.calledOnce);
+	t.true(actionFunction_2.calledOnce);
+	t.true(actionFunction_3.calledOnce);
+
+	myCli(['one']);
+	t.true(actionFunction_1.calledTwice);
+	t.true(actionFunction_2.calledOnce);
+	t.true(actionFunction_3.calledOnce);
+
+	myCli(['two']);
+	t.true(actionFunction_1.calledTwice);
+	t.true(actionFunction_2.calledTwice);
+	t.true(actionFunction_3.calledOnce);
+
+	myCli(['three']);
+	t.true(actionFunction_1.calledTwice);
+	t.true(actionFunction_2.calledTwice);
+	t.true(actionFunction_3.calledTwice);
+
+	myCli(['one']);
+	t.true(actionFunction_1.calledThrice);
+	t.true(actionFunction_2.calledTwice);
+	t.true(actionFunction_3.calledTwice);
+
+	myCli(['two']);
+	t.true(actionFunction_1.calledThrice);
+	t.true(actionFunction_2.calledThrice);
+	t.true(actionFunction_3.calledTwice);
+
+	myCli(['three']);
+	t.true(actionFunction_1.calledThrice);
+	t.true(actionFunction_2.calledThrice);
+	t.true(actionFunction_3.calledThrice);
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+test.todo('Use a command from file multiple times');
 test.todo('Multiple commands definition from files');
+test.todo('Use commands from files multiple times');
 
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+test.todo('Use a command from glob multiple times');
 test.todo('Command definition from glob');
 test.todo('Command definition from no-matching glob');
 test.todo('Multiple commands definition from glob');
+test.todo('Use commands from globs multiple times');
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
 
 test.todo('Multiple commands definition from files and objects');
+test.todo('Use commands from files and objects multiple times');
+
 test.todo('Multiple commands definition from files and globs');
+test.todo('Use commands from files and globs multiple times');
+
 test.todo('Multiple commands definition from files, globs and objects');
+test.todo('Use commands from files, globs and objects multiple times');
+
 test.todo('Multiple commands definition from globs and objects');
+test.todo('Use commands from globs and objects multiple times');
+
+test.todo('Check the execution order of multiple commands defined from objects');
+test.todo('Check the execution order of multiple commands defined from files');
+test.todo('Check the execution order of multiple commands defined from globs');
+
+test.todo('Check the execution order of multiple commands defined from files and objects');
+test.todo('Check the execution order of multiple commands defined from files and globs');
+test.todo('Check the execution order of multiple commands defined from files, globs and objects');
+test.todo('Check the execution order of multiple commands defined from globs and objects');
+
+test.todo('Check the execution order of multiple commands defined from objects with multiple uses of commands');
+test.todo('Check the execution order of multiple commands defined from files with multiple uses of commands');
+test.todo('Check the execution order of multiple commands defined from globs with multiple uses of commands');
+
+test.todo('Check the execution order of multiple commands defined from files and objects with multiple uses of commands');
+test.todo('Check the execution order of multiple commands defined from files and globs with multiple uses of commands');
+test.todo('Check the execution order of multiple commands defined from files, globs and objects with multiple uses of commands');
+test.todo('Check the execution order of multiple commands defined from globs and objects with multiple uses of commands');
 
 test.todo('undefined command handling');
 test.todo('version option');
