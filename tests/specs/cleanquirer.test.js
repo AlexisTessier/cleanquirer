@@ -1685,9 +1685,133 @@ test('Use commands from objects multiple times', t => {
 /*---------------------------*/
 /*---------------------------*/
 
-test.todo('Use a command from file multiple times');
-test.todo('Multiple commands definition from files');
-test.todo('Use commands from files multiple times');
+test.cb('Use a command from file multiple times', commandFromFileMacro, 'no-doc.js', async (t, myCli, actionFunction) => {
+	t.is(actionFunction.callCount, 0);
+	
+	await myCli(['no-doc']);
+	
+	t.is(actionFunction.callCount, 1);
+
+	await myCli(['no-doc']);
+
+	t.is(actionFunction.callCount, 2);
+
+	await myCli(['no-doc']);
+
+	t.is(actionFunction.callCount, 3);
+
+	t.end();
+});
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
+async function multipleCommandsDefinitionsFromFilesMacro(t, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const commands = [];
+
+	await Promise.all([
+		mockCommandFile('no-doc.js').then(filename => commands[0] = filename),
+		mockCommandFile('doc.js').then(filename => commands[1] = filename),
+		mockCommandFile('multi-functions-file.js').then(filename => commands[2] = filename)
+	]);
+
+	const [
+		noDocActionFunction, docActionFunction, multiFunctionsActionFunction
+	] = commands.map(filename => require(filename));
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands
+	});
+
+	await core(t, myCli, {
+		first: ['no-doc'],
+		second: ['doc-name'],
+		third: ['main-doc-name']
+	}, {
+		first: noDocActionFunction,
+		second: docActionFunction,
+		third: multiFunctionsActionFunction
+	});
+}
+
+multipleCommandsDefinitionsFromFilesMacro.title = providedTitle => (
+	`${providedTitle} - Multiple commands definition from files`);
+
+test(multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
+	t.is(actionFunctions.first.callCount, 0);
+	t.is(actionFunctions.second.callCount, 0);
+	t.is(actionFunctions.third.callCount, 0);
+
+	await myCli(actionCommands.first);
+	t.is(actionFunctions.first.callCount, 1);
+	t.is(actionFunctions.second.callCount, 0);
+	t.is(actionFunctions.third.callCount, 0);
+
+	await myCli(actionCommands.second);
+	t.is(actionFunctions.first.callCount, 1);
+	t.is(actionFunctions.second.callCount, 1);
+	t.is(actionFunctions.third.callCount, 0);
+
+	await myCli(actionCommands.third);
+	t.is(actionFunctions.first.callCount, 1);
+	t.is(actionFunctions.second.callCount, 1);
+	t.is(actionFunctions.third.callCount, 1);
+});
+
+test('Use commands from files multiple times', multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
+	t.is(actionFunctions.first.callCount, 0);
+	t.is(actionFunctions.second.callCount, 0);
+	t.is(actionFunctions.third.callCount, 0);
+
+	await myCli(actionCommands.first);
+	t.is(actionFunctions.first.callCount, 1);
+	t.is(actionFunctions.second.callCount, 0);
+	t.is(actionFunctions.third.callCount, 0);
+
+	await myCli(actionCommands.second);
+	t.is(actionFunctions.first.callCount, 1);
+	t.is(actionFunctions.second.callCount, 1);
+	t.is(actionFunctions.third.callCount, 0);
+
+	await myCli(actionCommands.third);
+	t.is(actionFunctions.first.callCount, 1);
+	t.is(actionFunctions.second.callCount, 1);
+	t.is(actionFunctions.third.callCount, 1);
+
+	await myCli(actionCommands.first);
+	t.is(actionFunctions.first.callCount, 2);
+	t.is(actionFunctions.second.callCount, 1);
+	t.is(actionFunctions.third.callCount, 1);
+
+	await myCli(actionCommands.second);
+	t.is(actionFunctions.first.callCount, 2);
+	t.is(actionFunctions.second.callCount, 2);
+	t.is(actionFunctions.third.callCount, 1);
+
+	await myCli(actionCommands.third);
+	t.is(actionFunctions.first.callCount, 2);
+	t.is(actionFunctions.second.callCount, 2);
+	t.is(actionFunctions.third.callCount, 2);
+
+	await myCli(actionCommands.first);
+	t.is(actionFunctions.first.callCount, 3);
+	t.is(actionFunctions.second.callCount, 2);
+	t.is(actionFunctions.third.callCount, 2);
+
+	await myCli(actionCommands.second);
+	t.is(actionFunctions.first.callCount, 3);
+	t.is(actionFunctions.second.callCount, 3);
+	t.is(actionFunctions.third.callCount, 2);
+
+	await myCli(actionCommands.third);
+	t.is(actionFunctions.first.callCount, 3);
+	t.is(actionFunctions.second.callCount, 3);
+	t.is(actionFunctions.third.callCount, 3);
+});
 
 /*---------------------------*/
 /*---------------------------*/
