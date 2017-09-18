@@ -113,8 +113,6 @@ function cleanquirer({
 
 		/*------------------*/
 
-		console.log(actions);
-
 		const action = actions[command].action;
 		let actionResult = null;
 		

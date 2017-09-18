@@ -1762,7 +1762,7 @@ test(multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands,
 	t.is(actionFunctions.third.callCount, 1);
 });
 
-test('Use commands from files multiple times', multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
+test.skip('Use commands from files multiple times', multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
 	t.is(actionFunctions.first.callCount, 0);
 	t.is(actionFunctions.second.callCount, 0);
 	t.is(actionFunctions.third.callCount, 0);
@@ -1860,3 +1860,11 @@ test.todo('Check the execution order of multiple commands defined from globs and
 test.todo('undefined command handling');
 test.todo('version option');
 test.todo('version command');
+
+test.skip(`shouldn't modify the input Array when using commands from commands objects`, t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+});
+
+test.skip(`shouldn't modify the input Array when using commands from files`, t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+});
