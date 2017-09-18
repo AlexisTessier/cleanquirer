@@ -60,7 +60,7 @@ function deduceCommandObjectFromFile(filepath) {
 		action = require(filepath);
 	}
 	catch(err){
-		err.message = `Error found in file at path "${filepath}": ${err.message}`;
+		err.message = `Error with the file at path "${filepath}": ${err.message}`;
 		throw err;
 	}
 	

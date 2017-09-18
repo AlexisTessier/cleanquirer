@@ -91,7 +91,7 @@ test('deduce from a syntax error file', t => {
 		deduce(syntaxErrorFilePath);
 	});
 
-	t.is(syntaxErrorFileError.message, `Error found in file at path "${syntaxErrorFilePath}": Invalid or unexpected token`);
+	t.is(syntaxErrorFileError.message, `Error with the file at path "${syntaxErrorFilePath}": Invalid or unexpected token`);
 });
 
 test('deduce from an unhandled exports definition file', t => {

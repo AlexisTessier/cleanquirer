@@ -936,7 +936,7 @@ test('Error using a file which contains a syntax error when defining a command f
 		});
 	});
 
-	t.is(syntaxErrorFileError.message, `Error found in file at path "${syntaxErrorFilePath}": Invalid or unexpected token`);
+	t.is(syntaxErrorFileError.message, `Error with the file at path "${syntaxErrorFilePath}": Invalid or unexpected token`);
 });
 
 test('Error using an unhandled exports definition defining a command from file', t => {
@@ -1762,7 +1762,7 @@ test(multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands,
 	t.is(actionFunctions.third.callCount, 1);
 });
 
-test.skip('Use commands from files multiple times', multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
+test('Use commands from files multiple times', multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
 	t.is(actionFunctions.first.callCount, 0);
 	t.is(actionFunctions.second.callCount, 0);
 	t.is(actionFunctions.third.callCount, 0);
@@ -1817,9 +1817,34 @@ test.skip('Use commands from files multiple times', multipleCommandsDefinitionsF
 /*---------------------------*/
 /*---------------------------*/
 
-test.todo('Use a command from glob multiple times');
-test.todo('Command definition from glob');
+test('Command definition from glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = requireFromIndex('tests/mocks/mock-commands/from-glob/one-match-doc/one-match');
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/one-match-doc/*.js')
+		]
+	});
+
+	t.is(actionFunction.callCount, 0);
+
+	await myCli(['one-match-command']);
+
+	t.is(actionFunction.callCount, 1);
+});
+
+test.todo('Command definition from glob with no doc');
+
+test.todo('Command definition from glob mixed doc an no-doc');
+
 test.todo('Command definition from no-matching glob');
+
+test.todo('Command definition from extensionless glob');
+
+test.todo('Use a command from glob multiple times');
+
 test.todo('Multiple commands definition from glob');
 test.todo('Use commands from globs multiple times');
 
@@ -1861,10 +1886,91 @@ test.todo('undefined command handling');
 test.todo('version option');
 test.todo('version command');
 
-test.skip(`shouldn't modify the input Array when using commands from commands objects`, t => {
+test(`shouldn't modify the input Array when using commands from commands objects`, t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunctionOne = mockFunction();
+	const actionFunctionTwo = mockFunction();
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'one',
+				action: actionFunctionOne
+			},
+			{
+				name: 'two',
+				action: actionFunctionTwo
+			}
+		]
+	});
+
+	const inputOne = ['one'];
+	const inputTwo = ['two'];
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputOne);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputTwo);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputOne);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputTwo);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
 });
 
-test.skip(`shouldn't modify the input Array when using commands from files`, t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
+test(`shouldn't modify the input Array when using commands from files`, multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.first);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.second);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.third);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.first);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.second);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.third);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
 });

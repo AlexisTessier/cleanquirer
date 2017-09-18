@@ -3,6 +3,9 @@
 const assert = require('assert');
 const path = require('path');
 
+const isGlob = require('is-glob');
+const glob = require('glob');
+
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 class CleanquirerCommandImplementationError extends Error{}
@@ -40,11 +43,21 @@ function cleanquirer({
 		assert(command && typeof command === 'object' || typeof command === 'string', `The provided ${name} command path "${command}" at index ${i} is neither an object or an absolute path.`);
 
 		if (typeof command === 'string') {
-			assert(path.isAbsolute(command), `The provided ${name} command path "${command}" at index ${i} is not an absolute path.`);
-		
-			actionsFromFile.push(deduceCommandObjectFromFile(command).then(commandObject => {
-				addAction(commandObject, `${i} (${command}`);
-			}));
+			function deduceFromFileAndAdd(commandFilepath){
+				actionsFromFile.push(deduceCommandObjectFromFile(commandFilepath).then(commandObject => {
+					addAction(commandObject, `${i} (${commandFilepath})`);
+				}));
+			}
+
+			if (isGlob(command)) {
+				glob.sync(command).forEach(globFileCommand => {
+					deduceFromFileAndAdd(globFileCommand);
+				});
+			}
+			else{
+				assert(path.isAbsolute(command), `The provided ${name} command path "${command}" at index ${i} is not an absolute path.`);
+				deduceFromFileAndAdd(command);
+			}
 		}
 		else{
 			addAction(command, i);
@@ -75,6 +88,8 @@ function cleanquirer({
 	}
 
 	function _cli(inputs, cliCallback, cliCallbackIsAFunction) {
+		inputs = [...inputs];
+
 		assert(typeof cliCallbackIsAFunction === 'boolean');
 
 		const cliPromise = cliCallbackIsAFunction ? null : new Promise((resolve, reject) => {
