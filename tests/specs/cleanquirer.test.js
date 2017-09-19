@@ -2,12 +2,27 @@
 
 const test = require('ava');
 
+const fs = require('fs');
 const path = require('path');
 
 const pathFromIndex = require('../utils/path-from-index');
 const requireFromIndex = require('../utils/require-from-index');
 const mockFunction = require('../mocks/mock-function');
 const mockCommandFile = require('../mocks/mock-command-file');
+
+function featureHasTestFileMacro(t, testFilename) {
+	return new Promise(resolve => {
+		fs.access(path.join(__dirname, 'cleanquirer', `${testFilename}.test.js`), err => {
+			if (err) {t.fail(`The feature should be tested in a specific file. "${testFilename}" wasn't found (${err.message})`);}
+			resolve();
+		});
+	});
+}
+
+featureHasTestFileMacro.title = providedTitle => (
+	`Feature has a test file - ${providedTitle}`)
+
+test.skip('Basic usage', featureHasTestFileMacro, 'basic-usage');
 
 test('type and basic api', t => {
 	const cleanquirerFromIndex = requireFromIndex('index');
@@ -137,6 +152,55 @@ test('Promise usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, a
 });
 
 /*---------------------------*/
+
+test(`shouldn't modify the input Array when using commands from commands objects`, t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunctionOne = mockFunction();
+	const actionFunctionTwo = mockFunction();
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'one',
+				action: actionFunctionOne
+			},
+			{
+				name: 'two',
+				action: actionFunctionTwo
+			}
+		]
+	});
+
+	const inputOne = ['one'];
+	const inputTwo = ['two'];
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputOne);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputTwo);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputOne);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+
+	myCli(inputTwo);
+
+	t.is(inputOne.length, 1);
+	t.is(inputTwo.length, 1);
+});
+
+/*---------------------------*/
 /*---------------------------*/
 /*---------------------------*/
 
@@ -220,7 +284,6 @@ function commandFromFilePromiseUsageCore(command) {
 		t.is(actionFunction.callCount, 0);
 	}
 }
-
 
 /*---------------------------*/
 
@@ -1741,6 +1804,7 @@ async function multipleCommandsDefinitionsFromFilesMacro(t, core) {
 multipleCommandsDefinitionsFromFilesMacro.title = providedTitle => (
 	`${providedTitle} - Multiple commands definition from files`);
 
+
 test(multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
 	t.is(actionFunctions.first.callCount, 0);
 	t.is(actionFunctions.second.callCount, 0);
@@ -1760,6 +1824,48 @@ test(multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands,
 	t.is(actionFunctions.first.callCount, 1);
 	t.is(actionFunctions.second.callCount, 1);
 	t.is(actionFunctions.third.callCount, 1);
+});
+
+test(`shouldn't modify the input Array when using commands from files`, multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.first);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.second);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.third);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.first);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.second);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
+
+	await myCli(actionCommands.third);
+
+	t.is(actionCommands.first.length, 1);
+	t.is(actionCommands.second.length, 1);
+	t.is(actionCommands.third.length, 1);
 });
 
 test('Use commands from files multiple times', multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
@@ -1885,92 +1991,3 @@ test.todo('Check the execution order of multiple commands defined from globs and
 test.todo('undefined command handling');
 test.todo('version option');
 test.todo('version command');
-
-test(`shouldn't modify the input Array when using commands from commands objects`, t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const actionFunctionOne = mockFunction();
-	const actionFunctionTwo = mockFunction();
-
-	const myCli = cleanquirer({
-		name: 'mycli',
-		commands: [
-			{
-				name: 'one',
-				action: actionFunctionOne
-			},
-			{
-				name: 'two',
-				action: actionFunctionTwo
-			}
-		]
-	});
-
-	const inputOne = ['one'];
-	const inputTwo = ['two'];
-
-	t.is(inputOne.length, 1);
-	t.is(inputTwo.length, 1);
-
-	myCli(inputOne);
-
-	t.is(inputOne.length, 1);
-	t.is(inputTwo.length, 1);
-
-	myCli(inputTwo);
-
-	t.is(inputOne.length, 1);
-	t.is(inputTwo.length, 1);
-
-	myCli(inputOne);
-
-	t.is(inputOne.length, 1);
-	t.is(inputTwo.length, 1);
-
-	myCli(inputTwo);
-
-	t.is(inputOne.length, 1);
-	t.is(inputTwo.length, 1);
-});
-
-test(`shouldn't modify the input Array when using commands from files`, multipleCommandsDefinitionsFromFilesMacro, async (t, myCli, actionCommands, actionFunctions) => {
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-
-	await myCli(actionCommands.first);
-
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-
-	await myCli(actionCommands.second);
-
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-
-	await myCli(actionCommands.third);
-
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-
-	await myCli(actionCommands.first);
-
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-
-	await myCli(actionCommands.second);
-
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-
-	await myCli(actionCommands.third);
-
-	t.is(actionCommands.first.length, 1);
-	t.is(actionCommands.second.length, 1);
-	t.is(actionCommands.third.length, 1);
-});
