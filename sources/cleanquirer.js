@@ -10,17 +10,25 @@ const deduceCommandObjectFromFile = require('./deduce-command-object-from-file')
 
 class CleanquirerCommandImplementationError extends Error{}
 
+function msg(...strings) {
+	return strings.map(s => s.trim()).join(' ');
+}
+
 function cleanquirer({
 	name,
 	commands = []
 } = {}) {
 	const configType = typeof arguments[0];
 
-	assert(configType === 'object' && !Array.isArray(arguments[0]),
-		`You must provide a valid configuration object to cleanquirer. ${configType} is not a valid type for a cleanquirer configuration.`
-	);
+	assert(configType === 'object' && !Array.isArray(arguments[0]), msg(
+		`You must provide a valid configuration object to cleanquirer.`,
+		`${configType} is not a valid type for a cleanquirer configuration.`
+	));
 
-	const unvalidNameError = `You must provide a not empty string as valid name parameter for your cli tool.`;
+	const unvalidNameError = msg(
+		`You must provide a not empty string`,
+		`as valid name parameter for your cli tool.`
+	);
 	assert(typeof name === 'string', unvalidNameError);
 	name = name.trim();
 	assert(name.length > 0, unvalidNameError);
@@ -29,18 +37,26 @@ function cleanquirer({
 
 	const actions = {};
 	function addAction(commandObject, index) {
-		assert(typeof commandObject === 'object',
-			`The provided ${name} command object at index ${index} must be an object. Currently, it's of type ${typeof commandObject}.`);
+		assert(typeof commandObject === 'object', msg(
+			`The provided ${name} command object`,
+			`at index ${index} must be an object.`,
+			`Currently, it's of type ${typeof commandObject}.`
+		));
 		
-		assert(typeof commandObject.name === 'string',
-			`The provided ${name} command object at index ${index} has no name.`)
+		assert(typeof commandObject.name === 'string', msg(
+			`The provided ${name} command object`,
+			`at index ${index} has no name.`
+		));
 
 		actions[commandObject.name] = commandObject;
 	}
 
 	const actionsFromFile = [];
 	commands.forEach((command, i) => {
-		assert(command && typeof command === 'object' || typeof command === 'string', `The provided ${name} command path "${command}" at index ${i} is neither an object or an absolute path.`);
+		assert(command && typeof command === 'object' || typeof command === 'string', msg(
+			`The provided ${name} command path "${command}"`,
+			`at index ${i} is neither an object or an absolute path.`
+		));
 
 		if (typeof command === 'string') {
 			function deduceFromFileAndAdd(commandFilepath){
@@ -55,7 +71,10 @@ function cleanquirer({
 				});
 			}
 			else{
-				assert(path.isAbsolute(command), `The provided ${name} command path "${command}" at index ${i} is not an absolute path.`);
+				assert(path.isAbsolute(command), msg(
+					`The provided ${name} command path "${command}"`,
+					`at index ${i} is not an absolute path.`
+				));
 				deduceFromFileAndAdd(command);
 			}
 		}
@@ -69,7 +88,11 @@ function cleanquirer({
 	const readyPromise = cliReady ? null : Promise.all(actionsFromFile).then(()=>cliReady = true);
 
 	function cli(inputs, cliCallback) {
-		assert(Array.isArray(inputs), `When using ${name} as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
+		assert(Array.isArray(inputs), msg(
+			`When using ${name} as a function,`,
+			`you must provide an input to it`,
+			`as an Array like one from process.argv.slice(2).`
+		));
 
 		const cliCallbackIsAFunction = typeof cliCallback === 'function';
 		assert(cliCallbackIsAFunction || !cliCallback);
@@ -110,15 +133,19 @@ function cleanquirer({
 
 		function done(commandError) {
 			if(tickChange === 0){
-				if (cliPromise) {
-					cliPromise.catch(err => {/* Avoid unhandled promise rejection */});
-				}
-
-				throw new CleanquirerCommandImplementationError(`The ${name} command "${command}" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+				throw new CleanquirerCommandImplementationError(msg(
+					`The ${name} command "${command}" you are trying to use`,
+					`calls internally a callback in a synchronous way.`,
+					`This is not permitted by cleanquirer.`,
+					`If the command is synchronous, it shouldn't`,
+					`use neither callback or promise.`
+				));
 			}
 			else{
 				if (commandError) {
-					cliCallback(new Error(`${name} ${command} error: ${commandError.message}`));
+					cliCallback(new Error(
+						`${name} ${command} error: ${commandError.message}`
+					));
 				}
 				else{
 					cliCallback();
@@ -139,7 +166,9 @@ function cleanquirer({
 				throw err;
 			}
 
-			throw new Error(`Error happen when using the ${name} command "${command}" : ${err.message}`);
+			throw new Error(msg(
+				`Error happen when using the ${name} command "${command}" : ${err.message}`
+			));
 		}
 
 		const actionUseCallback = action.length >= 2;
@@ -147,7 +176,13 @@ function cleanquirer({
 
 		if(actionUsePromise){
 			if (actionUseCallback) {
-				throw new CleanquirerCommandImplementationError(`The ${name} command "${command}" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+				throw new CleanquirerCommandImplementationError(msg(
+					`The ${name} command "${command}" you are trying to use`,
+					`both uses internally a callback and returns a promise.`,
+					`This is not permitted by cleanquirer.`,
+					`If the command is asynchronous, it must use`,
+					`callback or promise but not both.`
+				));
 			}
 
 			actionResult.then(() => done()).catch(err => done(err));

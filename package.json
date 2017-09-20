@@ -26,7 +26,8 @@
     "build": "npm run entries && npm run documentation",
     "dev": "concurrently \"ttab npm run update-coverage\" \"ttab npm run watch-test\" \"ttab npm run watch\" \"ttab npm run dev-server\"",
     "release": "node node_modules/@alexistessier/node-module-starterkit-release-dep",
-    "release-first": "npm run release -- -- first"
+    "release-first": "npm run release -- -- first",
+    "start": "npm run dev"
   },
   "repository": {
     "type": "git",
@@ -91,7 +92,10 @@
   },
   "ava": {
     "source": [
-      "sources/**/*.js"
+      "sources/**/*.js",
+      "tests/mocks/**/*.js",
+      "tests/utils/**/*.js",
+      "tests/**/*.macro.js"
     ],
     "timeout": 6000
   },

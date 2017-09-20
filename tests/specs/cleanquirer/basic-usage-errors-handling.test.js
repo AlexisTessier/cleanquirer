@@ -86,36 +86,6 @@ synchronousCommandThrowingErrorFromSimpleCommandObjectMacro.title = providedTitl
 
 /*---------------------------*/
 
-function asynchronousCommandCallbackFromSimpleCommandObjectMacro(t, core) {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const actionFunction = mockFunction();
-
-	t.context.asyncTimeout = 50;
-
-	const myCli = cleanquirer({
-		name: 'mycli',
-		commands: [
-			{
-				name: 'callback-command',
-				action(options, done){
-					setTimeout(()=>{
-						actionFunction();
-						done();
-					}, t.context.asyncTimeout);
-				}
-			}
-		]
-	});
-
-	return core(t, myCli, actionFunction);
-}
-
-asynchronousCommandCallbackFromSimpleCommandObjectMacro.title = providedTitle => (
-	`Asynchronous callback command from simple command object - ${providedTitle}`);
-
-/*---------------------------*/
-
 function asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro(t, core) {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -144,42 +114,6 @@ function asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro(t, cor
 
 asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro.title = providedTitle => (
 	`Asynchronous callback command with error from simple command object - ${providedTitle}`);
-
-/*---------------------------*/
-
-function asynchronousCommandPromiseFromSimpleCommandObjectMacro(t, core){
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const actionFunction = mockFunction();
-
-	t.context.asyncTimeout = 50;
-
-	const myCli = cleanquirer({
-		name: 'mycli',
-		commands: [
-			{
-				name: 'promise-command',
-				action(){
-					actionFunction();
-
-					return new Promise(resolve => {
-						actionFunction();
-						setTimeout(()=>{
-							actionFunction();
-							resolve();
-							actionFunction();
-						}, t.context.asyncTimeout);
-					});
-				}
-			}
-		]
-	});
-
-	return core(t, myCli, actionFunction);
-}
-
-asynchronousCommandPromiseFromSimpleCommandObjectMacro.title = providedTitle => (
-	`Asynchronous promise command from simple command object - ${providedTitle}`);
 
 /*---------------------------*/
 
@@ -337,48 +271,6 @@ test('Promise usage', synchronousCommandThrowingErrorFromSimpleCommandObjectMacr
 
 /*---------------------------*/
 
-test.cb('Synchronous usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.true(typeof t.context.asyncTimeout === 'number');
-
-	t.plan(3);
-
-	cli(['callback-command']);
-
-	t.true(action.notCalled);
-
-	setTimeout(()=>{
-		t.true(action.calledOnce);
-
-		t.end();
-	}, t.context.asyncTimeout*2);
-});
-
-test.cb('Callback usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.plan(2);
-
-	cli(['callback-command'], () => {
-		t.true(action.calledOnce);
-		t.end();
-	});
-
-	t.true(action.notCalled);
-});
-
-test('Promise usage', asynchronousCommandCallbackFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.plan(3);
-
-	const cliPromise = cli(['callback-command']);
-
-	t.true(cliPromise instanceof Promise);
-	t.true(action.notCalled);
-
-	return cliPromise.then(()=>{
-		t.true(action.calledOnce);
-	});
-});
-
-/*---------------------------*/
-
 test.cb('Synchronous usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
 	t.true(typeof t.context.asyncTimeout === 'number');
 
@@ -431,56 +323,6 @@ test('Promise usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjec
 
 		t.true(err instanceof Error);
 		t.is(err.message, `mycli callback-command error: callback error`);
-	});
-});
-
-/*---------------------------*/
-
-test.cb('Synchronous usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.true(typeof t.context.asyncTimeout === 'number');
-
-	t.plan(3);
-
-	cli(['promise-command']);
-
-	t.true(action.calledTwice);
-
-	setTimeout(()=>{
-		t.is(action.callCount, 4);
-
-		t.end();
-	}, t.context.asyncTimeout*2);
-});
-
-test.cb('Callback usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.true(typeof t.context.asyncTimeout === 'number');
-
-	t.plan(4);
-
-	cli(['promise-command'], ()=>{
-		t.is(action.callCount, 4);
-	});
-
-	t.true(action.calledTwice);
-
-	setTimeout(()=>{
-		t.is(action.callCount, 4);
-
-		t.end();
-	}, t.context.asyncTimeout*2);
-});
-
-test('Promise usage', asynchronousCommandPromiseFromSimpleCommandObjectMacro, (t, cli, action) => {
-	t.plan(3);
-
-	const cliPromise = cli(['promise-command']);
-
-	t.true(cliPromise instanceof Promise);
-
-	t.true(action.calledTwice);
-
-	return cliPromise.then(()=>{
-		t.is(action.callCount, 4);
 	});
 });
 

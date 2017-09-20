@@ -2,8 +2,11 @@
 
 const test = require('ava');
 
-/*---------------------------*/
-/*---------------------------*/
+const requireFromIndex = require('../../utils/require-from-index');
+const pathFromIndex = require('../../utils/path-from-index');
+
+const commandFromFileMacro = require('./command-from-file.macro');
+
 /*---------------------------*/
 
 function wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro(t, wrongInput) {
@@ -61,6 +64,124 @@ function wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro(t, wrongInp
 wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro.title = (providedTitle, input) => (
 	`Callback usage - When defining command from file, throws error if provided input is not valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`);
 
+/*---------------------------*/
+
+function commandFromDocumentedFileSynchronouslyThrowingErrorMacro(t, core) {
+	commandFromFileMacro(t, 'throwing-error-command.js', core);
+}
+
+commandFromDocumentedFileSynchronouslyThrowingErrorMacro.title = providedTitle => (
+	`Command from documented command files synchronously throwing error - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'synchronous-callback-call-without-error-command.js', core);
+}
+
+commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro.title = providedTitle => (
+	`Command from documented command files synchronously calling the callback without error - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'synchronous-callback-call-with-error-command.js', core);
+}
+
+commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro.title = providedTitle => (
+	`Command from documented command files synchronously calling the callback with an error - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'using-both-callback-and-promise-command.js', core);
+}
+
+commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro.title = providedTitle => (
+	`Command using both internally callback and promise from file - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'using-both-callback-and-promise-and-calling-the-callback-command.js', core);
+}
+
+commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro.title = providedTitle => (
+	`Command using both internally callback and promise from file and calling the callback - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'using-both-callback-and-promise-and-calling-the-callback-asynchronously-command.js', core);
+}
+
+commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro.title = providedTitle => (
+	`Command using both internally callback and promise from file and calling the callback - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandFromFileAsynchronouslyCallingTheCallbackWithAnError(t, core) {
+	commandFromFileMacro(t, 'asynchronous-callback-call-with-error-command.js', core);
+}
+
+commandFromFileAsynchronouslyCallingTheCallbackWithAnError.title = providedTitle => (
+	`Command from documented command files asynchronously calling the callback with an error - ${providedTitle}`);
+
+/*---------------------------*/
+
+function commandReturningRejectingPromiseFromDocumentedFileMacro(t, core) {
+	commandFromFileMacro(t, 'rejecting-promise-command.js', core);
+}
+
+commandReturningRejectingPromiseFromDocumentedFileMacro.title = providedTitle => (
+	`Command returning rejecting Promise from documented file - ${providedTitle}`)
+
+/*---------------------------*/
+
+function wrongFilePathDefiningCommandFromFileMacro(t, errorMessage, wrongFilePath){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const commandWrongFilePathError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				wrongFilePath
+			]
+		});
+	});
+
+	t.is(commandWrongFilePathError.message, errorMessage);
+}
+
+wrongFilePathDefiningCommandFromFileMacro.title = (providedTitle, wrongFilePath) => (
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath}`);
+
+/*---------------------------*/
+
+function commandFromNoJsFileMacro(t, wrongFile, errorMessageStart) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const noJsFilePath = pathFromIndex('tests/mocks/mock-commands', wrongFile);
+
+	const noJsFileError = t.throws(()=>{
+		cleanquirer({
+			name: 'mycli',
+			commands: [
+				noJsFilePath
+			]
+		});
+	});
+
+	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
+}
+
+commandFromNoJsFileMacro.title = providedTitle => (
+	`Using a no js file - ${providedTitle}`);
+
+/*---------------------------*/
+/*---------------------------*/
+/*---------------------------*/
+
 test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, undefined);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, {});
@@ -96,13 +217,6 @@ test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, function ()
 
 /*---------------------------*/
 
-function commandFromDocumentedFileSynchronouslyThrowingErrorMacro(t, core) {
-	commandFromFileMacro(t, 'throwing-error-command.js', core);
-}
-
-commandFromDocumentedFileSynchronouslyThrowingErrorMacro.title = providedTitle => (
-	`Command from documented command files synchronously throwing error - ${providedTitle}`);
-
 test.cb('Synchronous usage', commandFromDocumentedFileSynchronouslyThrowingErrorMacro, (t, myCli, actionFunction) => {
 	myCli(['throwing-error-command']).catch(err => {});
 
@@ -135,13 +249,6 @@ test.cb('Callback usage', commandFromDocumentedFileSynchronouslyThrowingErrorMac
 });
 
 /*---------------------------*/
-
-function commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro(t, core) {
-	commandFromFileMacro(t, 'synchronous-callback-call-without-error-command.js', core);
-}
-
-commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro.title = providedTitle => (
-	`Command from documented command files synchronously calling the callback without error - ${providedTitle}`);
 
 test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	myCli(['synchronous-callback-call-without-error-command']).catch(err => {});
@@ -178,13 +285,6 @@ test.cb('Callback usage', commandSynchronouslyCallingCallbackWithoutErrorFromDoc
 
 /*---------------------------*/
 
-function commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro(t, core) {
-	commandFromFileMacro(t, 'synchronous-callback-call-with-error-command.js', core);
-}
-
-commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro.title = providedTitle => (
-	`Command from documented command files synchronously calling the callback with an error - ${providedTitle}`);
-
 test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	myCli(['synchronous-callback-call-with-error-command']).catch(err => {});
 
@@ -220,20 +320,12 @@ test.cb('Callback usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocu
 
 /*---------------------------*/
 
-function commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro(t, core) {
-	commandFromFileMacro(t, 'using-both-callback-and-promise-command.js', core);
-}
-
-commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro.title = providedTitle => (
-	`Command using both internally callback and promise from file - ${providedTitle}`);
-
 test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	myCli(['using-both-callback-and-promise-command']).catch(err => {});
 
 	t.is(actionFunction.callCount, 0);
 	t.end()
 });
-
 
 test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	t.plan(4);
@@ -262,13 +354,6 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseFromDocume
 });
 
 /*---------------------------*/
-
-function commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro(t, core) {
-	commandFromFileMacro(t, 'using-both-callback-and-promise-and-calling-the-callback-command.js', core);
-}
-
-commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro.title = providedTitle => (
-	`Command using both internally callback and promise from file and calling the callback - ${providedTitle}`);
 
 test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-command']).catch(err => {});
@@ -305,13 +390,6 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 
 /*---------------------------*/
 
-function commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro(t, core) {
-	commandFromFileMacro(t, 'using-both-callback-and-promise-and-calling-the-callback-asynchronously-command.js', core);
-}
-
-commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro.title = providedTitle => (
-	`Command using both internally callback and promise from file and calling the callback - ${providedTitle}`);
-
 test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-asynchronously-command']).catch(err => {});
 
@@ -347,13 +425,6 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 
 /*---------------------------*/
 
-function commandFromFileAsynchronouslyCallingTheCallbackWithAnError(t, core) {
-	commandFromFileMacro(t, 'asynchronous-callback-call-with-error-command.js', core);
-}
-
-commandFromFileAsynchronouslyCallingTheCallbackWithAnError.title = providedTitle => (
-	`Command from documented command files asynchronously calling the callback with an error - ${providedTitle}`);
-
 test.cb('Callback usage', commandFromFileAsynchronouslyCallingTheCallbackWithAnError, (t, myCli, actionFunction) => {
 	myCli(['asynchronous-callback-call-with-error-command']).catch(err => {});
 
@@ -387,13 +458,6 @@ test.cb('Callback usage', commandFromFileAsynchronouslyCallingTheCallbackWithAnE
 
 /*---------------------------*/
 
-function commandReturningRejectingPromiseFromDocumentedFileMacro(t, core) {
-	commandFromFileMacro(t, 'rejecting-promise-command.js', core);
-}
-
-commandReturningRejectingPromiseFromDocumentedFileMacro.title = providedTitle => (
-	`Command returning rejecting Promise from documented file - ${providedTitle}`)
-
 test.cb('Synchronous usage', commandReturningRejectingPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
 	myCli(['rejecting-promise-command']).catch(err => {});
 
@@ -426,24 +490,6 @@ test.cb('Callback usage', commandReturningRejectingPromiseFromDocumentedFileMacr
 });
 
 /*---------------------------*/
-
-function wrongFilePathDefiningCommandFromFileMacro(t, errorMessage, wrongFilePath){
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const commandWrongFilePathError = t.throws(()=>{
-		cleanquirer({
-			name: 'mycli',
-			commands: [
-				wrongFilePath
-			]
-		});
-	});
-
-	t.is(commandWrongFilePathError.message, errorMessage);
-}
-
-wrongFilePathDefiningCommandFromFileMacro.title = (providedTitle, wrongFilePath) => (
-	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath}`);
 
 test(wrongFilePathDefiningCommandFromFileMacro,
 	`The provided mycli command path "undefined" at index 0 is neither an object or an absolute path.`);
@@ -580,23 +626,6 @@ test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'null', 'null-module.
 test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'number', 'number-module.js');
 
 /*---------------------------*/
-
-function commandFromNoJsFileMacro(t, wrongFile, errorMessageStart) {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const noJsFilePath = pathFromIndex('tests/mocks/mock-commands', wrongFile);
-
-	const noJsFileError = t.throws(()=>{
-		cleanquirer({
-			name: 'mycli',
-			commands: [
-				noJsFilePath
-			]
-		});
-	});
-
-	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
-}
 
 test('Error using a no js file defining a command from file', 
 	commandFromNoJsFileMacro, 'no-js.txt', 'is a .txt file');
