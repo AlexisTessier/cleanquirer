@@ -421,3 +421,4 @@ test('Promise usage', errorUsingBothCallbackAndPromiseCommandForSynchronousOpera
 });
 
 test.todo('undefined command handling');
+test.todo('duplicate command handling');

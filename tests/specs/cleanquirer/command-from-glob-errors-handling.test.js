@@ -6,6 +6,7 @@ test.todo('Command definition from glob wrong cli input - synchronous usage');
 test.todo('Command definition from glob wrong cli input - callback usage');
 test.todo('Command definition from glob wrong cli input - promise usage');
 test.todo('Command definition from no-matching glob');
+test.todo('Command definition from glob matching extensionless files and/or directory');
 test.todo('Command definition from glob matching no js files');
 test.todo('Command definition from glob synchronously throwing error');
 test.todo('Command definition from glob synchronously callback without error');
@@ -17,3 +18,4 @@ test.todo('Command definition from glob asynchronously calling the callback with
 test.todo('Command definition from glob returning rejecting promise');
 
 test.todo('undefined command handling');
+test.todo('duplicate command handling');

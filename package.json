@@ -75,20 +75,20 @@
     "coveralls": "2.13.1",
     "dashify": "0.2.2",
     "dependency-check": "2.9.1",
-    "eslint": "4.5.0",
+    "eslint": "4.7.2",
     "git-repo-info": "1.4.1",
     "github-markdown-css": "2.8.0",
-    "jsonfile": "3.0.1",
+    "jsonfile": "4.0.0",
     "marked": "0.3.6",
     "mkdirp": "0.5.1",
     "mustache": "2.3.0",
     "npm-watch": "0.2.0",
-    "nyc": "11.1.0",
+    "nyc": "11.2.1",
     "oss-license-name-to-url": "1.2.1",
     "read-yaml": "1.1.0",
     "serve-here": "3.2.0",
     "shelljs": "0.7.8",
-    "sinon": "3.2.1"
+    "sinon": "4.0.0"
   },
   "ava": {
     "source": [
@@ -106,9 +106,9 @@
     ]
   },
   "dependencies": {
-    "acorn": "5.1.1",
-    "documentation": "5.2.2",
-    "fs-extra": "4.0.1",
+    "acorn": "5.1.2",
+    "documentation": "5.3.2",
+    "fs-extra": "4.0.2",
     "glob": "7.1.2",
     "is-glob": "4.0.0",
     "line-column": "1.0.2",

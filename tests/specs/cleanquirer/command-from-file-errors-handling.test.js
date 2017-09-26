@@ -713,3 +713,4 @@ test('Error using an unhandled exports origin defining a command from file', t =
 });
 
 test.todo('undefined command handling');
+test.todo('duplicate command handling');

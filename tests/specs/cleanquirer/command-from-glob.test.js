@@ -175,6 +175,54 @@ test('Command definition from glob with multiple functions', async t => {
 	t.is(actionFunction.callCount, 1);
 });
 
-test.todo('Multiple commands definition from glob');
+test('Multiple commands definition from glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunctionFromRoot = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands/from-root');
+	const actionFunctionFromSubfolder = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands/subfolder/from-subfolder');
+	const actionFunctionFromSubfolderBis = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands/subfolder/from-subfolder-bis');
+	const actionFunctionFromDeepSubfolder = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands/subfolder/deep-subfolder/command');
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands/**/*.js')
+		]
+	});
+
+	t.is(actionFunctionFromRoot.callCount, 0);
+	t.is(actionFunctionFromSubfolder.callCount, 0);
+	t.is(actionFunctionFromSubfolderBis.callCount, 0);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-root-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 0);
+	t.is(actionFunctionFromSubfolderBis.callCount, 0);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 0);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-subfolder-documented-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 1);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-deep-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 1);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 1);
+});
+
 test.todo('Use a command from glob multiple times');
 test.todo('Use commands from globs multiple times');

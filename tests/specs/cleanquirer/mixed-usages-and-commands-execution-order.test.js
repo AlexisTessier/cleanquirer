@@ -2,6 +2,8 @@
 
 const test = require('ava');
 
+test.todo('duplicate command handling');
+
 test.todo('Multiple commands definition from files and objects');
 test.todo('Use commands from files and objects multiple times');
 

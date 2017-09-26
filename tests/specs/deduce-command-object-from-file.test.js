@@ -262,3 +262,7 @@ test('deduce command action from documented multi-functions files', deduceFromCo
 		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-functions-file.js'));
 	});
 });
+
+/*-----------------------*/
+
+test.todo('deduce command name from files should rejecting with an error if the comment is not formatted correctly');
