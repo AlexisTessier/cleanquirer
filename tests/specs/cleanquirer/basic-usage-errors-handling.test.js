@@ -419,3 +419,5 @@ test('Promise usage', errorUsingBothCallbackAndPromiseCommandForSynchronousOpera
 		t.fail();
 	});
 });
+
+test.todo('undefined command handling');

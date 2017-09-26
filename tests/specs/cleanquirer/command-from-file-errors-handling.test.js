@@ -711,3 +711,5 @@ test('Error using an unhandled exports origin defining a command from file', t =
 		t.is(err.message, `Cleanquirer doesn\'t found the exports value node in the file "${fullPath}".`);
 	});
 });
+
+test.todo('undefined command handling');

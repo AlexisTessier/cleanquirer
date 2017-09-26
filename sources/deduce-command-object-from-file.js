@@ -185,7 +185,7 @@ function findNodeAttachedDoc(node, filepath) {
 				));
 
 			if (matchingComments.length) {
-				return Promise.resolve(matchingComments[0]);
+				return Promise.resolve(matchingComments.reverse()[0]);
 			}
 		}
 

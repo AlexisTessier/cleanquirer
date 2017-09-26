@@ -154,6 +154,8 @@ deduceFromCommandFileMacro.title = providedTitle => (
 test('return promise', deduceFromCommandFileMacro, 'no-doc.js');
 test('return promise skipping the file extension', deduceFromCommandFileMacro, 'no-doc');
 
+/*-------------------------------------*/
+
 test('deduce command name with no doc', deduceFromCommandFileMacro, 'no-doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {
 		t.is(typeof commandObject, 'object');
@@ -182,6 +184,13 @@ test('deduce command name from multi comments files', deduceFromCommandFileMacro
 	});
 });
 
+test('deduce command name from multi top comments files', deduceFromCommandFileMacro, 'multi-top-comments.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.name, 'multi-comments-name');
+	});
+});
+
 test('deduce command name from undocumented multi-functions files', deduceFromCommandFileMacro, 'multi-functions-file-no-doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {
 		t.is(typeof commandObject, 'object');
@@ -203,6 +212,8 @@ test('deduce command name from documented multi-functions files', deduceFromComm
 	});
 });
 
+/*-------------------------------------*/
+
 test('deduce command action with no doc', deduceFromCommandFileMacro, 'no-doc.js', (t, deduce) => {
 	return deduce.then(commandObject => {
 		t.is(typeof commandObject, 'object');
@@ -221,6 +232,13 @@ test('deduce command action from multi comments files', deduceFromCommandFileMac
 	return deduce.then(commandObject => {
 		t.is(typeof commandObject, 'object');
 		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-comments.js'));
+	});
+});
+
+test('deduce command action from multi top comments files', deduceFromCommandFileMacro, 'multi-top-comments.js', (t, deduce) => {
+	return deduce.then(commandObject => {
+		t.is(typeof commandObject, 'object');
+		t.is(commandObject.action, requireFromIndex('tests/mocks/mock-commands/multi-top-comments.js'));
 	});
 });
 

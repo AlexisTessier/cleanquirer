@@ -56,6 +56,12 @@ module.exports = cli;
  * + multiple commands definition from globs
  * + multiple commands definition
  * + undefined command handling
+ * + stdout
+ * + stderr
+ * + default stdout handling
+ * + default stderr handling
+ * + custom stdout handling
+ * + custom stderr handling
  * + version option
  * + default version option
  * + version command
@@ -64,6 +70,17 @@ module.exports = cli;
  * -------
  * + name/action/options command object
  * + deduce options from documented files
+ * + deduce options from documented files targeted with glob
+
+ * release
+ * -------
+ * + prompt method option
+ * + prompt method as cli property
+ * + prompt method provided as option to each commands
+
+ * release
+ * -------
+ * + auto prompt required options if undefined
 
  * release
  * -------
@@ -71,21 +88,25 @@ module.exports = cli;
  * + description option and default description
  * + name/action/options/help command object
  * + deduce help from documented files
+ * + deduce help from documented files targeted with glob
 
  * release
  * -------
  * + options aliases
  * + deduce options aliases from documented files
+ * + deduce options aliases from documented files targeted with glob
 
  * release
  * -------
  * + global options
  * + deduce global options from documented files
+ * + deduce global options from documented files targeted with glob
 
  * release
  * -------
  * + command aliases
  * + deduce command aliases from documented files
+ * + deduce command aliases from documented files targeted with glob
 
  * release
  * -------
@@ -98,7 +119,7 @@ module.exports = cli;
  * release
  * -------
  * + command timeout option
- * + deduce command timeout option from documented files
+ * + deduce command timeout option from documented files targeted with glob
  
  * release
  * -------
@@ -107,6 +128,31 @@ module.exports = cli;
  * release
  * -------
  * + extends as Promise resolving command object
+
+ * release
+ * -------
+ * + cleanquirer cli tool to generate command objects files from documented files
+
+ * release
+ * -------
+ * + cleanquirer cli tool to generate a new cleanquirer project
+
+ * release
+ * -------
+ * + cleanquirer cli tool to generate a new cleanquirer project command
+
+ * release
+ * -------
+ * + uniq stdout for each command
+ * + uniq stderr for each command
+ * + default uniq stdout handling for each command
+ * + default uniq stderr handling for each command
+ * + custom uniq stdout handling for each command
+ * + custom uniq stderr handling for each command
+
+ * release
+ * -------
+ * + cleanquirer cli tool to lint a cleanquirer project
 
  */
 

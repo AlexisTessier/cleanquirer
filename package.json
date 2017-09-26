@@ -97,7 +97,7 @@
       "tests/utils/**/*.js",
       "tests/**/*.macro.js"
     ],
-    "timeout": 6000
+    "timeout": 12000
   },
   "nyc": {
     "exclude": [
