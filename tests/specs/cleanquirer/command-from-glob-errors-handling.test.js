@@ -18,4 +18,5 @@ test.todo('Command definition from glob asynchronously calling the callback with
 test.todo('Command definition from glob returning rejecting promise');
 
 test.todo('undefined command handling');
+test.todo('duplicate glob handling');
 test.todo('duplicate command handling');

@@ -36,6 +36,7 @@ function cleanquirer({
 	/*----------------*/
 
 	const actions = {};
+	const duplicateCommandDetectionAddActionCache = {};
 	function addAction(commandObject, index) {
 		assert(typeof commandObject === 'object', msg(
 			`The provided ${name} command object`,
@@ -48,10 +49,18 @@ function cleanquirer({
 			`at index ${index} has no name.`
 		));
 
+		assert(typeof actions[commandObject.name] === 'undefined', msg(
+			`"${name}" define a duplicate command "${commandObject.name}"`,
+			`in commands Array parameter at indexes`,
+			`${duplicateCommandDetectionAddActionCache[commandObject.name]} and ${index}.`
+		));
+
+		duplicateCommandDetectionAddActionCache[commandObject.name] = index;
 		actions[commandObject.name] = commandObject;
 	}
 
 	const actionsFromFile = [];
+	const duplicateCommandFilepathDetectionCache = {};
 	commands.forEach((command, i) => {
 		assert(command && typeof command === 'object' || typeof command === 'string', msg(
 			`The provided ${name} command path "${command}"`,
@@ -75,6 +84,15 @@ function cleanquirer({
 					`The provided ${name} command path "${command}"`,
 					`at index ${i} is not an absolute path.`
 				));
+
+				assert(!Object.keys(duplicateCommandFilepathDetectionCache).includes(command), msg(
+					`"${name}" use a duplicate filepath "${command}"`,
+					`in commands Array parameter at indexes`,
+					`${duplicateCommandFilepathDetectionCache[command]} and ${i}`,
+					`to define a command.`
+				));
+
+				duplicateCommandFilepathDetectionCache[command] = i;
 				deduceFromFileAndAdd(command);
 			}
 		}
@@ -122,6 +140,10 @@ function cleanquirer({
 		});
 
 		const command = inputs.shift();
+
+		assert(typeof actions[command] === 'object',
+			`The command "${command}" is not a command of "${name}".`
+		);
 
 		/*------------------*/
 

@@ -224,5 +224,133 @@ test('Multiple commands definition from glob', async t => {
 	t.is(actionFunctionFromDeepSubfolder.callCount, 1);
 });
 
-test.todo('Use a command from glob multiple times');
-test.todo('Use commands from globs multiple times');
+test('Use a command from glob multiple times', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-uses/command');
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/multiple-uses/*')
+		]
+	});
+
+	t.is(actionFunction.callCount, 0);
+
+	await myCli(['multiple-use-command']);
+
+	t.is(actionFunction.callCount, 1);
+
+	await myCli(['multiple-use-command']);
+
+	t.is(actionFunction.callCount, 2);
+
+	await myCli(['multiple-use-command']);
+
+	t.is(actionFunction.callCount, 3);
+});
+
+test('Use commands from globs multiple times', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionFunctionFromRoot = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands-multiple-uses/from-root');
+	const actionFunctionFromSubfolder = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands-multiple-uses/subfolder/from-subfolder');
+	const actionFunctionFromSubfolderBis = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands-multiple-uses/subfolder/from-subfolder-bis');
+	const actionFunctionFromDeepSubfolder = requireFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands-multiple-uses/subfolder/deep-subfolder/command');
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/multiple-commands-multiple-uses/**/*.js')
+		]
+	});
+
+	t.is(actionFunctionFromRoot.callCount, 0);
+	t.is(actionFunctionFromSubfolder.callCount, 0);
+	t.is(actionFunctionFromSubfolderBis.callCount, 0);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-root-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 0);
+	t.is(actionFunctionFromSubfolderBis.callCount, 0);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 0);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-subfolder-documented-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 1);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 0);
+
+	await myCli(['from-deep-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 1);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 1);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 1);
+
+	await myCli(['from-root-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 2);
+	t.is(actionFunctionFromSubfolder.callCount, 1);
+	t.is(actionFunctionFromSubfolderBis.callCount, 1);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 1);
+
+	await myCli(['from-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 2);
+	t.is(actionFunctionFromSubfolder.callCount, 2);
+	t.is(actionFunctionFromSubfolderBis.callCount, 1);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 1);
+
+	await myCli(['from-subfolder-documented-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 2);
+	t.is(actionFunctionFromSubfolder.callCount, 2);
+	t.is(actionFunctionFromSubfolderBis.callCount, 2);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 1);
+
+	await myCli(['from-deep-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 2);
+	t.is(actionFunctionFromSubfolder.callCount, 2);
+	t.is(actionFunctionFromSubfolderBis.callCount, 2);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 2);
+
+	await myCli(['from-root-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 3);
+	t.is(actionFunctionFromSubfolder.callCount, 2);
+	t.is(actionFunctionFromSubfolderBis.callCount, 2);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 2);
+
+	await myCli(['from-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 3);
+	t.is(actionFunctionFromSubfolder.callCount, 3);
+	t.is(actionFunctionFromSubfolderBis.callCount, 2);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 2);
+
+	await myCli(['from-subfolder-documented-command']);
+
+	t.is(actionFunctionFromRoot.callCount, 3);
+	t.is(actionFunctionFromSubfolder.callCount, 3);
+	t.is(actionFunctionFromSubfolderBis.callCount, 3);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 2);
+
+	await myCli(['from-deep-subfolder']);
+
+	t.is(actionFunctionFromRoot.callCount, 3);
+	t.is(actionFunctionFromSubfolder.callCount, 3);
+	t.is(actionFunctionFromSubfolderBis.callCount, 3);
+	t.is(actionFunctionFromDeepSubfolder.callCount, 3);
+});

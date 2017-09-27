@@ -52,8 +52,8 @@ module.exports = cli;
  * release
  * -------
  * + name/action command object => DONE
- * + deduce commands from documented files => deduce function ok, need to make it work from cleanquirer => DONE
- * + multiple commands definition from globs
+ * + deduce commands from documented files => DONE
+ * + multiple commands definition from globs => WIP
  * + multiple commands definition
  * + undefined command handling
  * + stdout

@@ -712,5 +712,93 @@ test('Error using an unhandled exports origin defining a command from file', t =
 	});
 });
 
-test.todo('undefined command handling');
-test.todo('duplicate command handling');
+test('undefined command handling', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(3);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/undefined-command-handling/doc.js');
+	const actionFunction = require(fullPath);
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			fullPath
+		]
+	});
+
+	t.is(actionFunction.callCount, 0);
+
+	try{
+		await myCli(['doc-name']);
+
+		t.is(actionFunction.callCount, 1);
+
+		await myCli(['undefined-command']);
+		t.fail();
+	}
+	catch(err){
+		t.is(err.message, `The command "undefined-command" is not a command of "mycli".`);
+	}
+});
+
+test('duplicate filepath handling', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/no-doc.js');
+
+	const duplicateFilepathError = t.throws(() => {
+		const myCli = cleanquirer({
+			name: 'mycli',
+			commands: [
+				fullPath,
+				fullPath
+			]
+		});
+	});
+
+	t.is(duplicateFilepathError.message, `"mycli" use a duplicate filepath "${fullPath}" in commands Array parameter at indexes 0 and 1 to define a command.`);
+});
+
+test('duplicate command handling', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(5);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/duplicate-commands-from-files/doc.js');
+	const fullPathBis = pathFromIndex('tests/mocks/mock-commands/duplicate-commands-from-files/doc-duplication.js');
+
+	const actionFunction = require(fullPath);
+	const actionFunctionBis = require(fullPathBis);
+
+	const myCli = cleanquirer({
+		name: 'myclifromfiles',
+		commands: [
+			fullPath,
+			fullPathBis
+		]
+	});
+
+	t.is(actionFunction.callCount, 0);
+	t.is(actionFunctionBis.callCount, 0);
+
+	try{
+		await myCli(['duplicate-command-name']);
+		t.fail();
+	}
+	catch(err){
+		t.is(actionFunction.callCount, 0);
+		t.is(actionFunctionBis.callCount, 0);
+
+		if(
+			err.message === `"myclifromfiles" define a duplicate command "duplicate-command-name" in commands Array parameter at indexes 0 (${fullPath}) and 1 (${fullPathBis}).`
+			||
+			err.message === `"myclifromfiles" define a duplicate command "duplicate-command-name" in commands Array parameter at indexes 1 (${fullPathBis}) and 0 (${fullPath}).`
+		){
+			t.pass();
+		}
+		else{
+			t.fail();
+		}
+	}
+});

@@ -420,5 +420,53 @@ test('Promise usage', errorUsingBothCallbackAndPromiseCommandForSynchronousOpera
 	});
 });
 
-test.todo('undefined command handling');
-test.todo('duplicate command handling');
+test('undefined command handling', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = mockFunction();
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'command-one',
+				action: actionFunction,
+			}
+		]
+	});
+
+	t.is(actionFunction.callCount, 0);
+
+	myCli(['command-one']);
+
+	t.is(actionFunction.callCount, 1);
+
+	const undefinedCommandError = t.throws(() => {
+		myCli(['command-two']);
+	});
+
+	t.is(undefinedCommandError.message, 'The command "command-two" is not a command of "mycli".');
+});
+
+test('duplicate command handling', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = mockFunction();
+	const actionFunctionBis = mockFunction();
+
+	const duplicateCommandError = t.throws(() => {
+		const myCli = cleanquirer({
+			name: 'myclibis',
+			commands: [
+				{
+					name: 'command-one',
+					action: actionFunction,
+				},
+				{
+					name: 'command-one',
+					action: actionFunctionBis,
+				}
+			]
+		});
+	});
+
+	t.is(duplicateCommandError.message, `"myclibis" define a duplicate command "command-one" in commands Array parameter at indexes 0 and 1.`);
+});
