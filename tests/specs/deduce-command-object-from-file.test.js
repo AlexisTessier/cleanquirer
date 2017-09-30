@@ -5,6 +5,8 @@ const test = require('ava');
 const requireFromIndex = require('../utils/require-from-index');
 const pathFromIndex = require('../utils/path-from-index');
 
+const msg = requireFromIndex('sources/msg');
+
 test('type and api', t => {
 	const deduceFromIndex = requireFromIndex('deduce-command-object-from-file');
 	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
@@ -49,7 +51,7 @@ function deduceNoFunctionModuleMacro(t, type, modulePath) {
 		deduce(fullModulePath);
 	});
 
-	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function.`);
+	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. A valid command module file must export a function.`);
 }
 
 deduceNoFunctionModuleMacro.title = (providedTitle, type, modulePath) => (
@@ -75,7 +77,7 @@ function deduceNoJsFileMacro(t, wrongFile, errorMessageStart) {
 		deduce(noJsFilePath);
 	});
 
-	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
+	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. A valid command module file must be a javascript file (.js).`);
 }
 
 test('error trying to deduce from a no js file', deduceNoJsFileMacro, 'no-js.txt', 'is a .txt file');
@@ -265,4 +267,20 @@ test('deduce command action from documented multi-functions files', deduceFromCo
 
 /*-----------------------*/
 
-test.todo('deduce command name from files should rejecting with an error if the comment is not formatted correctly');
+test('deduce command name from files should rejecting with an error if the comment name is not formatted correctly', t => {
+	const deduce = requireFromIndex('sources/deduce-command-object-from-file');
+
+	t.plan(1)
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/badly-formatted-comment.js');
+	return deduce(fullPath).then((k) => {
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, msg(
+			`Cleanquirer found a comment format error in the command file "${fullPath}"`,
+			`which made impossible to deduce the value of "name".`,
+			`Please check that you are using a correct syntax when writting a documentation comment.`,
+			`Error message from documentation.js is: Unknown content 'doc-name'.`
+		));
+	});
+});

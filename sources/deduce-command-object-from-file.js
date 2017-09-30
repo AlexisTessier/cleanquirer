@@ -9,6 +9,8 @@ const acorn = require('acorn');
 const documentation = require('documentation');
 const lineColumn = require('line-column');
 
+const msg = require('./msg');
+
 /*--------------*/
 
 function _getFileContent(filepath){
@@ -32,7 +34,9 @@ const parseFile = pMemoize(_parseFile);
 /*--------------*/
 
 function deduceCommandObjectFromFile(filepath) {
-	assert(typeof filepath === 'string' && path.isAbsolute(filepath), `${filepath} is of type ${typeof filepath}. The filepath argument must be an absolute path.`);
+	assert(typeof filepath === 'string' && path.isAbsolute(filepath), 
+		`${filepath} is of type ${typeof filepath}. The filepath argument must be an absolute path.`
+	);
 
 	let resolvedFilepath = null; 
 	try{
@@ -48,10 +52,14 @@ function deduceCommandObjectFromFile(filepath) {
 	const extname = path.extname(filepath);
 
 	if (extname.length === 0) {
-		throw new Error(`"${filepath}" has no extension. Valid commands module file must be a javascript file (.js).`);
+		throw new Error(
+			`"${filepath}" has no extension. A valid command module file must be a javascript file (.js).`
+		);
 	}
 	else if(extname !== '.js'){
-		throw new Error(`"${filepath}" is a ${extname} file. Valid commands module file must be a javascript file (.js).`);
+		throw new Error(
+			`"${filepath}" is a ${extname} file. A valid command module file must be a javascript file (.js).`
+		);
 	}
 
 	let action = null;
@@ -65,7 +73,10 @@ function deduceCommandObjectFromFile(filepath) {
 	}
 	
 
-	assert(typeof action === 'function', `${filepath} exports ${action === null ? 'null' : typeof action}. Valid commands module file must export a function.`);
+	assert(typeof action === 'function', msg(
+		`${filepath} exports ${action === null ? 'null' : typeof action}.`,
+		`A valid command module file must export a function.`
+	));
 
 
 	//defaults
@@ -78,19 +89,35 @@ function deduceCommandObjectFromFile(filepath) {
 		let fromComment = {};
 
 		if (attachedComment) {
-			fromComment.name = getTagValue('name', attachedComment) || commandObject.name;
+			fromComment.name = getTagValue('name', attachedComment, filepath) || commandObject.name;
+		}
+
+		for(let key in fromComment){
+			const value = fromComment[key];
+			if (value instanceof Error) {
+				return Promise.reject(value);
+			}
 		}
 
 		return Promise.resolve(Object.assign({}, commandObject, fromComment));
 	});
 }
 
-function getTagValue(title, comment) {
+function getTagValue(title, comment, filepath) {
 	assert(typeof title === 'string');
 	assert(typeof comment === 'object');
 	assert(Array.isArray(comment.tags));
 
 	const tag = comment.tags.filter(tag => tag.title === title)[0] || {};
+
+	if (Array.isArray(tag.errors) && tag.errors.length > 0) {
+		return new Error(msg(
+			`Cleanquirer found a comment format error in the command file "${filepath}"`,
+			`which made impossible to deduce the value of "${title}".`,
+			`Please check that you are using a correct syntax when writting a documentation comment.`,
+			`Error message from documentation.js is: ${tag.errors[0]}.`
+		));
+	}
 
 	return tag[title] || null;
 }
@@ -102,7 +129,9 @@ function getExportsValueComment(filepath) {
 		const exportsNode = findExportsNode(ast);
 
 		if (!exportsNode) {
-			return Promise.reject(new Error(`Cleanquirer doesn't found any exports node in the file "${filepath}".`));
+			return Promise.reject(new Error(
+				`Cleanquirer doesn't found any exports node in the file "${filepath}".`
+			));
 		}
 
 		const exportsType = exportsNode.right.type;
@@ -115,12 +144,15 @@ function getExportsValueComment(filepath) {
 				break;
 
 			default:
-				return Promise.reject(new Error(`The file "${filepath}" exports a node of type ${exportsType}. This type of exports is not handled by cleanquirer.`));
+				return Promise.reject(new Error(msg(
+					`The file "${filepath}" exports a node of type ${exportsType}.`,
+					`This type of exports is not handled by cleanquirer.`
+				)));
 		}
 
-		return exportsValueNode ? findNodeAttachedDoc(exportsValueNode, filepath) : Promise.reject(
-			new Error(`Cleanquirer doesn't found the exports value node in the file "${filepath}".`)
-		);
+		return exportsValueNode ? findNodeAttachedDoc(exportsValueNode, filepath) : Promise.reject(new Error(
+			`Cleanquirer doesn't found the exports value node in the file "${filepath}".`
+		));
 	});
 }
 
@@ -185,12 +217,14 @@ function findNodeAttachedDoc(node, filepath) {
 				));
 
 			if (matchingComments.length) {
-				return Promise.resolve(matchingComments.reverse()[0]);
+				const mainComment = matchingComments.reverse()[0];
+
+				return Promise.resolve(mainComment);
 			}
 		}
 
 		return Promise.resolve(null);
-	})
+	});
 }
 
 module.exports = deduceCommandObjectFromFile;

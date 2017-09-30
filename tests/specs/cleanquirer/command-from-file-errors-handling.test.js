@@ -5,6 +5,8 @@ const test = require('ava');
 const requireFromIndex = require('../../utils/require-from-index');
 const pathFromIndex = require('../../utils/path-from-index');
 
+const msg = requireFromIndex('sources/msg');
+
 const commandFromFileMacro = require('./command-from-file.macro');
 
 /*---------------------------*/
@@ -172,7 +174,7 @@ function commandFromNoJsFileMacro(t, wrongFile, errorMessageStart) {
 		});
 	});
 
-	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. Valid commands module file must be a javascript file (.js).`);
+	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. A valid command module file must be a javascript file (.js).`);
 }
 
 commandFromNoJsFileMacro.title = providedTitle => (
@@ -610,7 +612,7 @@ function usingNoFunctionModuleWhenDefineACommandFromFileMacro(t, type, modulePat
 		});
 	});
 
-	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. Valid commands module file must export a function.`);
+	t.is(noFunctionModuleError.message, `${fullModulePath} exports ${type}. A valid command module file must export a function.`);
 }
 
 usingNoFunctionModuleWhenDefineACommandFromFileMacro.title = (providedTitle, type, modulePath) => (
@@ -709,6 +711,31 @@ test('Error using an unhandled exports origin defining a command from file', t =
 		t.fail();
 	}).catch(err => {
 		t.is(err.message, `Cleanquirer doesn\'t found the exports value node in the file "${fullPath}".`);
+	});
+});
+
+test('Error using an file with badly formatted comment on command from file', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/badly-formatted-comment.js');
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			fullPath
+		]
+	});
+
+	return myCli(['badly-formatted-comment']).then(()=>{
+		t.fail();
+	}).catch(err => {
+		t.is(err.message, msg(
+			`Cleanquirer found a comment format error in the command file "${fullPath}"`,
+			`which made impossible to deduce the value of "name".`,
+			`Please check that you are using a correct syntax when writting a documentation comment.`,
+			`Error message from documentation.js is: Unknown content \'doc-name\'.`
+		));
 	});
 });
 

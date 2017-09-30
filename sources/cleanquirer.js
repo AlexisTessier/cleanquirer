@@ -6,13 +6,10 @@ const path = require('path');
 const isGlob = require('is-glob');
 const glob = require('glob');
 
+const msg = require('./msg');
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 class CleanquirerCommandImplementationError extends Error{}
-
-function msg(...strings) {
-	return strings.map(s => s.trim()).join(' ');
-}
 
 function cleanquirer({
 	name,
@@ -75,7 +72,28 @@ function cleanquirer({
 			}
 
 			if (isGlob(command)) {
-				glob.sync(command).forEach(globFileCommand => {
+				const commandFiles = glob.sync(command, {nodir: true});
+
+				assert(commandFiles.length > 0, msg(
+					`The provided glob "${command}"`,
+					`at index index ${i} matches no files.`
+				));
+
+				commandFiles.forEach(globFileCommand => {
+					const extname = path.extname(globFileCommand);
+
+					assert(extname.length > 0, msg(
+						`The provided glob "${command}"`,
+						`at index index ${i} matches a file without extension ("${globFileCommand}").`,
+						`A valid command module file must be a javascript file (.js).`
+					));
+
+					assert(extname === '.js', msg(
+						`The provided glob "${command}"`,
+						`at index index ${i} matches a ${extname} file ("${globFileCommand}").`,
+						`A valid command module file must be a javascript file (.js).`
+					));
+
 					deduceFromFileAndAdd(globFileCommand);
 				});
 			}
