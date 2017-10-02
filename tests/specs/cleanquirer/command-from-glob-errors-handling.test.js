@@ -5,6 +5,8 @@ const test = require('ava');
 const requireFromIndex = require('../../utils/require-from-index');
 const pathFromIndex = require('../../utils/path-from-index');
 
+const mockCommandFile = require('../../mocks/mock-command-file');
+
 const msg = requireFromIndex('sources/msg');
 
 /*---------------------------*/
@@ -204,13 +206,111 @@ test('Command definition from glob matching no js files', t => {
 	));
 });
 
-test.todo('Command definition from glob synchronously throwing error');
-test.todo('Command definition from glob synchronously callback without error');
-test.todo('Command definition from glob synchronously callback with error');
-test.todo('Command definition from glob internally using both callback and promise');
-test.todo('Command definition from glob internally using both callback and promise and calling the callback');
-test.todo('Command definition from glob internally using both callback and promise and calling the callback asynchronously');
-test.todo('Command definition from glob asynchronously calling the callback with an error');
+/*------------------------------*/
+/*------------------------------*/
+/*------------------------------*/
+
+async function handlingAsyncErrorMacro(t, {
+	command,
+	errorType,
+	errorMessage
+}) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(4);
+
+	const actionFunction = requireFromIndex(`tests/mocks/mock-commands/from-glob/${command}/command`);
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			pathFromIndex(`tests/mocks/mock-commands/from-glob/${command}/*`)
+		]
+	});
+
+	t.is(actionFunction.callCount, 0);
+
+	try{
+		await myCli(['command']);
+		t.fail();
+	}
+	catch(err){
+		t.is(actionFunction.callCount, 1);
+		t.is(err.constructor.name, errorType);
+		t.is(err.message, errorMessage);
+	}
+}
+
+/*------------------------------*/
+
+test('Command definition from glob synchronously throwing error', handlingAsyncErrorMacro, {
+	command: 'synchronously-throwing-error',
+	errorType: 'Error',
+	errorMessage: 'Error happen when using the mycli command "command" : throwing-error-command-error'
+});
+
+test('Command definition from glob synchronously callback without error', handlingAsyncErrorMacro, {
+	command: 'callback-synchronously-called-without-error',
+	errorType: 'CleanquirerCommandImplementationError',
+	errorMessage: msg(
+		'The mycli command "command" you are trying to use',
+		'calls internally a callback in a synchronous way.',
+		'This is not permitted by cleanquirer. If the command is synchronous,',
+		'it shouldn\'t use neither callback or promise.'
+	)
+});
+
+test('Command definition from glob synchronously callback with error', handlingAsyncErrorMacro, {
+	command: 'callback-synchronously-called-with-error',
+	errorType: 'CleanquirerCommandImplementationError',
+	errorMessage: msg(
+		'The mycli command "command" you are trying to use',
+		'calls internally a callback in a synchronous way.',
+		'This is not permitted by cleanquirer. If the command is synchronous,',
+		'it shouldn\'t use neither callback or promise.'
+	)
+});
+
+test('Command definition from glob internally using both callback and promise', handlingAsyncErrorMacro, {
+	command: 'using-both-callback-and-promise',
+	errorType: 'CleanquirerCommandImplementationError',
+	errorMessage: msg(
+		'The mycli command "command" you are trying to use both uses internally',
+		'a callback and returns a promise. This is not permitted by cleanquirer.',
+		'If the command is asynchronous, it must use callback or promise but not both.'
+	)
+});
+
+
+test('Command definition from glob internally using both callback and promise and calling the callback', handlingAsyncErrorMacro, {
+	command: 'using-both-callback-and-promise-and-calling-the-callback',
+	errorType: 'CleanquirerCommandImplementationError',
+	errorMessage: msg(
+		'The mycli command "command" you are trying to use calls internally a callback in a synchronous way.',
+		'This is not permitted by cleanquirer. If the command is synchronous,',
+		'it shouldn\'t use neither callback or promise.'
+	)
+});
+
+test('Command definition from glob internally using both callback and promise and calling the callback asynchronously', handlingAsyncErrorMacro, {
+	command: 'using-both-callback-and-promise-and-calling-the-callback-asynchronously',
+	errorType: 'CleanquirerCommandImplementationError',
+	errorMessage: msg(
+		'The mycli command "command" you are trying to use',
+		'both uses internally a callback and returns a promise.',
+		'This is not permitted by cleanquirer. If the command is asynchronous,',
+		'it must use callback or promise but not both.'
+	)
+});
+
+test('Command definition from glob asynchronously calling the callback with an error', handlingAsyncErrorMacro, {
+	command: 'asynchronously-calling-callback-with-error',
+	errorType: 'Error',
+	errorMessage: msg(
+		'mycli command error: asynchronous-callback-call-with-error-command-error'
+	)
+});
+
 test.todo('Command definition from glob returning rejecting promise');
 
 test.todo('undefined command handling');

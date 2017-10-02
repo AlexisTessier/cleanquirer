@@ -2,7 +2,9 @@
 
 const test = require('ava');
 
+const pathFromIndex = require('../../utils/path-from-index');
 const requireFromIndex = require('../../utils/require-from-index');
+
 const mockCommandFile = require('../../mocks/mock-command-file');
 const mockFunction = require('../../mocks/mock-function');
 
@@ -144,8 +146,155 @@ test('Use commands from files and objects multiple times', async t => {
 	t.is(actionFromFileTwo.callCount, 2);
 });
 
-test.todo('Multiple commands definition from files and globs');
-test.todo('Use commands from files and globs multiple times');
+test('Multiple commands definition from files and globs', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionPathFromFileOne = await mockCommandFile('doc.js');
+	const actionFromFileOne = require(actionPathFromFileOne);
+	const actionPathFromFileTwo = await mockCommandFile('no-doc.js');
+	const actionFromFileTwo = require(actionPathFromFileTwo);
+
+	const actionGlob = pathFromIndex('tests/mocks/mock-commands/from-glob-mixed-usage/files-and-globs/simple/*')
+	const actionFromGlobOne = require(actionGlob.replace('*', 'command'));
+	const actionFromGlobTwo = require(actionGlob.replace('*', 'command-2'));
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			actionPathFromFileOne,
+			actionPathFromFileTwo,
+			actionGlob
+		]
+	});
+
+	t.is(actionFromFileOne.callCount, 0);
+	t.is(actionFromGlobOne.callCount, 0);
+	t.is(actionFromFileTwo.callCount, 0);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['doc-name']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 0);
+	t.is(actionFromFileTwo.callCount, 0);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['command']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 0);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['no-doc']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 1);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['doc-command-2']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 1);
+	t.is(actionFromGlobTwo.callCount, 1);
+});
+
+test('Use commands from files and globs multiple times', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionPathFromFileOne = await mockCommandFile('doc.js');
+	const actionFromFileOne = require(actionPathFromFileOne);
+	const actionPathFromFileTwo = await mockCommandFile('no-doc.js');
+	const actionFromFileTwo = require(actionPathFromFileTwo);
+
+	const actionGlob = pathFromIndex('tests/mocks/mock-commands/from-glob-mixed-usage/files-and-globs/multiple/*')
+	const actionFromGlobOne = require(actionGlob.replace('*', 'command'));
+	const actionFromGlobTwo = require(actionGlob.replace('*', 'command-2'));
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			actionPathFromFileOne,
+			actionPathFromFileTwo,
+			actionGlob
+		]
+	});
+
+	t.is(actionFromFileOne.callCount, 0);
+	t.is(actionFromGlobOne.callCount, 0);
+	t.is(actionFromFileTwo.callCount, 0);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['doc-name']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 0);
+	t.is(actionFromFileTwo.callCount, 0);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['command']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 0);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['no-doc']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 1);
+	t.is(actionFromGlobTwo.callCount, 0);
+
+	await myCli(['doc-command-2']);
+	t.is(actionFromFileOne.callCount, 1);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 1);
+	t.is(actionFromGlobTwo.callCount, 1);
+
+	await myCli(['doc-name']);
+	t.is(actionFromFileOne.callCount, 2);
+	t.is(actionFromGlobOne.callCount, 1);
+	t.is(actionFromFileTwo.callCount, 1);
+	t.is(actionFromGlobTwo.callCount, 1);
+
+	await myCli(['command']);
+	t.is(actionFromFileOne.callCount, 2);
+	t.is(actionFromGlobOne.callCount, 2);
+	t.is(actionFromFileTwo.callCount, 1);
+	t.is(actionFromGlobTwo.callCount, 1);
+
+	await myCli(['no-doc']);
+	t.is(actionFromFileOne.callCount, 2);
+	t.is(actionFromGlobOne.callCount, 2);
+	t.is(actionFromFileTwo.callCount, 2);
+	t.is(actionFromGlobTwo.callCount, 1);
+
+	await myCli(['doc-command-2']);
+	t.is(actionFromFileOne.callCount, 2);
+	t.is(actionFromGlobOne.callCount, 2);
+	t.is(actionFromFileTwo.callCount, 2);
+	t.is(actionFromGlobTwo.callCount, 2);
+
+	await myCli(['doc-name']);
+	t.is(actionFromFileOne.callCount, 3);
+	t.is(actionFromGlobOne.callCount, 2);
+	t.is(actionFromFileTwo.callCount, 2);
+	t.is(actionFromGlobTwo.callCount, 2);
+
+	await myCli(['command']);
+	t.is(actionFromFileOne.callCount, 3);
+	t.is(actionFromGlobOne.callCount, 3);
+	t.is(actionFromFileTwo.callCount, 2);
+	t.is(actionFromGlobTwo.callCount, 2);
+
+	await myCli(['no-doc']);
+	t.is(actionFromFileOne.callCount, 3);
+	t.is(actionFromGlobOne.callCount, 3);
+	t.is(actionFromFileTwo.callCount, 3);
+	t.is(actionFromGlobTwo.callCount, 2);
+
+	await myCli(['doc-command-2']);
+	t.is(actionFromFileOne.callCount, 3);
+	t.is(actionFromGlobOne.callCount, 3);
+	t.is(actionFromFileTwo.callCount, 3);
+	t.is(actionFromGlobTwo.callCount, 3);
+});
 
 test.todo('Multiple commands definition from files, globs and objects');
 test.todo('Use commands from files, globs and objects multiple times');

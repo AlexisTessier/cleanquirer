@@ -111,6 +111,7 @@
     "fs-extra": "4.0.2",
     "glob": "7.1.2",
     "is-glob": "4.0.0",
+    "is-stream": "1.1.0",
     "line-column": "1.0.2",
     "p-memoize": "1.0.0",
     "temp-write": "3.3.0"

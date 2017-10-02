@@ -53,14 +53,9 @@ test('Command from glob > errors handling', featureHasTestFileMacro, 'command-fr
 
 test('Mixed usages and commands execution order', featureHasTestFileMacro, 'mixed-usages-and-commands-execution-order');
 
-/*---------------------------*/
+test('Provide stout and stderr', featureHasTestFileMacro, 'stdout-and-stderr');
 
-test.todo('stdout');
-test.todo('stderr');
-test.todo('default stdout handling');
-test.todo('default stderr handling');
-test.todo('custom stdout handling');
-test.todo('custom stderr handling');
+/*---------------------------*/
 
 test.todo('version option');
 test.todo('default version option');

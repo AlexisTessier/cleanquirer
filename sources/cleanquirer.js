@@ -197,9 +197,14 @@ function cleanquirer({
 
 		const action = actions[command].action;
 		let actionResult = null;
+		const actionOptions = {
+			stdout: process.stdout,
+			stderr: process.stderr,
+			stdin: process.stdin
+		};
 		
 		try{
-			actionResult = action({}, done);
+			actionResult = action(actionOptions, done);
 		}
 		catch(err){
 			if (err instanceof CleanquirerCommandImplementationError) {
