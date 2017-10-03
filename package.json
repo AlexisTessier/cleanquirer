@@ -72,17 +72,17 @@
     "ava": "0.22.0",
     "capitalize": "1.0.0",
     "concurrently": "3.5.0",
-    "coveralls": "2.13.1",
+    "coveralls": "3.0.0",
     "dashify": "0.2.2",
     "dependency-check": "2.9.1",
-    "eslint": "4.7.2",
+    "eslint": "4.8.0",
     "git-repo-info": "1.4.1",
     "github-markdown-css": "2.8.0",
     "jsonfile": "4.0.0",
     "marked": "0.3.6",
     "mkdirp": "0.5.1",
     "mustache": "2.3.0",
-    "npm-watch": "0.2.0",
+    "npm-watch": "0.3.0",
     "nyc": "11.2.1",
     "oss-license-name-to-url": "1.2.1",
     "read-yaml": "1.1.0",
@@ -97,7 +97,7 @@
       "tests/utils/**/*.js",
       "tests/**/*.macro.js"
     ],
-    "timeout": 12000
+    "timeout": 20000
   },
   "nyc": {
     "exclude": [

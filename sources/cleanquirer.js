@@ -46,11 +46,14 @@ function cleanquirer({
 			`at index ${index} has no name.`
 		));
 
-		assert(typeof actions[commandObject.name] === 'undefined', msg(
-			`"${name}" define a duplicate command "${commandObject.name}"`,
-			`in commands Array parameter at indexes`,
-			`${duplicateCommandDetectionAddActionCache[commandObject.name]} and ${index}.`
-		));
+		if (typeof actions[commandObject.name] !== 'undefined') {
+			const sortedIndex = [index, duplicateCommandDetectionAddActionCache[commandObject.name]].sort();
+			throw new Error(msg(
+				`"${name}" define a duplicate command "${commandObject.name}"`,
+				`in commands Array parameter at indexes`,
+				`${sortedIndex[0]} and ${sortedIndex[1]}.`
+			));
+		}
 
 		duplicateCommandDetectionAddActionCache[commandObject.name] = index;
 		actions[commandObject.name] = commandObject;
@@ -58,6 +61,7 @@ function cleanquirer({
 
 	const actionsFromFile = [];
 	const duplicateCommandFilepathDetectionCache = {};
+	const duplicateCommandGlobDetectionCache = {};
 	commands.forEach((command, i) => {
 		assert(command && typeof command === 'object' || typeof command === 'string', msg(
 			`The provided ${name} command path "${command}"`,
@@ -65,13 +69,27 @@ function cleanquirer({
 		));
 
 		if (typeof command === 'string') {
-			function deduceFromFileAndAdd(commandFilepath){
+			function deduceFromFileAndAdd(commandFilepath, fromGlobIndexSuffix = ''){
 				actionsFromFile.push(deduceCommandObjectFromFile(commandFilepath).then(commandObject => {
-					addAction(commandObject, `${i} (${commandFilepath})`);
+					addAction(commandObject, `${i} (${commandFilepath})${fromGlobIndexSuffix}`);
 				}));
 			}
 
 			if (isGlob(command)) {
+				assert(path.isAbsolute(command), msg(
+					`The provided ${name} glob "${command}"`,
+					`at index ${i} is not absolute.`
+				));
+
+				assert(!Object.keys(duplicateCommandGlobDetectionCache).includes(command), msg(
+					`"${name}" use a duplicate glob "${command}"`,
+					`in commands Array parameter at indexes`,
+					`${duplicateCommandGlobDetectionCache[command]} and ${i}`,
+					`to define a command.`
+				));
+
+				duplicateCommandGlobDetectionCache[command] = i;
+
 				const commandFiles = glob.sync(command, {nodir: true});
 
 				assert(commandFiles.length > 0, msg(
@@ -94,7 +112,7 @@ function cleanquirer({
 						`A valid command module file must be a javascript file (.js).`
 					));
 
-					deduceFromFileAndAdd(globFileCommand);
+					deduceFromFileAndAdd(globFileCommand, ` from glob "${command}"`);
 				});
 			}
 			else{

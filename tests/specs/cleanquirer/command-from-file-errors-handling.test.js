@@ -817,15 +817,9 @@ test('duplicate command handling', async t => {
 		t.is(actionFunction.callCount, 0);
 		t.is(actionFunctionBis.callCount, 0);
 
-		if(
-			err.message === `"myclifromfiles" define a duplicate command "duplicate-command-name" in commands Array parameter at indexes 0 (${fullPath}) and 1 (${fullPathBis}).`
-			||
-			err.message === `"myclifromfiles" define a duplicate command "duplicate-command-name" in commands Array parameter at indexes 1 (${fullPathBis}) and 0 (${fullPath}).`
-		){
-			t.pass();
-		}
-		else{
-			t.fail();
-		}
+		t.is(err.message, msg(
+			`"myclifromfiles" define a duplicate command "duplicate-command-name"`,
+			`in commands Array parameter at indexes 0 (${fullPath}) and 1 (${fullPathBis}).`
+		));
 	}
 });

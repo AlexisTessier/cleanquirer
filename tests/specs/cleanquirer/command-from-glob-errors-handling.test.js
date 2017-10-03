@@ -311,8 +311,132 @@ test('Command definition from glob asynchronously calling the callback with an e
 	)
 });
 
-test.todo('Command definition from glob returning rejecting promise');
+test('Command definition from glob returning rejecting promise', handlingAsyncErrorMacro, {
+	command: 'returning-rejecting-error-promise',
+	errorType: 'Error',
+	errorMessage: msg(
+		'mycli command error: rejecting-promise-command-error'
+	)
+});
 
-test.todo('undefined command handling');
-test.todo('duplicate glob handling');
-test.todo('duplicate command handling');
+test('non absolute glob', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const notAbsoluteGlobError = t.throws(() => {
+		cleanquirer({
+			name: 'cli',
+			commands: [
+				'non/absolute/path/*'
+			]
+		});
+	});
+
+	t.is(notAbsoluteGlobError.message, 'The provided cli glob "non/absolute/path/*" at index 0 is not absolute.');
+});
+
+test('undefined command handling', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(2);
+
+	const myCli = cleanquirer({
+		name: 'cli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/one-match-doc/*.js')
+		]
+	});
+
+	try{
+		await myCli(['undefined-command']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, 'The command "undefined-command" is not a command of "cli".');
+	}
+	
+});
+
+test('duplicate glob handling', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/from-glob/one-match-doc/*.js');
+
+	const duplicateGlobError = t.throws(() => {
+		cleanquirer({
+			name: 'duplicate-glob-cli',
+			commands: [
+				fullPath,
+				pathFromIndex('tests/mocks/mock-commands/from-glob/one-match-empty-comment/*.js'),
+				fullPath
+			]
+		})
+	});
+
+	t.is(duplicateGlobError.message, msg(
+		`"duplicate-glob-cli" use a duplicate glob "${fullPath}"`,
+		`in commands Array parameter at indexes 0 and 2 to define a command.`
+	));
+});
+
+test('duplicate command handling', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(2);
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/duplicate-commands-from-files/*.js');
+
+	const myCli = cleanquirer({
+		name: 'duplicate-command-cli',
+		commands: [
+			fullPath,
+			pathFromIndex('tests/mocks/mock-commands/from-glob/one-match-doc/*.js')
+		]
+	});
+
+	try{
+		await myCli(['whatever']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`"duplicate-command-cli" define a duplicate command "duplicate-command-name"`,
+			`in commands Array parameter at indexes`,
+			`0 (${fullPath.replace('*', 'doc-duplication')}) from glob "${fullPath}" and`,
+			`0 (${fullPath.replace('*', 'doc')}) from glob "${fullPath}".`
+		));
+	}
+});
+
+test('duplicate command handling from two globs', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(2);
+
+	const fullPathOne = pathFromIndex('tests/mocks/mock-commands/from-glob/duplicate-glob-one/*.js');
+	const fullPathTwo = pathFromIndex('tests/mocks/mock-commands/from-glob/duplicate-glob-two/*.js');
+
+	const myCli = cleanquirer({
+		name: 'duplicate-command-cli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/one-match-no-doc/*.js'),
+			fullPathOne,
+			fullPathTwo
+		]
+	});
+
+	try{
+		await myCli(['whatever']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`"duplicate-command-cli" define a duplicate command "duplicate-command-name-from-two-glob"`,
+			`in commands Array parameter at indexes`,
+			`1 (${fullPathOne.replace('*', 'one-match-one')}) from glob "${fullPathOne}" and`,
+			`2 (${fullPathTwo.replace('*', 'one-match-two')}) from glob "${fullPathTwo}".`
+		));
+	}
+});

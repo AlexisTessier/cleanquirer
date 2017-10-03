@@ -131,10 +131,10 @@ test.cb('default stdin stream', t => {
 	myCli(['command-one']);
 });
 
-test.todo('custom stdout handling');
-test.todo('custom stderr handling');
-test.todo('custom stdin handling');
+test.todo('custom stdout stream');
+test.todo('custom stderr stream');
+test.todo('custom stdin stream');
 
-test.todo('unvalid custom stdout handling');
-test.todo('unvalid custom stdin handling');
-test.todo('unvalid custom stderr handling');
+test.todo('unvalid custom stdout stream');
+test.todo('unvalid custom stdin stream');
+test.todo('unvalid custom stderr stream');
