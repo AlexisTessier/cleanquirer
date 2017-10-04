@@ -103,7 +103,7 @@
               <h3 id='<%- slug(section.title) %>' class='fl m0'>
                 <%- section.title %>
               </h3>
-              <%= marked(section.content) %>
+              <%= markdownToHtml(section.content) %>
             </div>
           </section>
         <% }) %>

@@ -11,6 +11,8 @@ var fs = require('fs'),
   LinkerStack = require('documentation').util.LinkerStack,
   hljs = require('highlight.js');
 
+var markdownToHtml = require('../markdown-to-html');
+
 module.exports = function(
   comments /*: Array<Comment> */,
   config /*: DocumentationConfig */
@@ -28,7 +30,7 @@ module.exports = function(
 
   var sharedImports = {
     imports: {
-      marked: require('marked'),
+      markdownToHtml,
       slug(str) {
         var slugger = new GithubSlugger();
         return slugger.slug(str);

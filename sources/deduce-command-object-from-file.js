@@ -34,11 +34,11 @@ const parseFile = pMemoize(_parseFile);
 /*--------------*/
 
 function deduceCommandObjectFromFile(filepath) {
-	assert(typeof filepath === 'string' && path.isAbsolute(filepath), 
+	assert(typeof filepath === 'string' && path.isAbsolute(filepath),
 		`${filepath} is of type ${typeof filepath}. The filepath argument must be an absolute path.`
 	);
 
-	let resolvedFilepath = null; 
+	let resolvedFilepath = null;
 	try{
 		resolvedFilepath = require.resolve(filepath);
 	}
@@ -63,7 +63,7 @@ function deduceCommandObjectFromFile(filepath) {
 	}
 
 	let action = null;
-	
+
 	try{
 		action = require(filepath);
 	}
@@ -71,13 +71,11 @@ function deduceCommandObjectFromFile(filepath) {
 		err.message = `Error with the file at path "${filepath}": ${err.message}`;
 		throw err;
 	}
-	
 
 	assert(typeof action === 'function', msg(
 		`${filepath} exports ${action === null ? 'null' : typeof action}.`,
 		`A valid command module file must export a function.`
 	));
-
 
 	//defaults
 	const commandObject = {

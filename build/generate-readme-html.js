@@ -3,7 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
-const marked = require('marked');
+
+const markdownToHtml = require('./markdown-to-html');
 
 const readme = fs.readFileSync(path.join(__dirname, '../README.md'), {
 	encoding: 'utf-8'
@@ -13,7 +14,7 @@ const githubMarkdownCSS = require.resolve('github-markdown-css');
 const githubCSS = 'github-markdown.css';
 const cssOutputPath = path.join(__dirname, '../documentation/', githubCSS);
 
-fs.writeFile(path.join(__dirname, '../documentation/readme.html'), template(marked(readme)), {
+fs.writeFile(path.join(__dirname, '../documentation/readme.html'), template(markdownToHtml(readme)), {
 	encoding: 'utf-8'
 });
 

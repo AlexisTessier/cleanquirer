@@ -40,7 +40,7 @@ function cleanquirer({
 			`at index ${index} must be an object.`,
 			`Currently, it's of type ${typeof commandObject}.`
 		));
-		
+
 		assert(typeof commandObject.name === 'string', msg(
 			`The provided ${name} command object`,
 			`at index ${index} has no name.`
@@ -160,7 +160,7 @@ function cleanquirer({
 		if (typeof cliCallback === 'function') {
 			cliPromise.catch(err => cliCallback(err));
 		}
-		
+
 		return cliPromise;
 	}
 
@@ -220,7 +220,7 @@ function cleanquirer({
 			stderr: process.stderr,
 			stdin: process.stdin
 		};
-		
+
 		try{
 			actionResult = action(actionOptions, done);
 		}
