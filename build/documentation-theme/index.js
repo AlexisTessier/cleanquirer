@@ -167,6 +167,5 @@ function markownify(entry) {
     return `##### ${entry.subtitle}`;
   }
 
-  console.log(Object.keys(entry))
   return '';
 }

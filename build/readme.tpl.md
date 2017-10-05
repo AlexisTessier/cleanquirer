@@ -10,7 +10,7 @@
 
 ![Branch : {{{currentBranch}}}](https://img.shields.io/badge/Branch-{{{currentBranch}}}-blue.svg)
 [![version](https://img.shields.io/badge/version-{{{version}}}-blue.svg)]({{{homepage}}})
-[![npm version](https://badge.fury.io/js/{{{name}}}.svg)](https://badge.fury.io/js/{{{furyName}}})
+[![npm version](https://badge.fury.io/js/{{{furyName}}}.svg)](https://badge.fury.io/js/{{{furyName}}})
 
 [![Build Status](https://travis-ci.org/{{{author.login.github}}}/{{{unscopedName}}}.svg?branch={{{currentBranch}}})](https://travis-ci.org/{{{author.login.github}}}/{{{unscopedName}}})
 [![Coverage Status](https://coveralls.io/repos/{{{author.login.github}}}/{{{unscopedName}}}/badge.svg?branch={{{currentBranch}}}&service=github)](https://coveralls.io/github/{{{author.login.github}}}/{{{unscopedName}}}?branch={{{currentBranch}}})

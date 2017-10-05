@@ -53,7 +53,7 @@ test('Command from glob > errors handling', featureHasTestFileMacro, 'command-fr
 
 test('Mixed usages and commands execution order', featureHasTestFileMacro, 'mixed-usages-and-commands-execution-order');
 
-test('Provide stout and stderr', featureHasTestFileMacro, 'stdout-and-stderr');
+test('Provide stdin, stout and stderr', featureHasTestFileMacro, 'stdin-stdout-stderr');
 
 /*---------------------------*/
 

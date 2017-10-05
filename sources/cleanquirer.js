@@ -46,6 +46,12 @@ function cleanquirer({
 			`at index ${index} has no name.`
 		));
 
+		assert(typeof commandObject.action === 'function', msg(
+			`The provided ${name} command object`,
+			`at index ${index} has no action defined.`,
+			`A valid action must be a function.`
+		));
+
 		if (typeof actions[commandObject.name] !== 'undefined') {
 			const sortedIndex = [index, duplicateCommandDetectionAddActionCache[commandObject.name]].sort();
 			throw new Error(msg(

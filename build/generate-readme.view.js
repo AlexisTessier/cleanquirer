@@ -17,7 +17,7 @@ const view = Object.assign({}, pkg, {
 	content: require('./documentation-introduction.js'),
 	currentBranch: git.branch,
 	licenseUrl: licenseUrl(pkg.license),
-	furyName: pkg.name.replace(/\//g, '%2F'),
+	furyName: pkg.name.replace(/\//g, '%2F').replace(/@/g, '%40'),
 	unscopedName: pkg.name.indexOf('/') < 0 ? pkg.name : pkg.name.split('/')[1]
 });
 
