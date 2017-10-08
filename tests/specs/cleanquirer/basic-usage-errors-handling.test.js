@@ -240,6 +240,29 @@ test(noNameParameterMacro, {name: []});
 
 /*---------------------------*/
 
+test('Error when defining command using an actionless command object', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const emptyCommandObjectError = t.throws(() => {
+		cleanquirer({
+			name: 'cli-test',
+			commands: [
+				{
+					name: 'actionless-command',
+					action(){}
+				},
+				{
+					name: 'actionless-command'
+				}
+			]
+		})
+	});
+
+	t.is(emptyCommandObjectError.message, `The provided cli-test command object at index 1 has no action defined. A valid action must be a function.`);
+});
+
+/*---------------------------*/
+
 test(wrongCliInputMacro);
 test(wrongCliInputMacro, undefined);
 test(wrongCliInputMacro, {});
@@ -469,25 +492,4 @@ test('duplicate command handling', t => {
 	});
 
 	t.is(duplicateCommandError.message, `"myclibis" define a duplicate command "command-one" in commands Array parameter at indexes 0 and 1.`);
-});
-
-test('Error when defining command using an actionless command object', t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const emptyCommandObjectError = t.throws(() => {
-		cleanquirer({
-			name: 'cli-test',
-			commands: [
-				{
-					name: 'actionless-command',
-					action(){}
-				},
-				{
-					name: 'actionless-command'
-				}
-			]
-		})
-	});
-
-	t.is(emptyCommandObjectError.message, `The provided cli-test command object at index 1 has no action defined. A valid action must be a function.`);
 });

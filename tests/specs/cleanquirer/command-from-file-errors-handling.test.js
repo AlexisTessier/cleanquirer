@@ -406,7 +406,7 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingT
 		t.fail();
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
-		t.truthy(err);
+		t.true(err instanceof Error);
 		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
@@ -414,14 +414,23 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingT
 });
 
 test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	t.plan(4);
+	t.plan(6);
+
+	let callbackYetCalled = false;
 
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-asynchronously-command'], err => {
-		t.is(actionFunction.callCount, 1);
-		t.truthy(err);
-		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
-		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
-		t.end();
+		if (!callbackYetCalled) {
+			t.is(actionFunction.callCount, 1);
+			t.true(err instanceof Error);
+			t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+			t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+			callbackYetCalled = true;
+		}
+		else {
+			t.is(actionFunction.callCount, 1);
+			t.is(err, undefined);
+			t.end();
+		}
 	});
 });
 

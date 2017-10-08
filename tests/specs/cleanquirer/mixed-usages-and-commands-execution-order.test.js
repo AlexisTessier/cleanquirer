@@ -758,7 +758,19 @@ test('Check the execution order of multiple commands defined from objects', t =>
 	t.true(actionOne.calledAfter(actionBis));
 	t.true(actionBis.calledAfter(actionTwo));
 });
-test.todo('Check the execution order of multiple commands defined from files');
+
+test.skip('Check the execution order of multiple commands defined from files', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionPathFromTinyFile = await mockCommandFile('doc.js');
+	const actionFromTinyFile = require(actionPathFromTinyFile);
+
+	// const actionPathFromBigFile = await mockCommandFile('big-file.js');
+	// const actionFromBigFile = require(actionPathFromBigFile);
+
+	// const actionPathFromGiantFile = await mockCommandFile('giant-file.js');
+	// const actionFromGiantFile = require(actionPathFromGiantFile);
+});
 test.todo('Check the execution order of multiple commands defined from globs');
 
 test.todo('Check the execution order of multiple commands defined from files and objects');
