@@ -3,6 +3,7 @@
 const assert = require('assert');
 const path = require('path');
 
+const isStream = require('is-stream');
 const isGlob = require('is-glob');
 const glob = require('glob');
 
@@ -31,11 +32,23 @@ function cleanquirer({
 	name = name.trim();
 	assert(name.length > 0, unvalidNameError);
 
-	assert(options && typeof options === 'object' && !(options instanceof Array), msg(
+	assert(options && typeof options === 'object' && !(options instanceof Array),
 		`You must provide an object as options parameter for your cli tool.`
-	));
+	);
 
 	/*----------------*/
+
+	assert(options.stdin === undefined || isStream.readable(options.stdin),
+		`You must provide a readable stream as stdin option for your cli tool.`
+	);
+
+	assert(options.stdout === undefined || isStream.writable(options.stdout),
+		`You must provide a writable stream as stdout option for your cli tool.`
+	);
+
+	assert(options.stderr === undefined || isStream.writable(options.stderr),
+		`You must provide a writable stream as stderr option for your cli tool.`
+	);
 
 	const stdin = options.stdin || process.stdin;
 	const stdout = options.stdout || process.stdout;

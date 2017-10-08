@@ -2,10 +2,12 @@
 
 const test = require('ava');
 
-const stream = require('stream');
 const isStream = require('is-stream');
 
 const requireFromIndex = require('../../utils/require-from-index');
+
+const mockWritableStream = requireFromIndex('tests/mocks/mock-writable-stream');
+const mockReadableStream = requireFromIndex('tests/mocks/mock-readable-stream');
 
 test.cb('stdout is passed in the options object', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
@@ -136,9 +138,7 @@ test.cb('default stdin stream', t => {
 test.cb('custom stdout stream', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	const customStdOut = new stream.Writable({
-		write(chunk, encoding, next) { next() }
-	});
+	const customStdOut = mockWritableStream();
 
 	t.plan(1);
 
@@ -164,9 +164,7 @@ test.cb('custom stdout stream', t => {
 test.cb('custom stderr stream', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	const customStdErr = new stream.Writable({
-		write(chunk, encoding, next) { next() }
-	});
+	const customStdErr = mockWritableStream();
 
 	t.plan(1);
 
@@ -192,9 +190,7 @@ test.cb('custom stderr stream', t => {
 test.cb('custom stdin stream', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	const customStdIn = new stream.Readable({
-		read() {}
-	});
+	const customStdIn = mockReadableStream();
 
 	t.plan(1);
 
@@ -217,6 +213,104 @@ test.cb('custom stdin stream', t => {
 	myCli(['command']);
 });
 
-test.todo('unvalid custom stdout stream');
-test.todo('unvalid custom stdin stream');
-test.todo('unvalid custom stderr stream');
+/*---------------------*/
+
+function unvalidCustomStdoutStreamMacro(t, unvalidStdout) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const unvalidStdoutError = t.throws(() => {
+		cleanquirer({
+			name: 'cli',
+			options: {
+				stdout: unvalidStdout
+			}
+		});
+	});
+
+	t.is(unvalidStdoutError.message, `You must provide a writable stream as stdout option for your cli tool.`);
+}
+
+unvalidCustomStdoutStreamMacro.title = (providedTitle, unvalidStream) => (
+	`${providedTitle} - an unvalidStdout stream should throw an error with (${typeof unvalidStream}) - ${JSON.stringify(unvalidStream)}`)
+
+test('not writable stream', unvalidCustomStdoutStreamMacro, mockReadableStream());
+test('Array', unvalidCustomStdoutStreamMacro, []);
+test(unvalidCustomStdoutStreamMacro, {});
+test(unvalidCustomStdoutStreamMacro, function(){return;});
+test(unvalidCustomStdoutStreamMacro, '');
+test(unvalidCustomStdoutStreamMacro, '	 ');
+test(unvalidCustomStdoutStreamMacro, 'string');
+test(unvalidCustomStdoutStreamMacro, 42);
+test(unvalidCustomStdoutStreamMacro, /regex/);
+test(unvalidCustomStdoutStreamMacro, true);
+test(unvalidCustomStdoutStreamMacro, false);
+test(unvalidCustomStdoutStreamMacro, 0);
+test(unvalidCustomStdoutStreamMacro, null);
+
+/*---------------------*/
+
+function unvalidCustomStdinStreamMacro(t, unvalidStdin) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const unvalidStdinError = t.throws(() => {
+		cleanquirer({
+			name: 'cli',
+			options: {
+				stdin: unvalidStdin
+			}
+		});
+	});
+
+	t.is(unvalidStdinError.message, `You must provide a readable stream as stdin option for your cli tool.`);
+}
+
+unvalidCustomStdinStreamMacro.title = (providedTitle, unvalidStream) => (
+	`${providedTitle} - an unvalidStdin stream should throw an error with (${typeof unvalidStream}) - ${JSON.stringify(unvalidStream)}`)
+
+test('not readable stream', unvalidCustomStdinStreamMacro, mockWritableStream());
+test('Array', unvalidCustomStdinStreamMacro, []);
+test(unvalidCustomStdinStreamMacro, {});
+test(unvalidCustomStdinStreamMacro, function(){return;});
+test(unvalidCustomStdinStreamMacro, '');
+test(unvalidCustomStdinStreamMacro, '	 ');
+test(unvalidCustomStdinStreamMacro, 'string');
+test(unvalidCustomStdinStreamMacro, 42);
+test(unvalidCustomStdinStreamMacro, /regex/);
+test(unvalidCustomStdinStreamMacro, true);
+test(unvalidCustomStdinStreamMacro, false);
+test(unvalidCustomStdinStreamMacro, 0);
+test(unvalidCustomStdinStreamMacro, null);
+
+/*---------------------*/
+
+function unvalidCustomStderrStreamMacro(t, unvalidStderr) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const unvalidStderrError = t.throws(() => {
+		cleanquirer({
+			name: 'cli',
+			options: {
+				stderr: unvalidStderr
+			}
+		});
+	});
+
+	t.is(unvalidStderrError.message, `You must provide a writable stream as stderr option for your cli tool.`);
+}
+
+unvalidCustomStderrStreamMacro.title = (providedTitle, unvalidStream) => (
+	`${providedTitle} - an unvalidStderr stream should throw an error with (${typeof unvalidStream}) - ${JSON.stringify(unvalidStream)}`)
+
+test('not writable stream', unvalidCustomStderrStreamMacro, mockReadableStream());
+test('Array', unvalidCustomStderrStreamMacro, []);
+test(unvalidCustomStderrStreamMacro, {});
+test(unvalidCustomStderrStreamMacro, function(){return;});
+test(unvalidCustomStderrStreamMacro, '');
+test(unvalidCustomStderrStreamMacro, '	 ');
+test(unvalidCustomStderrStreamMacro, 'string');
+test(unvalidCustomStderrStreamMacro, 42);
+test(unvalidCustomStderrStreamMacro, /regex/);
+test(unvalidCustomStderrStreamMacro, true);
+test(unvalidCustomStderrStreamMacro, false);
+test(unvalidCustomStderrStreamMacro, 0);
+test(unvalidCustomStderrStreamMacro, null);
