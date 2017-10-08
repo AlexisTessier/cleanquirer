@@ -734,7 +734,7 @@ test('Check the execution order of multiple commands defined from objects', t =>
 
 	const actionOne = mockFunction();
 	const actionTwo = mockFunction();
-	const actionBis = mockFunction();
+	const actionThree = mockFunction();
 
 	const myCli = cleanquirer({
 		name: 'cli-test',
@@ -748,30 +748,30 @@ test('Check the execution order of multiple commands defined from objects', t =>
 				action: actionTwo
 			},
 			{
-				name: 'command-bis',
-				action: actionBis
+				name: 'command-three',
+				action: actionThree
 			}
 		]
 	});
 
 	myCli(['command-two']);
-	myCli(['command-bis']);
+	myCli(['command-three']);
 	myCli(['command-one']);
 
-	t.true(actionOne.calledAfter(actionBis));
-	t.true(actionBis.calledAfter(actionTwo));
+	t.true(actionOne.calledAfter(actionThree));
+	t.true(actionThree.calledAfter(actionTwo));
 });
 
 test('Check the execution order of multiple commands defined from files', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-	const actionPathFromTinyFile = await mockCommandFile('normal-size-file.js');
+	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files/simple/normal-size-file.js');
 	const actionFromTinyFile = require(actionPathFromTinyFile);
 
-	const actionPathFromBigFile = await mockCommandFile('big-file.js');
+	const actionPathFromBigFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files/simple/big-file.js');
 	const actionFromBigFile = require(actionPathFromBigFile);
 
-	const actionPathFromGiantFile = await mockCommandFile('giant-file.js');
+	const actionPathFromGiantFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files/simple/giant-file.js');
 	const actionFromGiantFile = require(actionPathFromGiantFile);
 
 	const myCli = cleanquirer({
@@ -800,9 +800,113 @@ test('Check the execution order of multiple commands defined from files', async 
 	t.true(tinyFileCallIndex > bigFileCallIndex);
 	t.true(bigFileCallIndex > giantFileCallIndex);
 });
-test.todo('Check the execution order of multiple commands defined from globs');
 
-test.todo('Check the execution order of multiple commands defined from files and objects');
+test('Check the execution order of multiple commands defined from globs', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const glob = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-glob/simple/*.js');
+
+	const actionPathFromTinyFile = glob.replace('*', 'normal-size-file');
+	const actionFromTinyFile = require(actionPathFromTinyFile);
+
+	const actionPathFromBigFile = glob.replace('*', 'big-file');
+	const actionFromBigFile = require(actionPathFromBigFile);
+
+	const actionPathFromGiantFile = glob.replace('*', 'giant-file');
+	const actionFromGiantFile = require(actionPathFromGiantFile);
+
+	const myCli = cleanquirer({
+		name: 'cli',
+		commands: [
+			glob
+		]
+	});
+
+	await Promise.all([
+		myCli(['giant-file']),
+		myCli(['big-file']),
+		myCli(['normal-size-file-command'])
+	]);
+
+	t.is(actionFromTinyFile.callIndexes.length, 1);
+	t.is(actionFromBigFile.callIndexes.length, 1);
+	t.is(actionFromGiantFile.callIndexes.length, 1);
+
+	const tinyFileCallIndex = actionFromTinyFile.callIndexes[0];
+	const bigFileCallIndex = actionFromBigFile.callIndexes[0];
+	const giantFileCallIndex = actionFromGiantFile.callIndexes[0];
+
+	t.true(tinyFileCallIndex > bigFileCallIndex);
+	t.true(bigFileCallIndex > giantFileCallIndex);
+});
+
+test('Check the execution order of multiple commands defined from files and objects', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-objects/simple/normal-size-file.js');
+	const actionFromTinyFile = require(actionPathFromTinyFile);
+
+	const actionPathFromBigFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-objects/simple/big-file.js');
+	const actionFromBigFile = require(actionPathFromBigFile);
+
+	const actionPathFromGiantFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-objects/simple/giant-file.js');
+	const actionFromGiantFile = require(actionPathFromGiantFile);
+
+	const actionFromObjectOne = mockFunction.usingCallIndexes();
+	const actionFromObjectTwo = mockFunction.usingCallIndexes();
+	const actionFromObjectThree = mockFunction.usingCallIndexes();
+
+	const myCli = cleanquirer({
+		name: 'cli',
+		commands: [
+			actionPathFromTinyFile,
+			{
+				name: 'command-one',
+				action: actionFromObjectOne
+			},
+			actionPathFromBigFile,
+			actionPathFromGiantFile,
+			{
+				name: 'command-three',
+				action: actionFromObjectThree
+			},
+			{
+				name: 'command-two',
+				action: actionFromObjectTwo
+			}
+		]
+	});
+
+	await Promise.all([
+		myCli(['command-one']),
+		myCli(['giant-file']),
+		myCli(['command-two']),
+		myCli(['big-file']),
+		myCli(['command-three']),
+		myCli(['normal-size-file-command'])
+	]);
+
+	t.is(actionFromObjectOne.callIndexes.length, 1);
+	t.is(actionFromObjectTwo.callIndexes.length, 1);
+	t.is(actionFromObjectThree.callIndexes.length, 1);
+	t.is(actionFromTinyFile.callIndexes.length, 1);
+	t.is(actionFromBigFile.callIndexes.length, 1);
+	t.is(actionFromGiantFile.callIndexes.length, 1);
+
+	const commandOneCallIndex = actionFromObjectOne.callIndexes[0];
+	const commandTwoCallIndex = actionFromObjectTwo.callIndexes[0];
+	const commandThreeCallIndex = actionFromObjectThree.callIndexes[0];
+	const tinyFileCallIndex = actionFromTinyFile.callIndexes[0];
+	const bigFileCallIndex = actionFromBigFile.callIndexes[0];
+	const giantFileCallIndex = actionFromGiantFile.callIndexes[0];
+
+	t.true(tinyFileCallIndex > commandThreeCallIndex);
+	t.true(commandThreeCallIndex > bigFileCallIndex);
+	t.true(bigFileCallIndex > commandTwoCallIndex);
+	t.true(commandTwoCallIndex > giantFileCallIndex);
+	t.true(giantFileCallIndex > commandOneCallIndex);
+});
+
 test.todo('Check the execution order of multiple commands defined from files and globs');
 test.todo('Check the execution order of multiple commands defined from files, globs and objects');
 test.todo('Check the execution order of multiple commands defined from globs and objects');

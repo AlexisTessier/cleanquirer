@@ -53,15 +53,18 @@ module.exports = cli;
  * -------
  * + name/action command object => DONE
  * + deduce commands from documented files => DONE
- * + multiple commands definition from globs => WIP
- * + multiple commands definition
- * + undefined command handling
- * + stdout
- * + stderr
- * + default stdout handling
- * + default stderr handling
- * + custom stdout handling
- * + custom stderr handling
+ * + multiple commands definition from globs => DONE
+ * + multiple commands definition => WIP
+ * + undefined command handling => WIP
+ * + stdout => DONE
+ * + stderr => DONE
+ * + stdin => DONE
+ * + default stdout handling => DONE
+ * + default stderr handling => DONE
+ * + default stdin handling => DONE
+ * + custom stdout handling => DONE
+ * + custom stderr handling => DONE
+ * + custom stdin handling => DONE
  * + version option
  * + default version option
  * + version command
