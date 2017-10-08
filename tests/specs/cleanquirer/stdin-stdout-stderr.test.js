@@ -1,6 +1,8 @@
 'use strict';
 
 const test = require('ava');
+
+const stream = require('stream');
 const isStream = require('is-stream');
 
 const requireFromIndex = require('../../utils/require-from-index');
@@ -80,7 +82,7 @@ test.cb('default stdout stream', t => {
 			action({
 				stdout
 			} = {}){
-				t.true(Object.is(stdout, process.stdout));
+				t.is(stdout, process.stdout);
 				t.end();
 			}
 		}]
@@ -101,7 +103,7 @@ test.cb('default stderr stream', t => {
 			action({
 				stderr
 			} = {}){
-				t.true(Object.is(stderr, process.stderr));
+				t.is(stderr, process.stderr);
 				t.end();
 			}
 		}]
@@ -122,7 +124,7 @@ test.cb('default stdin stream', t => {
 			action({
 				stdin
 			} = {}){
-				t.true(Object.is(stdin, process.stdin));
+				t.is(stdin, process.stdin);
 				t.end();
 			}
 		}]
@@ -131,9 +133,89 @@ test.cb('default stdin stream', t => {
 	myCli(['command-one']);
 });
 
-test.todo('custom stdout stream');
-test.todo('custom stderr stream');
-test.todo('custom stdin stream');
+test.cb('custom stdout stream', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const customStdOut = new stream.Writable({
+		write(chunk, encoding, next) { next() }
+	});
+
+	t.plan(1);
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		options: {
+			stdout: customStdOut
+		},
+		commands: [{
+			name: 'command',
+			action({
+				stdout
+			} = {}){
+				t.is(stdout, customStdOut);
+				t.end();
+			}
+		}]
+	});
+
+	myCli(['command']);
+});
+
+test.cb('custom stderr stream', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const customStdErr = new stream.Writable({
+		write(chunk, encoding, next) { next() }
+	});
+
+	t.plan(1);
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		options: {
+			stderr: customStdErr
+		},
+		commands: [{
+			name: 'command',
+			action({
+				stderr
+			} = {}){
+				t.is(stderr, customStdErr);
+				t.end();
+			}
+		}]
+	});
+
+	myCli(['command']);
+});
+
+test.cb('custom stdin stream', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const customStdIn = new stream.Readable({
+		read() {}
+	});
+
+	t.plan(1);
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		options: {
+			stdin: customStdIn
+		},
+		commands: [{
+			name: 'command',
+			action({
+				stdin
+			} = {}){
+				t.is(stdin, customStdIn);
+				t.end();
+			}
+		}]
+	});
+
+	myCli(['command']);
+});
 
 test.todo('unvalid custom stdout stream');
 test.todo('unvalid custom stdin stream');

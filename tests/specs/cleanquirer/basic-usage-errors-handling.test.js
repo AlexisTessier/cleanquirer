@@ -40,6 +40,24 @@ noNameParameterMacro.title = (providedTitle, data) => (
 
 /*---------------------------*/
 
+function unvalidOptionsParameterMacro(t, unvalidOptionsParameter) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const unvalidOptionsParameterError = t.throws(()=>{
+		cleanquirer({
+			name: 'cli',
+			options: unvalidOptionsParameter
+		});
+	});
+
+	t.is(unvalidOptionsParameterError.message, `You must provide an object as options parameter for your cli tool.`);
+}
+
+unvalidOptionsParameterMacro.title = (providedTitle, data) => (
+	`${providedTitle} - need an object as options parameter or throw an error with options object like ${JSON.stringify(data)}`);
+
+/*---------------------------*/
+
 function wrongCliInputMacro(t, wrongInput) {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -237,6 +255,15 @@ test(noNameParameterMacro, {name: true});
 test(noNameParameterMacro, {name: false});
 test(noNameParameterMacro, {name: {}});
 test(noNameParameterMacro, {name: []});
+
+/*---------------------------*/
+
+test(unvalidOptionsParameterMacro, null);
+test(unvalidOptionsParameterMacro, '');
+test(unvalidOptionsParameterMacro, []);
+test(unvalidOptionsParameterMacro, 42);
+test(unvalidOptionsParameterMacro, 'string');
+test(unvalidOptionsParameterMacro, function(){ return; });
 
 /*---------------------------*/
 

@@ -13,6 +13,7 @@ class CleanquirerCommandImplementationError extends Error{}
 
 function cleanquirer({
 	name,
+	options = {},
 	commands = []
 } = {}) {
 	const configType = typeof arguments[0];
@@ -29,6 +30,16 @@ function cleanquirer({
 	assert(typeof name === 'string', unvalidNameError);
 	name = name.trim();
 	assert(name.length > 0, unvalidNameError);
+
+	assert(options && typeof options === 'object' && !(options instanceof Array), msg(
+		`You must provide an object as options parameter for your cli tool.`
+	));
+
+	/*----------------*/
+
+	const stdin = options.stdin || process.stdin;
+	const stdout = options.stdout || process.stdout;
+	const stderr = options.stderr || process.stderr;
 
 	/*----------------*/
 
@@ -222,9 +233,9 @@ function cleanquirer({
 		const action = actions[command].action;
 		let actionResult = null;
 		const actionOptions = {
-			stdout: process.stdout,
-			stderr: process.stderr,
-			stdin: process.stdin
+			stdout,
+			stderr,
+			stdin
 		};
 
 		try{
