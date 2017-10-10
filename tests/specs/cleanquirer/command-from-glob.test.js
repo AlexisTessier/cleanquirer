@@ -354,3 +354,15 @@ test('Use commands from globs multiple times', async t => {
 	t.is(actionFunctionFromSubfolderBis.callCount, 3);
 	t.is(actionFunctionFromDeepSubfolder.callCount, 3);
 });
+
+test.todo('Action returning a value - synchronous usage');
+test.todo('Action returning a value - callback usage');
+test.todo('Action returning a value - promise usage');
+
+test.todo('Action with a callback called with a value - synchronous usage');
+test.todo('Action with a callback called with a value - callback usage');
+test.todo('Action with a callback called with a value - promise usage');
+
+test.todo('Action returning a Promise resolving a value - synchronous usage');
+test.todo('Action returning a Promise resolving a value - callback usage');
+test.todo('Action returning a Promise resolving a value - promise usage');

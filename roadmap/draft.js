@@ -65,9 +65,14 @@ module.exports = cli;
  * + custom stdout handling => DONE
  * + custom stderr handling => DONE
  * + custom stdin handling => DONE
- * + version option
- * + default version option
- * + version command
+ * + returning or resolving value from actions => TODO
+ * + version option => WIP
+ * + default version option => TODO
+ * + version command => TODO
+ * + override version command from object => TODO
+ * + override version command from file => TODO
+ * + override version command from glob => TODO
+ * + pass the cli object to actions => TODO
 
  * release
  * -------

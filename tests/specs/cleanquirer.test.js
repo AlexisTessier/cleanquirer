@@ -51,7 +51,8 @@ test('Command from file > errors handling', featureHasTestFileMacro, 'command-fr
 test('Command from glob', featureHasTestFileMacro, 'command-from-glob');
 test('Command from glob > errors handling', featureHasTestFileMacro, 'command-from-glob-errors-handling');
 
-test('Mixed usages and commands execution order', featureHasTestFileMacro, 'mixed-usages-and-commands-execution-order');
+test('Mixed usages', featureHasTestFileMacro, 'mixed-usages');
+test('Commands execution order', featureHasTestFileMacro, 'commands-execution-order');
 
 test('Provide stdin, stout and stderr', featureHasTestFileMacro, 'stdin-stdout-stderr');
 test('Provide a default version command', featureHasTestFileMacro, 'version-command');
