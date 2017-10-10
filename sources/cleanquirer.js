@@ -14,6 +14,7 @@ class CleanquirerCommandImplementationError extends Error{}
 
 function cleanquirer({
 	name,
+	version,
 	options = {},
 	commands = []
 } = {}) {
@@ -53,6 +54,19 @@ function cleanquirer({
 	const stdin = options.stdin || process.stdin;
 	const stdout = options.stdout || process.stdout;
 	const stderr = options.stderr || process.stderr;
+
+	/*----------------*/
+
+	const defaultCommands = [{
+		name: 'version',
+		action({
+			stdout
+		}){
+			stdout.write(`${name} version ${version}\n`);
+		}
+	}];
+
+	commands.push(...defaultCommands);
 
 	/*----------------*/
 
@@ -286,6 +300,8 @@ function cleanquirer({
 
 		return cliPromise;
 	}
+
+	cli.version = version;
 
 	return cli;
 }
