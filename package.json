@@ -1,7 +1,7 @@
 {
   "name": "cleanquirer",
   "version": "0.0.0",
-  "description": "Create a cli tool from a documented javascript API",
+  "description": "Create a cli tool from a documented javascript API 💻",
   "main": "index.js",
   "directories": {
     "test": "tests"

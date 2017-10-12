@@ -12,7 +12,7 @@
 [![Dependency Status](https://david-dm.org/AlexisTessier/cleanquirer.svg)](https://david-dm.org/AlexisTessier/cleanquirer)
 [![devDependency Status](https://david-dm.org/AlexisTessier/cleanquirer/dev-status.svg)](https://david-dm.org/AlexisTessier/cleanquirer#info=devDependencies)
 
-Create a cli tool from a documented javascript API
+Create a cli tool from a documented javascript API 💻
 
 -   [Introduction](#introduction)
 -   [Get started](#get-started)
