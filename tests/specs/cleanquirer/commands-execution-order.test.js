@@ -491,7 +491,101 @@ test('Check the execution order of multiple commands defined from globs and obje
 	t.true(giantFileGlobCallIndex > actionFromObjectOneCallIndex);
 });
 
-test.todo('Check the execution order of multiple commands defined from globs and objects with multiple uses of commands');
+test('Check the execution order of multiple commands defined from globs and objects with multiple uses of commands', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const glob = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-glob-and-objects/multiple/*.js');
+
+	const actionPathFromTinyFileGlob = glob.replace('*', 'normal-size-file');
+	const actionFromTinyFileGlob = require(actionPathFromTinyFileGlob);
+
+	const actionPathFromBigFileGlob = glob.replace('*', 'big-file');
+	const actionFromBigFileGlob = require(actionPathFromBigFileGlob);
+
+	const actionPathFromGiantFileGlob = glob.replace('*', 'giant-file');
+	const actionFromGiantFileGlob = require(actionPathFromGiantFileGlob);
+
+	const actionFromObjectOne = mockFunction.usingCallIndexes();
+	const actionFromObjectTwo = mockFunction.usingCallIndexes();
+	const actionFromObjectThree = mockFunction.usingCallIndexes();
+
+	const myCli = cleanquirer({
+		name: 'cli',
+		commands: [
+			glob,
+			{
+				name: 'command-one',
+				action: actionFromObjectOne
+			},
+			{
+				name: 'command-three',
+				action: actionFromObjectThree
+			},
+			{
+				name: 'command-two',
+				action: actionFromObjectTwo
+			}
+		]
+	});
+
+	await Promise.all([
+		myCli(['command-two']),
+		myCli(['big-file']),
+		myCli(['command-one']),
+		myCli(['giant-file']),
+		myCli(['command-three']),
+		myCli(['normal-size-file-command'])
+	]);
+
+	t.is(actionFromTinyFileGlob.callIndexes.length, 1);
+	t.is(actionFromBigFileGlob.callIndexes.length, 1);
+	t.is(actionFromGiantFileGlob.callIndexes.length, 1);
+	t.is(actionFromObjectOne.callIndexes.length, 1);
+	t.is(actionFromObjectTwo.callIndexes.length, 1);
+	t.is(actionFromObjectThree.callIndexes.length, 1);
+
+	let tinyFileGlobCallIndex = actionFromTinyFileGlob.callIndexes[0];
+	let bigFileGlobCallIndex = actionFromBigFileGlob.callIndexes[0];
+	let giantFileGlobCallIndex = actionFromGiantFileGlob.callIndexes[0];
+	let actionFromObjectOneCallIndex = actionFromObjectOne.callIndexes[0];
+	let actionFromObjectTwoCallIndex = actionFromObjectTwo.callIndexes[0];
+	let actionFromObjectThreeCallIndex = actionFromObjectThree.callIndexes[0];
+
+	t.true(tinyFileGlobCallIndex > actionFromObjectThreeCallIndex);
+	t.true(actionFromObjectThreeCallIndex > giantFileGlobCallIndex);
+	t.true(giantFileGlobCallIndex > actionFromObjectOneCallIndex);
+	t.true(actionFromObjectOneCallIndex > bigFileGlobCallIndex);
+	t.true(bigFileGlobCallIndex > actionFromObjectTwoCallIndex);
+
+	await Promise.all([
+		myCli(['giant-file']),
+		myCli(['normal-size-file-command']),
+		myCli(['command-two']),
+		myCli(['big-file']),
+		myCli(['command-one']),
+		myCli(['command-three'])
+	]);
+
+	t.is(actionFromTinyFileGlob.callIndexes.length, 2);
+	t.is(actionFromBigFileGlob.callIndexes.length, 2);
+	t.is(actionFromGiantFileGlob.callIndexes.length, 2);
+	t.is(actionFromObjectOne.callIndexes.length, 2);
+	t.is(actionFromObjectTwo.callIndexes.length, 2);
+	t.is(actionFromObjectThree.callIndexes.length, 2);
+
+	tinyFileGlobCallIndex = actionFromTinyFileGlob.callIndexes[1];
+	bigFileGlobCallIndex = actionFromBigFileGlob.callIndexes[1];
+	giantFileGlobCallIndex = actionFromGiantFileGlob.callIndexes[1];
+	actionFromObjectOneCallIndex = actionFromObjectOne.callIndexes[1];
+	actionFromObjectTwoCallIndex = actionFromObjectTwo.callIndexes[1];
+	actionFromObjectThreeCallIndex = actionFromObjectThree.callIndexes[1];
+
+	t.true(actionFromObjectThreeCallIndex > actionFromObjectOneCallIndex);
+	t.true(actionFromObjectOneCallIndex > bigFileGlobCallIndex);
+	t.true(bigFileGlobCallIndex > actionFromObjectTwoCallIndex);
+	t.true(actionFromObjectTwoCallIndex > tinyFileGlobCallIndex);
+	t.true(tinyFileGlobCallIndex > giantFileGlobCallIndex);
+});
 
 /*-------------------------------------------*/
 
