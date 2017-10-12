@@ -135,11 +135,28 @@ module.exports = cli;
 
  * release
  * -------
+ * + command can be a Promise resolving command object
  * + extends as Promise resolving command object
 
  * release
  * -------
+ * + command object with filepath
+
+ * release
+ * -------
+ * + command object with filepath and ignore comments option
+
+ * release
+ * -------
+ * + command object with filepath and ignore some data from comments option
+
+ * release
+ * -------
  * + cleanquirer cli tool to generate command objects files from documented files
+
+ * release
+ * -------
+ * + cleanquirer cli tool to generate a static cleanquirer config file from a cli function
 
  * release
  * -------
