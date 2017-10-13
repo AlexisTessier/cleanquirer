@@ -6,6 +6,8 @@ const requireFromIndex = require('../../utils/require-from-index');
 
 const mockFunction = require('../../mocks/mock-function');
 
+const msg = requireFromIndex('sources/msg');
+
 /*---------------------------*/
 
 function unvalidConfigMacro(t, unvalidConfig) {
@@ -16,7 +18,10 @@ function unvalidConfigMacro(t, unvalidConfig) {
 	});
 
 	if (unvalidConfig !== null) {
-		t.is(unvalidConfigError.message, `You must provide a valid configuration object to cleanquirer. ${typeof unvalidConfig} is not a valid type for a cleanquirer configuration.`);
+		t.is(unvalidConfigError.message, msg(
+			`You must provide a valid configuration object to cleanquirer.`,
+			`${typeof unvalidConfig} is not a valid type for a cleanquirer configuration.`
+		));
 	}
 }
 
@@ -69,7 +74,10 @@ function wrongCliInputMacro(t, wrongInput) {
 		myCli(wrongInput);
 	});
 
-	t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
+	t.is(wrongCliInputError.message, msg(
+		`When using mycli as a function, you must provide`,
+		`an input to it as an Array like one from process.argv.slice(2).`
+	));
 }
 
 wrongCliInputMacro.title = (providedTitle, input) => (
@@ -190,9 +198,11 @@ function errorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObject
 		core(t, myCli);
 	});
 
-	t.is(useCallbackInSynchronousWayError.message, 
-		`The mycli command "callback" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`
-	);
+	t.is(useCallbackInSynchronousWayError.message, msg(
+		`The mycli command "callback" you are trying to use calls internally`,
+		`a callback in a synchronous way. This is not permitted by cleanquirer.`,
+		`If the command is synchronous, it shouldn't use neither callback or promise.`
+	));
 	t.is(useCallbackInSynchronousWayError.constructor.name, 'CleanquirerCommandImplementationError');
 }
 
@@ -222,8 +232,11 @@ function errorUsingBothCallbackAndPromiseCommandForSynchronousOperationFromSimpl
 		core(t, myCli);
 	});
 
-	t.is(useCallbackAndPromiseError.message, 
-		`The myclii command "callback-promise" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+	t.is(useCallbackAndPromiseError.message, msg(
+		`The myclii command "callback-promise" you are trying to use both uses`,
+		`internally a callback and returns a promise. This is not permitted by cleanquirer.`,
+		`If the command is asynchronous, it must use callback or promise but not both.`
+	));
 	t.is(useCallbackAndPromiseError.constructor.name, 'CleanquirerCommandImplementationError');
 }
 
@@ -285,7 +298,10 @@ test('Error when defining command using an actionless command object', t => {
 		})
 	});
 
-	t.is(emptyCommandObjectError.message, `The provided cli-test command object at index 1 has no action defined. A valid action must be a function.`);
+	t.is(emptyCommandObjectError.message, msg(
+		`The provided cli-test command object at index 1`,
+		`has no action defined. A valid action must be a function.`
+	));
 });
 
 /*---------------------------*/
@@ -518,9 +534,95 @@ test('duplicate command handling', t => {
 		});
 	});
 
-	t.is(duplicateCommandError.message, `"myclibis" define a duplicate command "command-one" in commands Array parameter at indexes 0 and 1.`);
+	t.is(duplicateCommandError.message, msg(
+		`"myclibis" define a duplicate command "command-one"`,
+		`in commands Array parameter at indexes 0 and 1.`
+	));
 });
 
-test.todo('Action with a callback called with more than one value - Synchronous usage');
-test.todo('Action with a callback called with more than one value - Callback usage');
-test.todo('Action with a callback called with more than one value - Promise usage');
+/*---------------------------*/
+
+function callbackCalledWithMoreThanOneValueMacro(t, excedentValues, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-multiple-callback',
+		commands: [
+			{
+				name: 'callback-called-with-multiple-values',
+				action(options, callback) {
+					setTimeout(() => {
+						callback(null, 'value-one', ...excedentValues);
+					}, 20);
+				}
+			}
+		]
+	});
+
+	core(t, myCli);
+}
+
+callbackCalledWithMoreThanOneValueMacro.title = providedTitle => (
+	`Action with a callback called with more than one value - ${providedTitle}`);
+
+test.cb('Synchronous usage', callbackCalledWithMoreThanOneValueMacro, ['value-two'], async (t, myCli) => {
+	t.plan(3)
+
+	try{
+		await myCli(['callback-called-with-multiple-values']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		t.is(err.message, msg(
+			`The cli-multiple-callback command "callback-called-with-multiple-values"`,
+			`you are trying to use calls internally a callback with more than one value`,
+			`(null, value-one, value-two). This is not permitted by cleanquirer.`,
+			`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
+			`one error or null and one value eventually, like this ( callback(err, result) ).`
+		));
+	}
+
+	t.end();
+});
+
+test.cb('Callback usage', callbackCalledWithMoreThanOneValueMacro, ['value-two', 'value-three'], (t, myCli) => {
+	t.plan(3);
+
+	myCli(['callback-called-with-multiple-values'], err => {
+		t.true(err instanceof Error);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		t.is(err.message, msg(
+			`The cli-multiple-callback command "callback-called-with-multiple-values"`,
+			`you are trying to use calls internally a callback with more than one value`,
+			`(null, value-one, value-two, value-three). This is not permitted by cleanquirer.`,
+			`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
+			`one error or null and one value eventually, like this ( callback(err, result) ).`
+		));
+
+		t.end();
+	});
+});
+
+test.cb('Promise usage', callbackCalledWithMoreThanOneValueMacro, ['value-two', 'value-three', 'value-four'], (t, myCli) => {
+	t.plan(3);
+
+	myCli(['callback-called-with-multiple-values']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		t.is(err.message, msg(
+			`The cli-multiple-callback command "callback-called-with-multiple-values"`,
+			`you are trying to use calls internally a callback with more than one value`,
+			`(null, value-one, value-two, value-three, value-four). This is not permitted by cleanquirer.`,
+			`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
+			`one error or null and one value eventually, like this ( callback(err, result) ).`
+		));
+
+		t.end();
+	});
+});
+
+/*---------------------------*/
+
+test.todo('Action calling a callback with an unvalid Error');

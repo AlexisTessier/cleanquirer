@@ -246,10 +246,23 @@ function cleanquirer({
 				));
 			}
 			else{
+				const argsKeys = Object.keys(arguments);
 				if (commandError) {
 					cliCallback(new Error(
 						`${name} ${command} error: ${commandError.message}`
 					));
+				}
+				else if(argsKeys.length > 2){
+					const args = argsKeys.map(key => arguments[key]).map(val => `${val}`);
+
+					cliCallback(new CleanquirerCommandImplementationError(msg(
+						`The ${name} command "${command}" you are trying to use`,
+						`calls internally a callback with more than one value (${args.join(', ')}).`,
+						`This is not permitted by cleanquirer.`,
+						`If the command uses a callback, it should only be called`,
+						`with a maximum of 2 arguments: one error or null and one value eventually,`,
+						`like this ( callback(err, result) ).`
+					)));
 				}
 				else{
 					cliCallback(null, commandValueFromCallback);
