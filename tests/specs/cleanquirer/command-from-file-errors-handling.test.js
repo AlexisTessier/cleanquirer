@@ -428,7 +428,7 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 		}
 		else {
 			t.is(actionFunction.callCount, 1);
-			t.is(err, undefined);
+			t.is(err, null);
 			t.end();
 		}
 	});
@@ -832,3 +832,7 @@ test('duplicate command handling', async t => {
 		));
 	}
 });
+
+test.todo('Action with a callback called with more than one value - Synchronous usage');
+test.todo('Action with a callback called with more than one value - Callback usage');
+test.todo('Action with a callback called with more than one value - Promise usage');

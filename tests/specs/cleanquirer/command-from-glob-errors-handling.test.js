@@ -440,3 +440,7 @@ test('duplicate command handling from two globs', async t => {
 		));
 	}
 });
+
+test.todo('Action with a callback called with more than one value - Synchronous usage');
+test.todo('Action with a callback called with more than one value - Callback usage');
+test.todo('Action with a callback called with more than one value - Promise usage');

@@ -730,3 +730,15 @@ test.todo('duplicate command handling between file and object');
 test.todo('duplicate command handling between file and glob');
 test.todo('duplicate command handling between object and glob');
 test.todo('duplicate command handling between file, object and glob');
+
+test.todo('Actions returning a value - synchronous usage');
+test.todo('Actions returning a value - callback usage');
+test.todo('Actions returning a value - promise usage');
+
+test.todo('Actions with a callback called with a value - synchronous usage');
+test.todo('Actions with a callback called with a value - callback usage');
+test.todo('Actions with a callback called with a value - promise usage');
+
+test.todo('Actions returning a Promise resolving a value - synchronous usage');
+test.todo('Actions returning a Promise resolving a value - callback usage');
+test.todo('Actions returning a Promise resolving a value - promise usage');

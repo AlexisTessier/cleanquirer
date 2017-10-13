@@ -26,10 +26,15 @@ test('version option', async t => {
 
 	t.is(myCli.version, 'test-version-value');
 
-	await myCli(['version']);
+	const versionFromCommand = await myCli(['version']);
 
 	t.is(buffer.join(''), 'version-cli version test-version-value\n');
+
+	t.is(myCli.version, 'test-version-value');
+	t.is(versionFromCommand, 'test-version-value');
 });
 
 test.todo('default version option');
 test.todo('version command');
+
+test.todo('throws error if trying to modify the cli.version property');

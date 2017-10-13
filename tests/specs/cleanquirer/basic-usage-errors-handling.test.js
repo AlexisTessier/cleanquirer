@@ -520,3 +520,7 @@ test('duplicate command handling', t => {
 
 	t.is(duplicateCommandError.message, `"myclibis" define a duplicate command "command-one" in commands Array parameter at indexes 0 and 1.`);
 });
+
+test.todo('Action with a callback called with more than one value - Synchronous usage');
+test.todo('Action with a callback called with more than one value - Callback usage');
+test.todo('Action with a callback called with more than one value - Promise usage');

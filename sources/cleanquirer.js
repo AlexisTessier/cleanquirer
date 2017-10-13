@@ -63,6 +63,8 @@ function cleanquirer({
 			stdout
 		}){
 			stdout.write(`${name} version ${version}\n`);
+
+			return version;
 		}
 	}];
 
@@ -214,8 +216,8 @@ function cleanquirer({
 		assert(typeof cliCallbackIsAFunction === 'boolean');
 
 		const cliPromise = cliCallbackIsAFunction ? null : new Promise((resolve, reject) => {
-			cliCallback = err => {
-				err ? reject(err) : resolve();
+			cliCallback = (err, result) => {
+				err ? reject(err) : resolve(result);
 			};
 		});
 
@@ -233,7 +235,7 @@ function cleanquirer({
 			tickChange++;
 		});
 
-		function done(commandError) {
+		function done(commandError, commandValueFromCallback) {
 			if(tickChange === 0){
 				throw new CleanquirerCommandImplementationError(msg(
 					`The ${name} command "${command}" you are trying to use`,
@@ -250,7 +252,7 @@ function cleanquirer({
 					));
 				}
 				else{
-					cliCallback();
+					cliCallback(null, commandValueFromCallback);
 				}
 			}
 		}
@@ -292,10 +294,10 @@ function cleanquirer({
 				));
 			}
 
-			actionResult.then(() => done()).catch(err => done(err));
+			actionResult.then(result => done(null, result)).catch(err => done(err));
 		}
 		else if (!actionUseCallback) {
-			cliCallback(null);
+			cliCallback(null, actionResult);
 		}
 
 		return cliPromise;

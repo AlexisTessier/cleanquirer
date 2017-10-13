@@ -441,14 +441,186 @@ test('Use commands from objects multiple times', t => {
 
 /*---------------------------*/
 
-test.todo('Action returning a value - synchronous usage');
-test.todo('Action returning a value - callback usage');
-test.todo('Action returning a value - promise usage');
+function actionReturningAValueMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
-test.todo('Action with a callback called with a value - synchronous usage');
-test.todo('Action with a callback called with a value - callback usage');
-test.todo('Action with a callback called with a value - promise usage');
+	const myCli = cleanquirer({
+		name: 'cli-tool',
+		commands: [{
+			name: 'returning-value',
+			action(){
+				return 'returned value'
+			}
+		}]
+	});
 
-test.todo('Action returning a Promise resolving a value - synchronous usage');
-test.todo('Action returning a Promise resolving a value - callback usage');
-test.todo('Action returning a Promise resolving a value - promise usage');
+	core(t, myCli);
+}
+
+actionReturningAValueMacro.title = providedTitle => (
+	`Action returning a value - ${providedTitle}`
+);
+
+test.cb('Synchronous usage', actionReturningAValueMacro, async (t, myCli) => {
+	const returnedValuePromise = myCli(['returning-value']);
+
+	t.true(returnedValuePromise instanceof Promise);
+
+	const returnedValue = await returnedValuePromise;
+
+	t.is(returnedValue, 'returned value');
+
+	t.end();
+});
+
+test.cb('Callback usage', actionReturningAValueMacro, (t, myCli) => {
+	t.plan(3);
+
+	const returnedValueNotPromise = myCli(['returning-value'], (err, result) => {
+		t.is(err, null);
+
+		t.is(result, 'returned value');
+
+		t.end();
+	});
+
+	t.is(returnedValueNotPromise, null);
+});
+
+test.cb('Promise usage', actionReturningAValueMacro, (t, myCli) => {
+	t.plan(2);
+
+	const returnedValuePromise = myCli(['returning-value']);
+
+	t.true(returnedValuePromise instanceof Promise);
+
+	returnedValuePromise.then(result => {
+		t.is(result, 'returned value');
+
+		t.end();
+	}).catch(() => t.fail())
+});
+
+/*---------------------------*/
+
+function actionWithACallbackCalledWithAValueMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-tool',
+		commands: [{
+			name: 'callback-with-value',
+			action(options, callback){
+				setTimeout(() => callback(null, 'value from callback'), 20);
+			}
+		}]
+	});
+
+	core(t, myCli);
+}
+
+actionWithACallbackCalledWithAValueMacro.title = providedTitle => (
+	`Action with a callback called with a value - ${providedTitle}`
+);
+
+test.cb('Synchronous usage', actionWithACallbackCalledWithAValueMacro, async (t, myCli) => {
+	const valueFromCallbackPromise = myCli(['callback-with-value']);
+
+	t.true(valueFromCallbackPromise instanceof Promise);
+
+	const valueFromCallback = await valueFromCallbackPromise;
+
+	t.is(valueFromCallback, 'value from callback');
+
+	t.end();
+});
+
+test.cb('Callback usage', actionWithACallbackCalledWithAValueMacro, (t, myCli) => {
+	t.plan(3);
+
+	const valueFromCallbackNotPromise = myCli(['callback-with-value'], (err, result) => {
+		t.is(err, null);
+
+		t.is(result, 'value from callback');
+
+		t.end();
+	});
+
+	t.is(valueFromCallbackNotPromise, null);
+});
+
+test.cb('Promise usage', actionWithACallbackCalledWithAValueMacro, (t, myCli) => {
+	t.plan(2);
+
+	const valueFromCallbackPromise = myCli(['callback-with-value']);
+
+	t.true(valueFromCallbackPromise instanceof Promise);
+
+	valueFromCallbackPromise.then(result => {
+		t.is(result, 'value from callback');
+
+		t.end();
+	}).catch(() => t.fail());
+});
+
+/*---------------------------*/
+
+function actionReturningAPromiseResolvingAValueMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-tool',
+		commands: [{
+			name: 'promise-resolving-value',
+			action(){
+				return Promise.resolve('value from promise');
+			}
+		}]
+	});
+
+	core(t, myCli);
+}
+
+actionReturningAPromiseResolvingAValueMacro.title = providedTitle => (
+	`Action returning a Promise resolving a value - ${providedTitle}`
+);
+
+test.cb('Synchronous usage', actionReturningAPromiseResolvingAValueMacro, async (t, myCli) => {
+	const valueFromPromisePromise = myCli(['promise-resolving-value']);
+
+	t.true(valueFromPromisePromise instanceof Promise);
+
+	const valueFromPromise = await valueFromPromisePromise;
+
+	t.is(valueFromPromise, 'value from promise');
+
+	t.end();
+});
+
+test.cb('Callback usage', actionReturningAPromiseResolvingAValueMacro, (t, myCli) => {
+	t.plan(3);
+
+	const valueFromPromiseNotPromise = myCli(['promise-resolving-value'], (err, result) => {
+		t.is(err, null);
+
+		t.is(result, 'value from promise');
+
+		t.end();
+	});
+
+	t.is(valueFromPromiseNotPromise, null);
+});
+
+test.cb('Promise usage', actionReturningAPromiseResolvingAValueMacro, (t, myCli) => {
+	t.plan(2);
+
+	const valueFromPromisePromise = myCli(['promise-resolving-value']);
+
+	t.true(valueFromPromisePromise instanceof Promise);
+
+	valueFromPromisePromise.then(result => {
+		t.is(result, 'value from promise');
+
+		t.end();
+	}).catch(() => t.fail());
+});
