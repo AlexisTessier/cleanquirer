@@ -8,6 +8,8 @@ const requireFromIndex = require('../../utils/require-from-index');
 const mockCommandFile = require('../../mocks/mock-command-file');
 const mockFunction = require('../../mocks/mock-function');
 
+const msg = requireFromIndex('sources/msg');
+
 test('Multiple commands definition from files and objects', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -726,19 +728,93 @@ test('Use commands from files, globs and objects multiple times', async t => {
 	t.is(actionFromGlobTwo.callCount, 3);
 });
 
-test.todo('duplicate command handling between file and object');
-test.todo('duplicate command handling between file and glob');
-test.todo('duplicate command handling between object and glob');
-test.todo('duplicate command handling between file, object and glob');
+test('duplicate command handling between file and object', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = mockFunction();
+	const actionFunctionBis = mockFunction();
 
-test.todo('Actions returning a value - synchronous usage');
-test.todo('Actions returning a value - callback usage');
-test.todo('Actions returning a value - promise usage');
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/duplicate-command-one.js');
 
-test.todo('Actions with a callback called with a value - synchronous usage');
-test.todo('Actions with a callback called with a value - callback usage');
-test.todo('Actions with a callback called with a value - promise usage');
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			{
+				name: 'command-one',
+				action: actionFunction,
+			},
+			fullPath
+		]
+	});
 
-test.todo('Actions returning a Promise resolving a value - synchronous usage');
-test.todo('Actions returning a Promise resolving a value - callback usage');
-test.todo('Actions returning a Promise resolving a value - promise usage');
+	try{
+		await myCli(['whatever']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`"mycli" define a duplicate command "command-one"`,
+			`in commands Array parameter at indexes 0 and 1 (${fullPath}).`
+		));
+	}
+});
+
+test('duplicate command handling between file and glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = mockFunction();
+	const actionFunctionBis = mockFunction();
+
+	const fullPath = pathFromIndex('tests/mocks/mock-commands/duplicate-command-one.js');
+	const glob = pathFromIndex('tests/mocks/mock-commands/from-glob/duplicate-command-one/*.js');
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			fullPath,
+			glob
+		]
+	});
+
+	try{
+		await myCli(['whatever']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`"mycli" define a duplicate command "command-one"`,
+			`in commands Array parameter at indexes 0 (${fullPath}) and 1 (${glob.replace('*', 'duplicate-command-one-1')}) from glob "${glob}".`
+		));
+	}
+});
+
+test('duplicate command handling between object and glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	const actionFunction = mockFunction();
+	const actionFunctionBis = mockFunction();
+
+	const glob = pathFromIndex('tests/mocks/mock-commands/from-glob/duplicate-command-one/*.js');
+
+	const myCli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			glob,
+			{
+				name: 'command-one',
+				action: actionFunction,
+			}
+		]
+	});
+
+	try{
+		await myCli(['whatever']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`"mycli" define a duplicate command "command-one"`,
+			`in commands Array parameter at indexes 0 (${glob.replace('*', 'duplicate-command-one-1')}) from glob "${glob}" and 1.`
+		));
+	}
+});

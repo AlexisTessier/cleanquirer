@@ -498,7 +498,7 @@ test.cb('Promise usage', actionReturningAValueMacro, (t, myCli) => {
 		t.is(result, 'returned value');
 
 		t.end();
-	}).catch(() => t.fail())
+	});
 });
 
 /*---------------------------*/
@@ -560,7 +560,7 @@ test.cb('Promise usage', actionWithACallbackCalledWithAValueMacro, (t, myCli) =>
 		t.is(result, 'value from callback');
 
 		t.end();
-	}).catch(() => t.fail());
+	});
 });
 
 /*---------------------------*/
@@ -622,5 +622,5 @@ test.cb('Promise usage', actionReturningAPromiseResolvingAValueMacro, (t, myCli)
 		t.is(result, 'value from promise');
 
 		t.end();
-	}).catch(() => t.fail());
+	});
 });

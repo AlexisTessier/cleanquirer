@@ -565,6 +565,14 @@ function callbackCalledWithMoreThanOneValueMacro(t, excedentValues, core){
 callbackCalledWithMoreThanOneValueMacro.title = providedTitle => (
 	`Action with a callback called with more than one value - ${providedTitle}`);
 
+const callbackCalledWithMoreThanOneValueErrorMessage = excedentValues => msg(
+	`The cli-multiple-callback command "callback-called-with-multiple-values"`,
+	`you are trying to use calls internally a callback with more than one value`,
+	`(null, value-one, ${excedentValues}). This is not permitted by cleanquirer.`,
+	`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
+	`one error or null and one value eventually, like this: callback(err, 'a value').`
+);
+
 test.cb('Synchronous usage', callbackCalledWithMoreThanOneValueMacro, ['value-two'], async (t, myCli) => {
 	t.plan(3)
 
@@ -574,14 +582,8 @@ test.cb('Synchronous usage', callbackCalledWithMoreThanOneValueMacro, ['value-tw
 	}
 	catch(err){
 		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('value-two'));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
-		t.is(err.message, msg(
-			`The cli-multiple-callback command "callback-called-with-multiple-values"`,
-			`you are trying to use calls internally a callback with more than one value`,
-			`(null, value-one, value-two). This is not permitted by cleanquirer.`,
-			`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
-			`one error or null and one value eventually, like this ( callback(err, result) ).`
-		));
 	}
 
 	t.end();
@@ -592,14 +594,8 @@ test.cb('Callback usage', callbackCalledWithMoreThanOneValueMacro, ['value-two',
 
 	myCli(['callback-called-with-multiple-values'], err => {
 		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('value-two, value-three'));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
-		t.is(err.message, msg(
-			`The cli-multiple-callback command "callback-called-with-multiple-values"`,
-			`you are trying to use calls internally a callback with more than one value`,
-			`(null, value-one, value-two, value-three). This is not permitted by cleanquirer.`,
-			`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
-			`one error or null and one value eventually, like this ( callback(err, result) ).`
-		));
 
 		t.end();
 	});
@@ -610,14 +606,8 @@ test.cb('Promise usage', callbackCalledWithMoreThanOneValueMacro, ['value-two', 
 
 	myCli(['callback-called-with-multiple-values']).then(()=>t.fail()).catch(err => {
 		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('value-two, value-three, value-four'));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
-		t.is(err.message, msg(
-			`The cli-multiple-callback command "callback-called-with-multiple-values"`,
-			`you are trying to use calls internally a callback with more than one value`,
-			`(null, value-one, value-two, value-three, value-four). This is not permitted by cleanquirer.`,
-			`If the command uses a callback, it should only be called with a maximum of 2 arguments:`,
-			`one error or null and one value eventually, like this ( callback(err, result) ).`
-		));
 
 		t.end();
 	});
@@ -625,4 +615,108 @@ test.cb('Promise usage', callbackCalledWithMoreThanOneValueMacro, ['value-two', 
 
 /*---------------------------*/
 
-test.todo('Action calling a callback with an unvalid Error');
+function callingCallbackWithAnUnvalidErrorMacro(t, unvalidError, core) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-unvalid-error-callback',
+		commands: [
+			{
+				name: 'unvalid-error-callback',
+				action(options, callback){
+					setTimeout(()=>callback(unvalidError), 20);
+				}
+			}
+		]
+	});
+
+	core(t, unvalidError, myCli);
+}
+
+callingCallbackWithAnUnvalidErrorMacro.title = (providedTitle, unvalidError) => (
+	`Action with a callback called with an unvalid error (${unvalidError}) - ${providedTitle}`);
+
+const unvalidErrorMessage = unvalidError => msg(
+	`The cli-unvalid-error-callback command "unvalid-error-callback" you are trying to use`,
+	`calls internally a callback with a unvalid error value: (${typeof unvalidError}) ${unvalidError}. If the command uses a callback,`,
+	`the error parameter at first position can only be null or undefined if no error, or an instance of Error,`,
+	`like this: callback(new Error("An error message")).`,
+	`If the command is supposed to call the callback with a value, it must use the second argument like this:`,
+	`callback(null, 'command result')`
+);
+
+const callingCallbackWithAnUnvalidErrorSynchronousCore = async(t, unvalidError, myCli) => {
+	t.plan(3);
+
+	try{
+		await myCli(['unvalid-error-callback']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, unvalidErrorMessage(unvalidError));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	t.end();
+}
+
+const callingCallbackWithAnUnvalidErrorCallbackCore = async(t, unvalidError, myCli) => {
+	t.plan(3);
+
+	myCli(['unvalid-error-callback'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, unvalidErrorMessage(unvalidError));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+}
+
+const callingCallbackWithAnUnvalidErrorPromiseCore = async(t, unvalidError, myCli) => {
+	t.plan(3);
+
+	myCli(['unvalid-error-callback']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, unvalidErrorMessage(unvalidError));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+}
+
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, '', callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, ' ', callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, 'string', callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, 1, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, 0, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, [], callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, {}, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, function(){return;}, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorSynchronousCore);
+
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, '', callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, ' ', callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 'string', callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 1, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 0, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, [], callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, {}, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function(){return;}, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorCallbackCore);
+
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, '', callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, ' ', callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 'string', callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 1, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 0, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, [], callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, {}, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function(){return;}, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorPromiseCore);

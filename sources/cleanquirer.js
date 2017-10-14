@@ -205,6 +205,8 @@ function cleanquirer({
 
 		if (typeof cliCallback === 'function') {
 			cliPromise.catch(err => cliCallback(err));
+
+			return null;
 		}
 
 		return cliPromise;
@@ -235,8 +237,11 @@ function cleanquirer({
 			tickChange++;
 		});
 
+		const action = actions[command].action;
+		const actionUseCallback = action.length >= 2;
+
 		function done(commandError, commandValueFromCallback) {
-			if(tickChange === 0){
+			if(actionUseCallback && tickChange === 0){
 				throw new CleanquirerCommandImplementationError(msg(
 					`The ${name} command "${command}" you are trying to use`,
 					`calls internally a callback in a synchronous way.`,
@@ -247,7 +252,18 @@ function cleanquirer({
 			}
 			else{
 				const argsKeys = Object.keys(arguments);
-				if (commandError) {
+				if (commandError !== undefined && commandError !== null && !(commandError instanceof Error)) {
+					cliCallback(new CleanquirerCommandImplementationError(msg(
+						`The ${name} command "${command}" you are trying to use`,
+						`calls internally a callback with a unvalid error value: (${typeof commandError}) ${commandError}.`,
+						`If the command uses a callback, the error parameter at first position can only be null or undefined`,
+						`if no error, or an instance of Error, like this:`,
+						`callback(new Error("An error message")).`,
+						`If the command is supposed to call the callback with a value,`,
+						`it must use the second argument like this: callback(null, 'command result')`
+					)));
+				}
+				else if (commandError) {
 					cliCallback(new Error(
 						`${name} ${command} error: ${commandError.message}`
 					));
@@ -261,7 +277,7 @@ function cleanquirer({
 						`This is not permitted by cleanquirer.`,
 						`If the command uses a callback, it should only be called`,
 						`with a maximum of 2 arguments: one error or null and one value eventually,`,
-						`like this ( callback(err, result) ).`
+						`like this: callback(err, 'a value').`
 					)));
 				}
 				else{
@@ -272,7 +288,7 @@ function cleanquirer({
 
 		/*------------------*/
 
-		const action = actions[command].action;
+		
 		let actionResult = null;
 		const actionOptions = {
 			stdout,
@@ -293,7 +309,6 @@ function cleanquirer({
 			));
 		}
 
-		const actionUseCallback = action.length >= 2;
 		const actionUsePromise = actionResult instanceof Promise;
 
 		if(actionUsePromise){

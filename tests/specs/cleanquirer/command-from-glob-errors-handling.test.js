@@ -441,6 +441,214 @@ test('duplicate command handling from two globs', async t => {
 	}
 });
 
-test.todo('Action with a callback called with more than one value - Synchronous usage');
-test.todo('Action with a callback called with more than one value - Callback usage');
-test.todo('Action with a callback called with more than one value - Promise usage');
+/*------------------------------*/
+
+function callbackCalledWithMoreThanOneValueMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const glob = pathFromIndex('tests/mocks/mock-commands/from-glob/callback-called-with-more-than-one-value/*.js');
+
+	const myCli = cleanquirer({
+		name: 'cli-test',
+		commands: [
+			glob
+		]
+	});
+
+	core(t, myCli);
+}
+
+callbackCalledWithMoreThanOneValueMacro.title = providedTitle => (
+	`Action with a callback called with more than one value - ${providedTitle}`);
+
+const callbackCalledWithMoreThanOneValueErrorMessage = (command, excedentValues) => msg(
+	`The cli-test command "${command}" you are trying to use`,
+	`calls internally a callback with more than one value (null, value-one, ${excedentValues}).`,
+	`This is not permitted by cleanquirer. If the command uses a callback, it should only`,
+	`be called with a maximum of 2 arguments: one error or null and one value eventually, like this: callback(err, \'a value\').`
+);
+
+test.cb('Synchronous usage', callbackCalledWithMoreThanOneValueMacro, async (t, myCli)=>{
+	t.plan(6);
+
+	try{
+		await myCli(['command-1']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('command-1', 'value-two'));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	try{
+		await myCli(['command-2']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('command-2', 'value-two, value-three'));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	t.end();
+});
+
+test.cb('Callback usage', callbackCalledWithMoreThanOneValueMacro, (t, myCli)=>{
+	t.plan(6);
+
+	myCli(['command-1'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('command-1', 'value-two'));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	myCli(['command-2'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('command-2', 'value-two, value-three'));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	function endTest() {
+		endTest.callCount++;
+		if (endTest.callCount === 2) {
+			t.end();
+		}
+	}
+	endTest.callCount = 0;
+});
+
+test.cb('Promise usage', callbackCalledWithMoreThanOneValueMacro, (t, myCli)=>{
+	t.plan(6);
+
+	myCli(['command-1']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('command-1', 'value-two'));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	myCli(['command-2']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage('command-2', 'value-two, value-three'));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	function endTest() {
+		endTest.callCount++;
+		if (endTest.callCount === 2) {
+			t.end();
+		}
+	}
+	endTest.callCount = 0;
+});
+
+/*------------------------------*/
+
+function callbackCalledWithUnvalidErrorMacro(t, core){
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const glob = pathFromIndex('tests/mocks/mock-commands/from-glob/callback-called-with-an-unvalid-error/*.js');
+
+	const myCli = cleanquirer({
+		name: 'cli-unvalid-error',
+		commands: [
+			glob
+		]
+	});
+
+	core(t, myCli);
+}
+
+callbackCalledWithUnvalidErrorMacro.title = providedTitle => (
+	`Action with a callback called with an unvalid error - ${providedTitle}`);
+
+const callbackCalledWithUnvalidErrorErrorMessage = (command, unvalidError) => msg(
+	`The cli-unvalid-error command "${command}" you are trying to use`,
+	`calls internally a callback with a unvalid error value: (${typeof unvalidError}) ${unvalidError}.`,
+	`If the command uses a callback, the error parameter at first position`,
+	`can only be null or undefined if no error, or an instance of Error, like this:`,
+	`callback(new Error("An error message")). If the command is supposed`,
+	`to call the callback with a value, it must use the second argument like this: callback(null, 'command result')`
+);
+
+test.cb('Synchronous usage', callbackCalledWithUnvalidErrorMacro, async (t, myCli)=>{
+	t.plan(6);
+
+	try{
+		await myCli(['command-1']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithUnvalidErrorErrorMessage('command-1', 2));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	try{
+		await myCli(['command-2']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithUnvalidErrorErrorMessage('command-2', false));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	t.end();
+});
+
+test.cb('Callback usage', callbackCalledWithUnvalidErrorMacro, (t, myCli)=>{
+	t.plan(6);
+
+	myCli(['command-1'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithUnvalidErrorErrorMessage('command-1', 2));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	myCli(['command-2'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithUnvalidErrorErrorMessage('command-2', false));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	function endTest() {
+		endTest.callCount++;
+		if (endTest.callCount === 2) {
+			t.end();
+		}
+	}
+	endTest.callCount = 0;
+});
+
+test.cb('Promise usage', callbackCalledWithUnvalidErrorMacro, (t, myCli)=>{
+	t.plan(6);
+
+	myCli(['command-1']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithUnvalidErrorErrorMessage('command-1', 2));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	myCli(['command-2']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithUnvalidErrorErrorMessage('command-2', false));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		endTest();
+	});
+
+	function endTest() {
+		endTest.callCount++;
+		if (endTest.callCount === 2) {
+			t.end();
+		}
+	}
+	endTest.callCount = 0;
+});

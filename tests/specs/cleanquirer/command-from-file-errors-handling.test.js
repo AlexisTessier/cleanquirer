@@ -833,6 +833,109 @@ test('duplicate command handling', async t => {
 	}
 });
 
-test.todo('Action with a callback called with more than one value - Synchronous usage');
-test.todo('Action with a callback called with more than one value - Callback usage');
-test.todo('Action with a callback called with more than one value - Promise usage');
+/*---------------------*/
+
+const callbackCalledWithMoreThanOneValueErrorMessage = msg(
+	`The mycli command "callback-called-with-more-than-one-value" you are trying to use`,
+	`calls internally a callback with more than one value (null, value-one, value-two).`,
+	`This is not permitted by cleanquirer. If the command uses a callback,`,
+	`it should only be called with a maximum of 2 arguments: one error or null`,
+	`and one value eventually, like this: callback(err, 'a value').`
+);
+
+test.cb('Action with a callback called with more than one value - Synchronous usage',
+	commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
+	t.plan(3);
+
+	try{
+		await myCli(['callback-called-with-more-than-one-value']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	t.end();
+});
+
+test.cb('Action with a callback called with more than one value - Callback usage', commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
+	
+	t.plan(3);
+
+	myCli(['callback-called-with-more-than-one-value'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});		
+});
+
+test.cb('Action with a callback called with more than one value - Promise usage', commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
+	
+	t.plan(3);
+
+	try{
+		await myCli(['callback-called-with-more-than-one-value']);
+		t.fail();
+	}
+	catch(err){
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+	}
+
+	t.end();	
+});
+
+/*---------------------*/
+
+const unvalidErrorMessage = (unvalidError => msg(
+	`The mycli command "callback-called-with-an-unvalid-error" you are trying to use`,
+	`calls internally a callback with a unvalid error value: (${typeof unvalidError}) ${unvalidError}. If the command uses a callback,`,
+	`the error parameter at first position can only be null or undefined if no error, or an instance of Error,`,
+	`like this: callback(new Error("An error message")).`,
+	`If the command is supposed to call the callback with a value, it must use the second argument like this:`,
+	`callback(null, 'command result')`
+))('unvalid error');
+
+test.cb('Action with a callback called with an unvalid error - Synchronous usage', commandFromFileMacro, 'callback-called-with-an-unvalid-error.js', async (t, myCli) => {
+	
+	t.plan(3);
+
+	myCli(['callback-called-with-an-unvalid-error'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, unvalidErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+});
+
+test.cb('Action with a callback called with an unvalid error - Callback usage', commandFromFileMacro, 'callback-called-with-an-unvalid-error.js', async (t, myCli) => {
+	
+	t.plan(3);
+
+	myCli(['callback-called-with-an-unvalid-error'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, unvalidErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+});
+
+test.cb('Action with a callback called with an unvalid error - Promise usage', commandFromFileMacro, 'callback-called-with-an-unvalid-error.js', async (t, myCli) => {
+	
+	t.plan(3);
+
+	myCli(['callback-called-with-an-unvalid-error']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, unvalidErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+});
