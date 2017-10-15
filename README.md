@@ -3,7 +3,7 @@
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
 ![Branch : master](https://img.shields.io/badge/Branch-master-blue.svg)
-[![version](https://img.shields.io/badge/version-0.0.0-blue.svg)](https://github.com/AlexisTessier/cleanquirer#readme)
+[![version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/AlexisTessier/cleanquirer#readme)
 [![npm version](https://badge.fury.io/js/cleanquirer.svg)](https://badge.fury.io/js/cleanquirer)
 
 [![Build Status](https://travis-ci.org/AlexisTessier/cleanquirer.svg?branch=master)](https://travis-ci.org/AlexisTessier/cleanquirer)
