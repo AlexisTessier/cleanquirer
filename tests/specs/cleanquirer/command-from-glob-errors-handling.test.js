@@ -141,7 +141,7 @@ test('Command definition from no matching glob', async t => {
 		});
 	});
 
-	t.is(noMatchingError.message, `The provided glob "${fullPath}" at index index 1 matches no files.`);
+	t.is(noMatchingError.message, `The provided glob "${fullPath}" at index 1 matches no files.`);
 });
 
 test('Command definition from no matching files glob (but matching directory)', t => {
@@ -159,7 +159,7 @@ test('Command definition from no matching files glob (but matching directory)', 
 		});
 	});
 
-	t.is(noMatchingFilesError.message, `The provided glob "${fullPath}" at index index 1 matches no files.`);
+	t.is(noMatchingFilesError.message, `The provided glob "${fullPath}" at index 1 matches no files.`);
 });
 
 test('Command definition from glob matching extensionless files', t => {
@@ -178,7 +178,7 @@ test('Command definition from glob matching extensionless files', t => {
 	});
 
 	t.is(matchingExtensionLessFileError.message, msg(
-		`The provided glob "${fullPath}" at index index 0 matches`,
+		`The provided glob "${fullPath}" at index 0 matches`,
 		`a file without extension ("${fullPath.replace('*', 'command')}").`,
 		`A valid command module file must be a javascript file (.js).`
 	));
@@ -200,7 +200,7 @@ test('Command definition from glob matching no js files', t => {
 	});
 
 	t.is(matchingNoJSFileError.message, msg(
-		`The provided glob "${fullPath}" at index index 1 matches`,
+		`The provided glob "${fullPath}" at index 1 matches`,
 		`a .txt file ("${fullPath.replace('*', 'command.txt')}").`,
 		`A valid command module file must be a javascript file (.js).`
 	));

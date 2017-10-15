@@ -1,6 +1,6 @@
 # Cleanquirer
 
-![draft](https://img.shields.io/badge/stability-draft-lightgrey.svg?style=flat-square)
+[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
 ![Branch : master](https://img.shields.io/badge/Branch-master-blue.svg)
 [![version](https://img.shields.io/badge/version-0.0.0-blue.svg)](https://github.com/AlexisTessier/cleanquirer#readme)
@@ -16,6 +16,7 @@ Create a cli tool from a documented javascript API 💻
 
 -   [Introduction](#introduction)
 -   [Get started](#get-started)
+-   [Roadmap](#roadmap)
 -   [Documentation](#documentation)
 -   [License](#license)
 
@@ -71,7 +72,7 @@ You can use the exported function to call methods of the cli api directly in jav
 
 const myCli = require('path/to/cli-function.js');
 
-myCli(['my-cli-command', 'option="option value"']).then(()=>{
+myCli(['my-cli-command']).then(()=>{
     // do stuffs after the command was executed
 })
 ```
@@ -93,6 +94,28 @@ And fill the bin field in your module package.json
     "bin": {
       "cli-name": "path/to/bin/myCli"
     }
+
+## Roadmap
+
+-   command options support (automaticaly deduced from files comments and/or function signature)
+
+
+-   provide a prompt method (like inquirer) in order to allow easy user interactions
+
+
+-   automaticaly prompt the missing options when user uses a command
+
+
+-   help command/flag support
+
+
+-   options aliases support
+
+
+-   global options support
+
+
+-   commands aliases support
 
 ## Documentation
 

@@ -50,7 +50,7 @@
     const myCli = require('path/to/cli-function.js');
 
 
-    myCli(['my-cli-command', 'option="option value"']).then(()=>{
+    myCli(['my-cli-command']).then(()=>{
         // do stuffs after the command was executed
     })
 - p: >
@@ -73,4 +73,12 @@
     "bin": {
       "cli-name": "path/to/bin/myCli"
     }
+- section: Roadmap
+- li: command options support (automaticaly deduced from files comments and/or function signature)
+- li: provide a prompt method (like inquirer) in order to allow easy user interactions
+- li: automaticaly prompt the missing options when user uses a command
+- li: help command/flag support
+- li: options aliases support
+- li: global options support
+- li: commands aliases support
 - section: Documentation

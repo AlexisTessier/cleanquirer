@@ -6,6 +6,7 @@
   "directories": {
     "test": "tests"
   },
+  "stability": "experimental",
   "scripts": {
     "lint": "eslint --ext js ./sources",
     "watch": "npm-watch",
@@ -97,7 +98,7 @@
       "tests/utils/**/*.js",
       "tests/**/*.macro.js"
     ],
-    "timeout": 30000
+    "timeout": 50000
   },
   "nyc": {
     "exclude": [

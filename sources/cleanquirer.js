@@ -72,9 +72,10 @@ function cleanquirer({
 
 			return version;
 		}
-	}];
-
-	commands.push(...defaultCommands);
+	}].reduce((hashmap, command) => {
+		hashmap[command.name] = command;
+		return hashmap;
+	}, {});
 
 	/*----------------*/
 
@@ -146,7 +147,7 @@ function cleanquirer({
 
 				assert(commandFiles.length > 0, msg(
 					`The provided glob "${command}"`,
-					`at index index ${i} matches no files.`
+					`at index ${i} matches no files.`
 				));
 
 				commandFiles.forEach(globFileCommand => {
@@ -154,13 +155,13 @@ function cleanquirer({
 
 					assert(extname.length > 0, msg(
 						`The provided glob "${command}"`,
-						`at index index ${i} matches a file without extension ("${globFileCommand}").`,
+						`at index ${i} matches a file without extension ("${globFileCommand}").`,
 						`A valid command module file must be a javascript file (.js).`
 					));
 
 					assert(extname === '.js', msg(
 						`The provided glob "${command}"`,
-						`at index index ${i} matches a ${extname} file ("${globFileCommand}").`,
+						`at index ${i} matches a ${extname} file ("${globFileCommand}").`,
 						`A valid command module file must be a javascript file (.js).`
 					));
 
@@ -231,7 +232,9 @@ function cleanquirer({
 
 		const command = inputs.shift();
 
-		assert(typeof actions[command] === 'object',
+		const commandObject = actions[command] || defaultCommands[command];
+
+		assert(typeof commandObject === 'object',
 			`The command "${command}" is not a command of "${name}".`
 		);
 
@@ -243,7 +246,7 @@ function cleanquirer({
 			tickChange++;
 		});
 
-		const action = actions[command].action;
+		const action = commandObject.action;
 		const actionUseCallback = action.length >= 2;
 
 		function done(commandError, commandValueFromCallback) {
@@ -296,6 +299,7 @@ function cleanquirer({
 
 		let actionResult = null;
 		const actionOptions = {
+			cli,
 			stdout,
 			stderr,
 			stdin
@@ -345,6 +349,13 @@ function cleanquirer({
 
 		return cliPromise;
 	}
+
+	Object.defineProperty(cli, "name", {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value: name
+	});
 
 	Object.defineProperty(cli, "version", {
 		enumerable: false,

@@ -2,6 +2,7 @@
 
 const test = require('ava');
 
+const pathFromIndex = require('../../utils/path-from-index');
 const requireFromIndex = require('../../utils/require-from-index');
 
 const mockFunction = require('../../mocks/mock-function');
@@ -99,6 +100,80 @@ asynchronousCommandPromiseFromSimpleCommandObjectMacro.title = providedTitle => 
 
 /*---------------------------*/
 /*---------------------------*/
+/*---------------------------*/
+
+test('Name property', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+	
+	const myCli = cleanquirer({
+		name: 'cli-name'
+	});
+
+	t.is(myCli.name, 'cli-name');
+	
+	const err = t.throws(()=>{
+		myCli.name = 'a-name-can-t-be-changed'
+	});
+
+	t.true(err instanceof TypeError);
+	t.true(err.message.indexOf(`read only property 'name'`) >= 0);
+});
+
+test.cb('Access to cli in action from command object', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const myCli = cleanquirer({
+		name: 'cli-name',
+		commands: [
+			{
+				name: 'command',
+				action(options){
+					t.is(options.cli, myCli);
+					t.end();
+				}
+			}
+		]
+	});
+
+	myCli(['command']);
+});
+
+test('Access to cli in action from file', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const myCli = cleanquirer({
+		name: 'cli-name',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/returning-cli-command.js')
+		]
+	});
+
+	const cli = await myCli(['returning-cli-command']);
+
+	t.is(cli, myCli);
+});
+
+test('Access to cli in action from glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	t.plan(1);
+
+	const myCli = cleanquirer({
+		name: 'cli-name',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/returning-cli-command/*.js')
+		]
+	});
+
+	const cli = await myCli(['command']);
+
+	t.is(cli, myCli);
+});
+
 /*---------------------------*/
 
 test('Synchronous usage', synchronousCommandFromSimpleCommandObjectMacro, (t, cli, action) => {

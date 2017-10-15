@@ -4,6 +4,7 @@ const test = require('ava');
 
 const stream = require('stream');
 
+const pathFromIndex = require('../../utils/path-from-index');
 const requireFromIndex = require('../../utils/require-from-index');
 
 test('version option', async t => {
@@ -84,4 +85,66 @@ test('throws error if trying to modify the cli.version property', t => {
 
 	t.true(err instanceof TypeError);
 	t.true(err.message.indexOf(`read only property 'version'`) >= 0);
+});
+
+test('override version command from object', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-version-override',
+		version: 'start version',
+		commands: [
+			{
+				name: 'version',
+				action(){
+					return 'override version'
+				}
+			}
+		]
+	});
+
+	t.is(myCli.version, 'start version');
+
+	const version = await myCli(['version']);
+
+	t.is(myCli.version, 'start version');
+	t.is(version, 'override version');
+});
+
+test('override version command from file', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-version-override',
+		version: 'start version',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/override-version-command.js')
+		]
+	});
+
+	t.is(myCli.version, 'start version');
+
+	const version = await myCli(['version']);
+
+	t.is(myCli.version, 'start version');
+	t.is(version, 'override version from file');
+});
+
+test('override version command from glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-version-override',
+		version: 'start version',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/override-version-command/*.js')
+		]
+	});
+
+	t.is(myCli.version, 'start version');
+
+	const version = await myCli(['version']);
+
+	t.is(myCli.version, 'start version');
+	t.is(version, 'override version from glob');
 });

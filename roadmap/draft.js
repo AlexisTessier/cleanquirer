@@ -70,10 +70,10 @@ module.exports = cli;
  * + version option => DONE
  * + default version option => DONE
  * + version command => DONE
- * + override version command from object => TODO
- * + override version command from file => TODO
- * + override version command from glob => TODO
- * + pass the cli object to actions => TODO
+ * + override version command from object => DONE
+ * + override version command from file => DONE
+ * + override version command from glob => DONE
+ * + pass the cli object to actions => DONE
 
  * release
  * -------
