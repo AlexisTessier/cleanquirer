@@ -652,3 +652,52 @@ test.cb('Promise usage', callbackCalledWithUnvalidErrorMacro, (t, myCli)=>{
 	}
 	endTest.callCount = 0;
 });
+
+/*-----------------------*/
+
+test.cb('Action with callback and returning a value', t => {
+	t.plan(6);
+
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-test',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/action-with-callback-and-returning-a-value/*.js')
+		]
+	});
+
+	function testEnd() {
+		testEnd.callCount++;
+		if (testEnd.callCount === 2) {
+			t.end();
+		}
+	}
+	testEnd.callCount = 0;
+
+	myCli(['command-1']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`The cli-test command "command-1" you are trying to use both uses internally`,
+			`a callback and returns a value (42) of type number. This is not permitted by cleanquirer.`,
+			`If the command uses a callback, it must not return a value. Eventually, it can pass that`,
+			`value as the second parameter of the callback like this: callback(null, resultValue)`
+		));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		testEnd();
+	});
+
+	myCli(['command-2']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`The cli-test command "command-2" you are trying to use both uses internally`,
+			`a callback and returns a value (false) of type boolean. This is not permitted by cleanquirer.`,
+			`If the command uses a callback, it must not return a value. Eventually, it can pass that`,
+			`value as the second parameter of the callback like this: callback(null, resultValue)`
+		));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		testEnd();
+	});
+});

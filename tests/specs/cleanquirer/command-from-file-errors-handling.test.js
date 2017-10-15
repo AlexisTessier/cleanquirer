@@ -939,3 +939,31 @@ test.cb('Action with a callback called with an unvalid error - Promise usage', c
 		t.end();
 	});
 });
+
+/*-----------------------*/
+
+test.cb('Action with callback and returning a value', t => {
+	t.plan(3);
+
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'error-cli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/action-with-callback-and-returning-a-value.js')
+		]
+	});
+
+	myCli(['action-with-callback-and-returning-a-value']).then(()=>t.fail()).catch(err => {
+		t.true(err instanceof Error);
+		t.is(err.message, msg(
+			`The error-cli command "action-with-callback-and-returning-a-value" you are trying to use both uses internally`,
+			`a callback and returns a value (returned value) of type string. This is not permitted by cleanquirer.`,
+			`If the command uses a callback, it must not return a value. Eventually, it can pass that`,
+			`value as the second parameter of the callback like this: callback(null, resultValue)`
+		));
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+});

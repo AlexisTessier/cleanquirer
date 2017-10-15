@@ -7,14 +7,20 @@ const isStream = require('is-stream');
 const isGlob = require('is-glob');
 const glob = require('glob');
 
+// get parent module version
+const readPkgUp = require('read-pkg-up');
+const parentModule = require('parent-module');
+
 const msg = require('./msg');
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 class CleanquirerCommandImplementationError extends Error{}
 
+const defaultVersion = readPkgUp.sync({cwd: path.dirname(parentModule())}).pkg.version;
+
 function cleanquirer({
 	name,
-	version,
+	version = defaultVersion,
 	options = {},
 	commands = []
 } = {}) {
@@ -288,7 +294,6 @@ function cleanquirer({
 
 		/*------------------*/
 
-		
 		let actionResult = null;
 		const actionOptions = {
 			stdout,
@@ -324,6 +329,16 @@ function cleanquirer({
 
 			actionResult.then(result => done(null, result)).catch(err => done(err));
 		}
+		else if (actionUseCallback && actionResult !== undefined) {
+			throw new CleanquirerCommandImplementationError(msg(
+				`The ${name} command "${command}" you are trying to use`,
+				`both uses internally a callback and returns a value (${actionResult}) of type ${typeof actionResult}.`,
+				`This is not permitted by cleanquirer.`,
+				`If the command uses a callback, it must not return a value.`,
+				`Eventually, it can pass that value as the second parameter of the callback like this:`,
+				`callback(null, resultValue)`
+			));
+		}
 		else if (!actionUseCallback) {
 			cliCallback(null, actionResult);
 		}
@@ -331,7 +346,12 @@ function cleanquirer({
 		return cliPromise;
 	}
 
-	cli.version = version;
+	Object.defineProperty(cli, "version", {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value: version
+	});
 
 	return cli;
 }

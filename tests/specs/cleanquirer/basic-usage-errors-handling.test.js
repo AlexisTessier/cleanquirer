@@ -720,3 +720,34 @@ test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function(){ret
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorPromiseCore);
+
+/*-----------------------*/
+
+test('Action with callback and returning a value', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'error-cli',
+		commands: [
+			{
+				name: 'error',
+				action(options, callback){
+					return '';
+				}
+			}
+		]
+	});
+
+	const callbackUsageWithAnActionReturningAValueError = t.throws(() => {
+		myCli(['error']);
+	});
+
+	t.true(callbackUsageWithAnActionReturningAValueError instanceof Error);
+	t.is(callbackUsageWithAnActionReturningAValueError.message, msg(
+		`The error-cli command "error" you are trying to use both uses internally`,
+		`a callback and returns a value () of type string. This is not permitted by cleanquirer.`,
+		`If the command uses a callback, it must not return a value. Eventually, it can pass that`,
+		`value as the second parameter of the callback like this: callback(null, resultValue)`
+	));
+	t.is(callbackUsageWithAnActionReturningAValueError.constructor.name, 'CleanquirerCommandImplementationError');
+});
