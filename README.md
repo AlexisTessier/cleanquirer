@@ -2,12 +2,12 @@
 
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
-![Branch : master](https://img.shields.io/badge/Branch-master-blue.svg)
+![Branch : release](https://img.shields.io/badge/Branch-release-blue.svg)
 [![version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/AlexisTessier/cleanquirer#readme)
 [![npm version](https://badge.fury.io/js/cleanquirer.svg)](https://badge.fury.io/js/cleanquirer)
 
-[![Build Status](https://travis-ci.org/AlexisTessier/cleanquirer.svg?branch=master)](https://travis-ci.org/AlexisTessier/cleanquirer)
-[![Coverage Status](https://coveralls.io/repos/AlexisTessier/cleanquirer/badge.svg?branch=master&service=github)](https://coveralls.io/github/AlexisTessier/cleanquirer?branch=master)
+[![Build Status](https://travis-ci.org/AlexisTessier/cleanquirer.svg?branch=release)](https://travis-ci.org/AlexisTessier/cleanquirer)
+[![Coverage Status](https://coveralls.io/repos/AlexisTessier/cleanquirer/badge.svg?branch=release&service=github)](https://coveralls.io/github/AlexisTessier/cleanquirer?branch=release)
 
 [![Dependency Status](https://david-dm.org/AlexisTessier/cleanquirer.svg)](https://david-dm.org/AlexisTessier/cleanquirer)
 [![devDependency Status](https://david-dm.org/AlexisTessier/cleanquirer/dev-status.svg)](https://david-dm.org/AlexisTessier/cleanquirer#info=devDependencies)
