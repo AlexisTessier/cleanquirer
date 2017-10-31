@@ -57,4 +57,6 @@ test('Commands execution order', featureHasTestFileMacro, 'commands-execution-or
 test('Provide stdin, stout and stderr', featureHasTestFileMacro, 'stdin-stdout-stderr');
 test('Provide a default version command', featureHasTestFileMacro, 'version-command');
 
+test('Commands options support', featureHasTestFileMacro, 'command-options-support');
+
 /*---------------------------*/

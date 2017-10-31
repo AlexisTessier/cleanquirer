@@ -77,7 +77,9 @@ module.exports = cli;
 
  * release
  * -------
- * + name/action/options command object
+ * + name/action/options command object - ordered usage
+ * + name/action/options command object - unordered usage
+ * + name/action/options command object - mix ordered and unordered usage
  * + deduce options from documented files
  * + deduce options from documented files targeted with glob
 

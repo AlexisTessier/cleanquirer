@@ -247,6 +247,7 @@ function cleanquirer({
 		});
 
 		const action = commandObject.action;
+
 		const actionUseCallback = action.length >= 2;
 
 		function done(commandError, commandValueFromCallback) {
@@ -304,6 +305,12 @@ function cleanquirer({
 			stderr,
 			stdin
 		};
+
+		const optionsDefinitions = commandObject.options || [];
+
+		optionsDefinitions.forEach(optionDefinition => {
+			actionOptions[optionDefinition.name] = inputs.shift();
+		});
 
 		try{
 			actionResult = action(actionOptions, done);
