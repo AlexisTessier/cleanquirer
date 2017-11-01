@@ -14,6 +14,8 @@
     "check-dependencies": "dependency-check ./package.json",
     "test": "npm run lint && npm run check-dependencies && npm run coverage",
     "watch-test": "ava --watch --timeout=$npm_package_ava_timeout",
+    "match-test": "ava --timeout=$npm_package_ava_timeout --match='@match*'",
+    "mwatch-test": "ava --watch --timeout=$npm_package_ava_timeout --match='@match*'",
     "coverage": "nyc ava --timeout=$npm_package_ava_timeout && npm run report",
     "update-coverage": "npm run coverage && node build/update-coverage",
     "dev-server": "concurrently \"ttab npm run dev-server-coverage\" \"npm run dev-server-documentation\"",

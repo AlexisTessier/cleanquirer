@@ -77,41 +77,57 @@ module.exports = cli;
 
  * release
  * -------
- * + name/action/options command object - ordered usage
- * + name/action/options command object - unordered usage
- * + name/action/options command object - mix ordered and unordered usage
- * + deduce options from documented files
- * + deduce options from documented files targeted with glob
+ * + options command object - ordered usage => WIP
+ * + deduce options from documented files => TO DO
+ * + deduce options from documented files targeted with glob => TO DO
+ 
+ * release
+ * -------
+ * + options command object - unordered usage
+ * + options command object - mix ordered and unordered usage
+
+ * release
+ * -------
+ * + options command object - default value
+ * + deduce option default value from documented files
+ * + deduce option default value from documented files targeted with glob
+
+ * release
+ * -------
+ * + options command object - type
+ * + deduce option type from documented files
+ * + deduce option type from documented files targeted with glob
 
  * release
  * -------
  * + prompt method option
  * + prompt method as cli property
  * + prompt method provided as option to each commands
-
- * release
- * -------
  * + auto prompt required options if undefined
 
  * release
  * -------
  * + help command
  * + description option and default description
- * + name/action/options/help command object
+ * + help command object
  * + deduce help from documented files
  * + deduce help from documented files targeted with glob
 
  * release
  * -------
- * + options aliases
- * + deduce options aliases from documented files
- * + deduce options aliases from documented files targeted with glob
+ * + create run function for easy bin writing
 
  * release
  * -------
  * + global options
  * + deduce global options from documented files
  * + deduce global options from documented files targeted with glob
+
+ * release
+ * -------
+ * + options aliases
+ * + deduce options aliases from documented files
+ * + deduce options aliases from documented files targeted with glob
 
  * release
  * -------
