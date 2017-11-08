@@ -2,13 +2,13 @@
 
 const test = require('ava');
 
+const msg = require('@alexistessier/msg');
+
 const pathFromIndex = require('../../utils/path-from-index');
 const requireFromIndex = require('../../utils/require-from-index');
 
 const mockCommandFile = require('../../mocks/mock-command-file');
 const mockFunction = require('../../mocks/mock-function');
-
-const msg = requireFromIndex('sources/msg');
 
 test('Multiple commands definition from files and objects', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');

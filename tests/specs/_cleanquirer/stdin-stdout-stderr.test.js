@@ -236,7 +236,7 @@ unvalidCustomStdoutStreamMacro.title = (providedTitle, unvalidStream) => (
 test('not writable stream', unvalidCustomStdoutStreamMacro, mockReadableStream());
 test('Array', unvalidCustomStdoutStreamMacro, []);
 test(unvalidCustomStdoutStreamMacro, {});
-test(unvalidCustomStdoutStreamMacro, function(){return;});
+test(unvalidCustomStdoutStreamMacro, function func(){return;});
 test(unvalidCustomStdoutStreamMacro, '');
 test(unvalidCustomStdoutStreamMacro, '	 ');
 test(unvalidCustomStdoutStreamMacro, 'string');
@@ -270,7 +270,7 @@ unvalidCustomStdinStreamMacro.title = (providedTitle, unvalidStream) => (
 test('not readable stream', unvalidCustomStdinStreamMacro, mockWritableStream());
 test('Array', unvalidCustomStdinStreamMacro, []);
 test(unvalidCustomStdinStreamMacro, {});
-test(unvalidCustomStdinStreamMacro, function(){return;});
+test(unvalidCustomStdinStreamMacro, function func(){return;});
 test(unvalidCustomStdinStreamMacro, '');
 test(unvalidCustomStdinStreamMacro, '	 ');
 test(unvalidCustomStdinStreamMacro, 'string');
@@ -304,7 +304,7 @@ unvalidCustomStderrStreamMacro.title = (providedTitle, unvalidStream) => (
 test('not writable stream', unvalidCustomStderrStreamMacro, mockReadableStream());
 test('Array', unvalidCustomStderrStreamMacro, []);
 test(unvalidCustomStderrStreamMacro, {});
-test(unvalidCustomStderrStreamMacro, function(){return;});
+test(unvalidCustomStderrStreamMacro, function func(){return;});
 test(unvalidCustomStderrStreamMacro, '');
 test(unvalidCustomStderrStreamMacro, '	 ');
 test(unvalidCustomStderrStreamMacro, 'string');

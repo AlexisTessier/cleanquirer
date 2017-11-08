@@ -11,7 +11,8 @@ const glob = require('glob');
 const readPkgUp = require('read-pkg-up');
 const parentModule = require('parent-module');
 
-const msg = require('./msg');
+const msg = require('@alexistessier/msg');
+
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 class CleanquirerCommandImplementationError extends Error{}
@@ -307,8 +308,36 @@ function cleanquirer({
 		};
 
 		const optionsDefinitions = commandObject.options || [];
+		const numberOfOptions = optionsDefinitions.length
+		if (inputs.length > numberOfOptions) {
+			let requirements;
+			switch(numberOfOptions){
+				case 0:
+					requirements = 'no option';
+					break;
+				case 1:
+					requirements = 'only 1 option';
+					break;
+				default:
+					requirements = `only ${numberOfOptions} options`;
+					break;
+			}
+
+			const unknowIndex = numberOfOptions;
+			const unknow = inputs[unknowIndex];
+
+			throw new Error(msg(
+				`${name} ${command} requires ${requirements} but found value`,
+				`${JSON.stringify(unknow)} for an unknow option at position ${unknowIndex+1}.`
+			));
+		}
 
 		optionsDefinitions.forEach(optionDefinition => {
+			if (inputs.length === 0) {
+				throw new Error(
+					`${name} ${command} requires a missing option "${optionDefinition.name}".`
+				);
+			}
 			actionOptions[optionDefinition.name] = inputs.shift();
 		});
 

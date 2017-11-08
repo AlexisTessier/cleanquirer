@@ -9,7 +9,7 @@ const acorn = require('acorn');
 const documentation = require('documentation');
 const lineColumn = require('line-column');
 
-const msg = require('./msg');
+const msg = require('@alexistessier/msg');
 
 /*--------------*/
 

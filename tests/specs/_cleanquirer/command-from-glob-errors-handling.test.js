@@ -2,12 +2,12 @@
 
 const test = require('ava');
 
+const msg = require('@alexistessier/msg');
+
 const requireFromIndex = require('../../utils/require-from-index');
 const pathFromIndex = require('../../utils/path-from-index');
 
 const mockCommandFile = require('../../mocks/mock-command-file');
-
-const msg = requireFromIndex('sources/msg');
 
 /*---------------------------*/
 

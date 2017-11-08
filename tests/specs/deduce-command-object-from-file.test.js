@@ -2,10 +2,10 @@
 
 const test = require('ava');
 
+const msg = require('@alexistessier/msg');
+
 const requireFromIndex = require('../utils/require-from-index');
 const pathFromIndex = require('../utils/path-from-index');
-
-const msg = requireFromIndex('sources/msg');
 
 test('type and api', t => {
 	const deduceFromIndex = requireFromIndex('deduce-command-object-from-file');
@@ -36,7 +36,7 @@ test(deduceWithWrongFilePathMacro, null);
 test(deduceWithWrongFilePathMacro, 5);
 test(deduceWithWrongFilePathMacro, []);
 test(deduceWithWrongFilePathMacro, {});
-test(deduceWithWrongFilePathMacro, ()=>{});
+test(deduceWithWrongFilePathMacro, ()=>{return;});
 test(deduceWithWrongFilePathMacro, '');
 test(deduceWithWrongFilePathMacro, 'non/absolute/path.js');
 
@@ -134,7 +134,7 @@ test('deduce from an unhandled exports value origin file', t => {
 	return deduce(fullPath).then(()=>{
 		t.fail();
 	}).catch(err => {
-		t.is(err.message, `Cleanquirer doesn\'t found the exports value node in the file "${fullPath}".`);
+		t.is(err.message, `Cleanquirer doesn't found the exports value node in the file "${fullPath}".`);
 	});
 });
 

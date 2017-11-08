@@ -11,7 +11,7 @@ function featureHasTestFileMacro(t, testFilename) {
 	t.plan(1);
 
 	return new Promise(resolve => {
-		fs.access(path.join(__dirname, 'cleanquirer', `${testFilename}.test.js`), err => {
+		fs.access(path.join(__dirname, '_cleanquirer', `${testFilename}.test.js`), err => {
 			if (err) {t.fail(`The feature should be tested in a specific file. "${testFilename}" wasn't found (${err.message})`);}
 			t.pass();
 			resolve();

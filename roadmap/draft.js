@@ -46,41 +46,6 @@ const cli = cleanquirer({
 module.exports = cli;
 
 /**
- * TO DO
- * -----
-
- * release
- * -------
- * + name/action command object => DONE
- * + deduce commands from documented files => DONE
- * + multiple commands definition from globs => DONE
- * + multiple commands definition => DONE
- * + undefined command handling => DONE
- * + stdout => DONE
- * + stderr => DONE
- * + stdin => DONE
- * + default stdout handling => DONE
- * + default stderr handling => DONE
- * + default stdin handling => DONE
- * + custom stdout handling => DONE
- * + custom stderr handling => DONE
- * + custom stdin handling => DONE
- * + duplicate command handling => DONE
- * + returning or resolving value from actions => DONE
- * + version option => DONE
- * + default version option => DONE
- * + version command => DONE
- * + override version command from object => DONE
- * + override version command from file => DONE
- * + override version command from glob => DONE
- * + pass the cli object to actions => DONE
-
- * release
- * -------
- * + options command object - ordered usage => WIP
- * + deduce options from documented files => TO DO
- * + deduce options from documented files targeted with glob => TO DO
- 
  * release
  * -------
  * + options command object - unordered usage
