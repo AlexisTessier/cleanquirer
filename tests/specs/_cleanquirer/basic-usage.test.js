@@ -104,13 +104,13 @@ asynchronousCommandPromiseFromSimpleCommandObjectMacro.title = providedTitle => 
 
 test('Name property', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
-	
+
 	const myCli = cleanquirer({
 		name: 'cli-name'
 	});
 
 	t.is(myCli.name, 'cli-name');
-	
+
 	const err = t.throws(()=>{
 		myCli.name = 'a-name-can-t-be-changed'
 	});

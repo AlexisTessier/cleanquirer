@@ -218,9 +218,9 @@ test.cb(`shouldn't modify the input Array when using command from file`, command
 	const input = ['no-doc'];
 
 	t.is(input.length, 1);
-	
+
 	await myCli(input);
-	
+
 	t.is(input.length, 1);
 
 	t.end();
@@ -297,9 +297,9 @@ test(`shouldn't modify the input Array when using commands from files`, multiple
 
 test.cb('Use a command from file multiple times', commandFromFileMacro, 'no-doc.js', async (t, myCli, actionFunction) => {
 	t.is(actionFunction.callCount, 0);
-	
+
 	await myCli(['no-doc']);
-	
+
 	t.is(actionFunction.callCount, 1);
 
 	await myCli(['no-doc']);

@@ -256,7 +256,7 @@ test(unvalidConfigMacro, false);
 test(unvalidConfigMacro, null);
 test(unvalidConfigMacro, 'unvalid');
 test(unvalidConfigMacro, '  ');
-test(unvalidConfigMacro, function () {});
+test(unvalidConfigMacro, function func() {return;});
 
 /*---------------------------*/
 
@@ -276,7 +276,7 @@ test(unvalidOptionsParameterMacro, '');
 test(unvalidOptionsParameterMacro, []);
 test(unvalidOptionsParameterMacro, 42);
 test(unvalidOptionsParameterMacro, 'string');
-test(unvalidOptionsParameterMacro, function(){ return; });
+test(unvalidOptionsParameterMacro, function func() {return;});
 
 /*---------------------------*/
 
@@ -289,7 +289,7 @@ test('Error when defining command using an actionless command object', t => {
 			commands: [
 				{
 					name: 'actionless-command',
-					action(){}
+					action(){return;}
 				},
 				{
 					name: 'actionless-command'
@@ -315,7 +315,7 @@ test(wrongCliInputMacro, false);
 test(wrongCliInputMacro, null);
 test(wrongCliInputMacro, '  ');
 test(wrongCliInputMacro, 'wrong input');
-test(wrongCliInputMacro, function () {});
+test(wrongCliInputMacro, function func() {return;});
 
 /*---------------------------*/
 
@@ -342,7 +342,7 @@ test.cb('Synchronous usage', asynchronousCommandCallbackWithErrorFromSimpleComma
 
 	t.plan(3);
 
-	cli(['callback-command']).then(()=>{}).catch(()=>{});
+	cli(['callback-command']).then(()=>{return;}).catch(()=>{return;});
 
 	t.true(action.notCalled);
 
@@ -380,7 +380,7 @@ test('Promise usage', asynchronousCommandCallbackWithErrorFromSimpleCommandObjec
 	t.plan(6);
 
 	const cliPromise = cli(['callback-command']);
-	
+
 	t.true(cliPromise instanceof Promise);
 	t.true(action.notCalled);
 
@@ -399,7 +399,7 @@ test.cb('Synchronous usage', asynchronousCommandPromiseWithErrorFromSimpleComman
 
 	t.plan(3);
 
-	cli(['promise-error-command']).then(()=>{}).catch(()=>{});
+	cli(['promise-error-command']).then(()=>{return;}).catch(()=>{return;});
 
 	t.true(action.calledTwice);
 
@@ -407,7 +407,7 @@ test.cb('Synchronous usage', asynchronousCommandPromiseWithErrorFromSimpleComman
 		t.is(action.callCount, 4);
 
 		t.end();
-	}, t.context.asyncTimeout*2);	
+	}, t.context.asyncTimeout*2);
 });
 
 test.cb('Callback usage', asynchronousCommandPromiseWithErrorFromSimpleCommandObjectMacro, (t, cli, action) => {
@@ -453,7 +453,7 @@ test('Callback usage', errorUsingCallbackCommandForSynchronousOperationFromSimpl
 
 	cli(['callback'], err => {
 		t.fail();
-	});	
+	});
 });
 
 test('Promise usage', errorUsingCallbackCommandForSynchronousOperationFromSimpleCommandObjectMacro, (t, cli) => {
@@ -692,7 +692,7 @@ test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, 1, callingC
 test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, 0, callingCallbackWithAnUnvalidErrorSynchronousCore);
 test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, [], callingCallbackWithAnUnvalidErrorSynchronousCore);
 test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, {}, callingCallbackWithAnUnvalidErrorSynchronousCore);
-test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, function(){return;}, callingCallbackWithAnUnvalidErrorSynchronousCore);
+test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, function func(){return;}, callingCallbackWithAnUnvalidErrorSynchronousCore);
 test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorSynchronousCore);
 test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorSynchronousCore);
 test.cb('Synchronous usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorSynchronousCore);
@@ -704,7 +704,7 @@ test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 1, callingCall
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 0, callingCallbackWithAnUnvalidErrorCallbackCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, [], callingCallbackWithAnUnvalidErrorCallbackCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, {}, callingCallbackWithAnUnvalidErrorCallbackCore);
-test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function(){return;}, callingCallbackWithAnUnvalidErrorCallbackCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function func(){return;}, callingCallbackWithAnUnvalidErrorCallbackCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorCallbackCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorCallbackCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorCallbackCore);
@@ -716,7 +716,7 @@ test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 1, callingCall
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, 0, callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, [], callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, {}, callingCallbackWithAnUnvalidErrorPromiseCore);
-test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function(){return;}, callingCallbackWithAnUnvalidErrorPromiseCore);
+test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, function func(){return;}, callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, /regex/, callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, false, callingCallbackWithAnUnvalidErrorPromiseCore);
 test.cb('Callback usage', callingCallbackWithAnUnvalidErrorMacro, true, callingCallbackWithAnUnvalidErrorPromiseCore);

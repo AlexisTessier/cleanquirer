@@ -19,14 +19,19 @@ function wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro(t, wrong
 			myCli(wrongInput);
 		});
 
-		t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-		
+		t.is(wrongCliInputError.message, msg(
+			`When using mycli as a function, you must provide an`,
+			`input to it as an Array like one from process.argv.slice(2).`
+		));
+
 		t.end();
 	});
 }
 
-wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro.title = (providedTitle, input) => (
-	`Synchronous usage - When defining command from file, throws error if provided input is not valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`);
+wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro.title = (providedTitle, input) => msg(
+	`Synchronous usage - When defining command from file, throws error if provided input`,
+	`is not valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`
+);
 
 function wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro(t, wrongInput) {
 	t.plan(2);
@@ -38,14 +43,19 @@ function wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro(t, wrongInpu
 			});
 		});
 
-		t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-		
+		t.is(wrongCliInputError.message, msg(
+			`When using mycli as a function, you must provide an input`,
+			`to it as an Array like one from process.argv.slice(2).`
+		));
+
 		t.end();
 	});
 }
 
-wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro.title = (providedTitle, input) => (
-	`Promise usage - When defining command from file, throws error if provided input is not valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`);
+wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro.title = (providedTitle, input) => msg(
+	`Promise usage - When defining command from file, throws error if provided input`,
+	`is not valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`
+);
 
 function wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro(t, wrongInput) {
 	t.plan(2);
@@ -57,14 +67,19 @@ function wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro(t, wrongInp
 			});
 		});
 
-		t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-		
+		t.is(wrongCliInputError.message, msg(
+			`When using mycli as a function, you must provide an input`,
+			`to it as an Array like one from process.argv.slice(2).`
+		));
+
 		t.end();
 	});
 }
 
-wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro.title = (providedTitle, input) => (
-	`Callback usage - When defining command from file, throws error if provided input is not valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`);
+wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro.title = (providedTitle, input) => msg(
+	`Callback usage - When defining command from file, throws error if provided input is not`,
+	`valid like ${typeof input} - ${typeof input === 'object' ? JSON.stringify(input) : typeof input}`
+);
 
 /*---------------------------*/
 
@@ -82,7 +97,8 @@ function commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro(
 }
 
 commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro.title = providedTitle => (
-	`Command from documented command files synchronously calling the callback without error - ${providedTitle}`);
+	`Command from documented command files synchronously calling the callback without error - ${providedTitle}`
+);
 
 /*---------------------------*/
 
@@ -91,7 +107,8 @@ function commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro(t
 }
 
 commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro.title = providedTitle => (
-	`Command from documented command files synchronously calling the callback with an error - ${providedTitle}`);
+	`Command from documented command files synchronously calling the callback with an error - ${providedTitle}`
+);
 
 /*---------------------------*/
 
@@ -155,8 +172,10 @@ function wrongFilePathDefiningCommandFromFileMacro(t, errorMessage, wrongFilePat
 	t.is(commandWrongFilePathError.message, errorMessage);
 }
 
-wrongFilePathDefiningCommandFromFileMacro.title = (providedTitle, wrongFilePath) => (
-	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath}`);
+wrongFilePathDefiningCommandFromFileMacro.title = (providedTitle, wrongFilePath) => msg(
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a`,
+	`command from file - (${typeof wrongFilePath}) ${wrongFilePath}`
+);
 
 /*---------------------------*/
 
@@ -174,7 +193,10 @@ function commandFromNoJsFileMacro(t, wrongFile, errorMessageStart) {
 		});
 	});
 
-	t.is(noJsFileError.message, `"${noJsFilePath}" ${errorMessageStart}. A valid command module file must be a javascript file (.js).`);
+	t.is(noJsFileError.message, msg(
+		`"${noJsFilePath}" ${errorMessageStart}.`,
+		`A valid command module file must be a javascript file (.js).`
+	));
 }
 
 commandFromNoJsFileMacro.title = providedTitle => (
@@ -193,7 +215,7 @@ test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, false);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, null);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, '  ');
 test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, 'wrong input');
-test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, function () {});
+test.cb(wrongCliInputWithCommandsDefinedFromFilesSynchronousUsageMacro, function func() {return;});
 
 test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, undefined);
@@ -204,7 +226,7 @@ test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, false);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, null);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, '  ');
 test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, 'wrong input');
-test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, function () {});
+test.cb(wrongCliInputWithCommandsDefinedFromFilesPromiseUsageMacro, function func() {return;});
 
 test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, undefined);
@@ -215,12 +237,12 @@ test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, false);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, null);
 test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, '  ');
 test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, 'wrong input');
-test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, function () {});
+test.cb(wrongCliInputWithCommandsDefinedFromFilesCallbackUsageMacro, function func() {return;});
 
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandFromDocumentedFileSynchronouslyThrowingErrorMacro, (t, myCli, actionFunction) => {
-	myCli(['throwing-error-command']).catch(err => {});
+	myCli(['throwing-error-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end();
@@ -253,7 +275,7 @@ test.cb('Callback usage', commandFromDocumentedFileSynchronouslyThrowingErrorMac
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithoutErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['synchronous-callback-call-without-error-command']).catch(err => {});
+	myCli(['synchronous-callback-call-without-error-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end()
@@ -267,7 +289,12 @@ test.cb('Promise usage', commandSynchronouslyCallingCallbackWithoutErrorFromDocu
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "synchronous-callback-call-without-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.message, msg(
+			`The mycli command "synchronous-callback-call-without-error-command" you are`,
+			`trying to use calls internally a callback in a synchronous way.`,
+			`This is not permitted by cleanquirer. If the command is synchronous,`,
+			`it shouldn't use neither callback or promise.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -279,7 +306,11 @@ test.cb('Callback usage', commandSynchronouslyCallingCallbackWithoutErrorFromDoc
 	myCli(['synchronous-callback-call-without-error-command'], err => {
 		t.truthy(err);
 		t.is(actionFunction.callCount, 1);
-		t.is(err.message, `The mycli command "synchronous-callback-call-without-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.message, msg(
+			`The mycli command "synchronous-callback-call-without-error-command" you are trying`,
+			`to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer.`,
+			`If the command is synchronous, it shouldn't use neither callback or promise.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -288,7 +319,7 @@ test.cb('Callback usage', commandSynchronouslyCallingCallbackWithoutErrorFromDoc
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['synchronous-callback-call-with-error-command']).catch(err => {});
+	myCli(['synchronous-callback-call-with-error-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end()
@@ -302,7 +333,11 @@ test.cb('Promise usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocum
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "synchronous-callback-call-with-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.message, msg(
+			`The mycli command "synchronous-callback-call-with-error-command" you are trying to use`,
+			`calls internally a callback in a synchronous way. This is not permitted by cleanquirer.`,
+			`If the command is synchronous, it shouldn't use neither callback or promise.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -314,7 +349,11 @@ test.cb('Callback usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocu
 	myCli(['synchronous-callback-call-with-error-command'], err => {
 		t.truthy(err);
 		t.is(actionFunction.callCount, 1);
-		t.is(err.message, `The mycli command "synchronous-callback-call-with-error-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn't use neither callback or promise.`);
+		t.is(err.message, msg(
+			`The mycli command "synchronous-callback-call-with-error-command" you are trying to use`,
+			`calls internally a callback in a synchronous way. This is not permitted by cleanquirer.`,
+			`If the command is synchronous, it shouldn't use neither callback or promise.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -323,7 +362,7 @@ test.cb('Callback usage', commandSynchronouslyCallingCallbackWithAnErrorFromDocu
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['using-both-callback-and-promise-command']).catch(err => {});
+	myCli(['using-both-callback-and-promise-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end()
@@ -337,7 +376,11 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseFromDocumen
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "using-both-callback-and-promise-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.message, msg(
+			`The mycli command "using-both-callback-and-promise-command" you are trying to use both uses`,
+			`internally a callback and returns a promise. This is not permitted by cleanquirer.`,
+			`If the command is asynchronous, it must use callback or promise but not both.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -349,7 +392,11 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseFromDocume
 	myCli(['using-both-callback-and-promise-command'], err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "using-both-callback-and-promise-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.message, msg(
+			`The mycli command "using-both-callback-and-promise-command" you are trying to use both uses`,
+			`internally a callback and returns a promise. This is not permitted by cleanquirer.`,
+			`If the command is asynchronous, it must use callback or promise but not both.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -358,7 +405,7 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseFromDocume
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['using-both-callback-and-promise-and-calling-the-callback-command']).catch(err => {});
+	myCli(['using-both-callback-and-promise-and-calling-the-callback-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end()
@@ -372,7 +419,12 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingT
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn\'t use neither callback or promise.`);
+		t.is(err.message, msg(
+			`The mycli command "using-both-callback-and-promise-and-calling-the-callback-command"`,
+			`you are trying to use calls internally a callback in a synchronous way.`,
+			`This is not permitted by cleanquirer.`,
+			`If the command is synchronous, it shouldn't use neither callback or promise.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -384,7 +436,12 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 	myCli(['using-both-callback-and-promise-and-calling-the-callback-command'], err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-command" you are trying to use calls internally a callback in a synchronous way. This is not permitted by cleanquirer. If the command is synchronous, it shouldn\'t use neither callback or promise.`);
+		t.is(err.message, msg(
+			`The mycli command "using-both-callback-and-promise-and-calling-the-callback-command"`,
+			`you are trying to use calls internally a callback in a synchronous way.`,
+			`This is not permitted by cleanquirer.`,
+			`If the command is synchronous, it shouldn't use neither callback or promise.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -393,7 +450,7 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandInternallyUsingBothCallbackAndPromiseAndCallingTheCallbackAsynchronouslyFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['using-both-callback-and-promise-and-calling-the-callback-asynchronously-command']).catch(err => {});
+	myCli(['using-both-callback-and-promise-and-calling-the-callback-asynchronously-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end()
@@ -407,7 +464,12 @@ test.cb('Promise usage', commandInternallyUsingBothCallbackAndPromiseAndCallingT
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.true(err instanceof Error);
-		t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+		t.is(err.message, msg(
+			`The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command"`,
+			`you are trying to use both uses internally a callback and returns a promise.`,
+			`This is not permitted by cleanquirer.`,
+			`If the command is asynchronous, it must use callback or promise but not both.`
+		));
 		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 		t.end();
 	});
@@ -422,7 +484,12 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 		if (!callbackYetCalled) {
 			t.is(actionFunction.callCount, 1);
 			t.true(err instanceof Error);
-			t.is(err.message, `The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command" you are trying to use both uses internally a callback and returns a promise. This is not permitted by cleanquirer. If the command is asynchronous, it must use callback or promise but not both.`);
+			t.is(err.message, msg(
+				`The mycli command "using-both-callback-and-promise-and-calling-the-callback-asynchronously-command"`,
+				`you are trying to use both uses internally a callback and returns a promise.`,
+				`This is not permitted by cleanquirer. If the command is asynchronous, it must use`,
+				`callback or promise but not both.`
+			));
 			t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
 			callbackYetCalled = true;
 		}
@@ -437,7 +504,7 @@ test.cb('Callback usage', commandInternallyUsingBothCallbackAndPromiseAndCalling
 /*---------------------------*/
 
 test.cb('Callback usage', commandFromFileAsynchronouslyCallingTheCallbackWithAnError, (t, myCli, actionFunction) => {
-	myCli(['asynchronous-callback-call-with-error-command']).catch(err => {});
+	myCli(['asynchronous-callback-call-with-error-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end();
@@ -451,7 +518,10 @@ test.cb('Promise usage', commandFromFileAsynchronouslyCallingTheCallbackWithAnEr
 	}).catch(err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `mycli asynchronous-callback-call-with-error-command error: asynchronous-callback-call-with-error-command-error`);
+		t.is(err.message, msg(
+			`mycli asynchronous-callback-call-with-error-command error:`,
+			`asynchronous-callback-call-with-error-command-error`
+		));
 		t.end();
 	});
 });
@@ -462,7 +532,10 @@ test.cb('Callback usage', commandFromFileAsynchronouslyCallingTheCallbackWithAnE
 	myCli(['asynchronous-callback-call-with-error-command'], err => {
 		t.is(actionFunction.callCount, 1);
 		t.truthy(err);
-		t.is(err.message, `mycli asynchronous-callback-call-with-error-command error: asynchronous-callback-call-with-error-command-error`);
+		t.is(err.message, msg(
+			`mycli asynchronous-callback-call-with-error-command error:`,
+			`asynchronous-callback-call-with-error-command-error`
+		));
 		t.end();
 	});
 });
@@ -470,7 +543,7 @@ test.cb('Callback usage', commandFromFileAsynchronouslyCallingTheCallbackWithAnE
 /*---------------------------*/
 
 test.cb('Synchronous usage', commandReturningRejectingPromiseFromDocumentedFileMacro, (t, myCli, actionFunction) => {
-	myCli(['rejecting-promise-command']).catch(err => {});
+	myCli(['rejecting-promise-command']).catch(err => {return;});
 
 	t.is(actionFunction.callCount, 0);
 	t.end();
@@ -511,7 +584,7 @@ test(wrongFilePathDefiningCommandFromFileMacro,
 test(wrongFilePathDefiningCommandFromFileMacro,
 	`The provided mycli command path "5" at index 0 is neither an object or an absolute path.`, 5);
 test(wrongFilePathDefiningCommandFromFileMacro,
-	`The provided mycli command path "() => {}" at index 0 is neither an object or an absolute path.`, ()=>{});
+	`The provided mycli command path "${() => {return;}}" at index 0 is neither an object or an absolute path.`, ()=>{return;});
 test(wrongFilePathDefiningCommandFromFileMacro,
 	`The provided mycli command object at index 0 has no name.`, []);
 test(wrongFilePathDefiningCommandFromFileMacro,
@@ -539,8 +612,10 @@ function wrongFilePathDefiningCommandFromFileErrorOrderMacro(t, errorMessage, wr
 	t.is(commandWrongFilePathError.message, errorMessage);
 }
 
-wrongFilePathDefiningCommandFromFileErrorOrderMacro.title = (providedTitle, wrongFilePath) => (
-	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath} - check errors order`);
+wrongFilePathDefiningCommandFromFileErrorOrderMacro.title = (providedTitle, wrongFilePath) => msg(
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath`,
+	`defining a command from file - (${typeof wrongFilePath}) ${wrongFilePath} - check errors order`
+);
 
 test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
 	`The provided mycli command path "undefined" at index 0 is neither an object or an absolute path.`);
@@ -551,7 +626,7 @@ test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
 test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
 	`The provided mycli command path "5" at index 0 is neither an object or an absolute path.`, 5);
 test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
-	`The provided mycli command path "() => {}" at index 0 is neither an object or an absolute path.`, ()=>{});
+	`The provided mycli command path "${()=>{return;}}" at index 0 is neither an object or an absolute path.`, ()=>{return;});
 test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
 	`The provided mycli command object at index 0 has no name.`, []);
 test(wrongFilePathDefiningCommandFromFileErrorOrderMacro,
@@ -572,8 +647,7 @@ function wrongFilePathDefiningCommandAtIndex1FromFileMacro(t, errorMessage, wron
 			commands: [
 				{
 					name: 'valid-command',
-					action() {
-					}
+					action() {return;}
 				},
 				wrongFilePath
 			]
@@ -583,8 +657,10 @@ function wrongFilePathDefiningCommandAtIndex1FromFileMacro(t, errorMessage, wron
 	t.is(commandWrongFilePathError.message, errorMessage);
 }
 
-wrongFilePathDefiningCommandAtIndex1FromFileMacro.title = (providedTitle, wrongFilePath) => (
-	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command at index 1 from file - (${typeof wrongFilePath}) ${wrongFilePath}`);
+wrongFilePathDefiningCommandAtIndex1FromFileMacro.title = (providedTitle, wrongFilePath) => msg(
+	`${providedTitle} - Synchronous usage - Error using a wrong filepath defining a command at`,
+	`index 1 from file - (${typeof wrongFilePath}) ${wrongFilePath}`
+);
 
 test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
 	`The provided mycli command path "undefined" at index 1 is neither an object or an absolute path.`);
@@ -595,7 +671,7 @@ test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
 test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
 	`The provided mycli command path "5" at index 1 is neither an object or an absolute path.`, 5);
 test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
-	`The provided mycli command path "() => {}" at index 1 is neither an object or an absolute path.`, ()=>{});
+	`The provided mycli command path "${()=>{return;}}" at index 1 is neither an object or an absolute path.`, ()=>{return;});
 test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
 	`The provided mycli command object at index 1 has no name.`, []);
 test(wrongFilePathDefiningCommandAtIndex1FromFileMacro,
@@ -638,7 +714,7 @@ test(usingNoFunctionModuleWhenDefineACommandFromFileMacro, 'number', 'number-mod
 
 /*---------------------------*/
 
-test('Error using a no js file defining a command from file', 
+test('Error using a no js file defining a command from file',
 	commandFromNoJsFileMacro, 'no-js.txt', 'is a .txt file');
 
 test('Error using a no js file defining a command from file - skipping extension',
@@ -719,7 +795,7 @@ test('Error using an unhandled exports origin defining a command from file', t =
 	return myCli(['unhandled-exports-value-origin-file']).then(()=>{
 		t.fail();
 	}).catch(err => {
-		t.is(err.message, `Cleanquirer doesn\'t found the exports value node in the file "${fullPath}".`);
+		t.is(err.message, `Cleanquirer doesn't found the exports value node in the file "${fullPath}".`);
 	});
 });
 
@@ -743,7 +819,7 @@ test('Error using an file with badly formatted comment on command from file', t 
 			`Cleanquirer found a comment format error in the command file "${fullPath}"`,
 			`which made impossible to deduce the value of "name".`,
 			`Please check that you are using a correct syntax when writting a documentation comment.`,
-			`Error message from documentation.js is: Unknown content \'doc-name\'.`
+			`Error message from documentation.js is: Unknown content 'doc-name'.`
 		));
 	});
 });
@@ -845,6 +921,35 @@ const callbackCalledWithMoreThanOneValueErrorMessage = msg(
 
 test.cb('Action with a callback called with more than one value - Synchronous usage',
 	commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
+		t.plan(3);
+
+		try{
+			await myCli(['callback-called-with-more-than-one-value']);
+			t.fail();
+		}
+		catch(err){
+			t.true(err instanceof Error);
+			t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
+			t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+		}
+
+		t.end();
+	}
+);
+
+test.cb('Action with a callback called with more than one value - Callback usage', commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
+	t.plan(3);
+
+	myCli(['callback-called-with-more-than-one-value'], err => {
+		t.true(err instanceof Error);
+		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
+		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
+
+		t.end();
+	});
+});
+
+test.cb('Action with a callback called with more than one value - Promise usage', commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
 	t.plan(3);
 
 	try{
@@ -860,36 +965,6 @@ test.cb('Action with a callback called with more than one value - Synchronous us
 	t.end();
 });
 
-test.cb('Action with a callback called with more than one value - Callback usage', commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
-	
-	t.plan(3);
-
-	myCli(['callback-called-with-more-than-one-value'], err => {
-		t.true(err instanceof Error);
-		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
-		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
-
-		t.end();
-	});		
-});
-
-test.cb('Action with a callback called with more than one value - Promise usage', commandFromFileMacro, 'callback-called-with-more-than-one-value.js', async (t, myCli) => {
-	
-	t.plan(3);
-
-	try{
-		await myCli(['callback-called-with-more-than-one-value']);
-		t.fail();
-	}
-	catch(err){
-		t.true(err instanceof Error);
-		t.is(err.message, callbackCalledWithMoreThanOneValueErrorMessage);
-		t.is(err.constructor.name, 'CleanquirerCommandImplementationError');
-	}
-
-	t.end();	
-});
-
 /*---------------------*/
 
 const unvalidErrorMessage = (unvalidError => msg(
@@ -902,7 +977,6 @@ const unvalidErrorMessage = (unvalidError => msg(
 ))('unvalid error');
 
 test.cb('Action with a callback called with an unvalid error - Synchronous usage', commandFromFileMacro, 'callback-called-with-an-unvalid-error.js', async (t, myCli) => {
-	
 	t.plan(3);
 
 	myCli(['callback-called-with-an-unvalid-error'], err => {
@@ -915,7 +989,6 @@ test.cb('Action with a callback called with an unvalid error - Synchronous usage
 });
 
 test.cb('Action with a callback called with an unvalid error - Callback usage', commandFromFileMacro, 'callback-called-with-an-unvalid-error.js', async (t, myCli) => {
-	
 	t.plan(3);
 
 	myCli(['callback-called-with-an-unvalid-error'], err => {
@@ -928,7 +1001,6 @@ test.cb('Action with a callback called with an unvalid error - Callback usage', 
 });
 
 test.cb('Action with a callback called with an unvalid error - Promise usage', commandFromFileMacro, 'callback-called-with-an-unvalid-error.js', async (t, myCli) => {
-	
 	t.plan(3);
 
 	myCli(['callback-called-with-an-unvalid-error']).then(()=>t.fail()).catch(err => {

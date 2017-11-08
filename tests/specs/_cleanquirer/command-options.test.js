@@ -250,6 +250,7 @@ test.todo('from object - duplicate option');
 
 /* - deduce option from documented file - */
 
+test.todo('variations options from file');
 test.todo('from file - option count detect inconsistency');
 test.todo('from file - option hasDefaultValue detect inconsistency');
 test.todo('from file - option type detect inconsistency');

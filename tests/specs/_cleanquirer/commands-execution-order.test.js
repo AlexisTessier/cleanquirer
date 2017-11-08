@@ -7,7 +7,7 @@ const requireFromIndex = require('../../utils/require-from-index');
 
 const mockFunction = require('../../mocks/mock-function');
 
-let cleanquirerTestGetCallIndex = 0; 
+let cleanquirerTestGetCallIndex = 0;
 global.cleanquirerTestGetCallIndex = () => (++cleanquirerTestGetCallIndex)
 
 test('Check the execution order of multiple commands defined from objects', t => {

@@ -28,7 +28,7 @@ function wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro(t, wrongI
 	});
 
 	t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-		
+
 	t.end();
 }
 
@@ -54,7 +54,7 @@ function wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro(t, wrongInput
 	});
 
 	t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-		
+
 	t.end();
 }
 
@@ -80,7 +80,7 @@ function wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro(t, wrongInpu
 	});
 
 	t.is(wrongCliInputError.message, `When using mycli as a function, you must provide an input to it as an Array like one from process.argv.slice(2).`);
-	
+
 	t.end();
 }
 
@@ -100,7 +100,7 @@ test.cb(wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro, false);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro, null);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro, '  ');
 test.cb(wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro, 'wrong input');
-test.cb(wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro, function () {});
+test.cb(wrongCliInputWithCommandsDefinedFromGlobSynchronousUsageMacro, function func() {return;});
 
 test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, undefined);
@@ -111,7 +111,7 @@ test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, false);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, null);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, '  ');
 test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, 'wrong input');
-test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, function () {});
+test.cb(wrongCliInputWithCommandsDefinedFromGlobPromiseUsageMacro, function func() {return;});
 
 test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, undefined);
@@ -122,7 +122,7 @@ test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, false);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, null);
 test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, '  ');
 test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, 'wrong input');
-test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, function () {});
+test.cb(wrongCliInputWithCommandsDefinedFromGlobCallbackUsageMacro, function func() {return;});
 
 /*---------------------------*/
 
@@ -354,7 +354,6 @@ test('undefined command handling', async t => {
 		t.true(err instanceof Error);
 		t.is(err.message, 'The command "undefined-command" is not a command of "cli".');
 	}
-	
 });
 
 test('duplicate glob handling', t => {
@@ -465,7 +464,7 @@ const callbackCalledWithMoreThanOneValueErrorMessage = (command, excedentValues)
 	`The cli-test command "${command}" you are trying to use`,
 	`calls internally a callback with more than one value (null, value-one, ${excedentValues}).`,
 	`This is not permitted by cleanquirer. If the command uses a callback, it should only`,
-	`be called with a maximum of 2 arguments: one error or null and one value eventually, like this: callback(err, \'a value\').`
+	`be called with a maximum of 2 arguments: one error or null and one value eventually, like this: callback(err, 'a value').`
 );
 
 test.cb('Synchronous usage', callbackCalledWithMoreThanOneValueMacro, async (t, myCli)=>{
