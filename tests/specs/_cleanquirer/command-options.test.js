@@ -240,7 +240,11 @@ test.todo('variations with multiple calls - too much options');
 /*-------------*/
 
 test.todo('from object - option hasDefaultValue');
-test.todo('from object - option type');
+test.todo('from object - option type - default');
+test.todo('from object - option type - string');
+test.todo('from object - option type - number');
+test.todo('from object - option type - boolean');
+test.todo('from object - option type - object');
 
 test.todo('from object - unvalid options parameter');
 test.todo('from object - unvalid option');
