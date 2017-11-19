@@ -79,7 +79,6 @@ test('version command', async t => {
 
 test('default version option', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
-	const pkg = requireFromIndex('package.json');
 
 	const buffer = [];
 	const stdout = new stream.Writable({
@@ -95,14 +94,14 @@ test('default version option', async t => {
 		}
 	});
 
-	t.is(myCli.version, pkg.version);
+	t.is(myCli.version, 'unversioned');
 
 	const versionFromCommand = await myCli(['version']);
 
-	t.is(buffer.join(''), `v-cli version ${pkg.version}\n`);
+	t.is(buffer.join(''), `v-cli version unversioned\n`);
 
-	t.is(myCli.version, pkg.version);
-	t.is(versionFromCommand, pkg.version);
+	t.is(myCli.version, 'unversioned');
+	t.is(versionFromCommand, 'unversioned');
 });
 
 test('throws error if trying to modify the cli.version property', t => {
