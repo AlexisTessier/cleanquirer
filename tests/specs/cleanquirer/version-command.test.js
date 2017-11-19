@@ -18,6 +18,39 @@ test('version option', async t => {
 	t.is(myCli.version, '2.8.1');
 });
 
+test('version option with trimable string', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'version-cli',
+		version: ' version name		'
+	});
+
+	t.is(myCli.version, 'version name');
+});
+
+test('version option with a integer', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'version-cli',
+		version: 42
+	});
+
+	t.is(myCli.version, '42');
+});
+
+test('version option with a float', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'version-cli',
+		version: 42.42
+	});
+
+	t.is(myCli.version, '42.42');
+});
+
 test('version command', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
