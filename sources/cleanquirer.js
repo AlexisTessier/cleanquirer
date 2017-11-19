@@ -33,6 +33,14 @@ function cleanquirer({
 	name = name.trim();
 	assert(name.length > 0, unvalidNameError);
 
+	const unvalidVersionError = msg(
+		`You must provide a not empty string or a number`,
+		`as valid version parameter for your cli tool.`
+	);
+	assert(typeof version === 'string' || typeof version === 'number', unvalidVersionError);
+	version = `${version}`.trim();
+	assert(version.length > 0, unvalidVersionError);
+
 	assert(options && typeof options === 'object' && !(options instanceof Array),
 		`You must provide an object as options parameter for your cli tool.`
 	);
