@@ -1,6 +1,6 @@
 {
   "name": "cleanquirer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create a cli tool from a documented javascript API 💻",
   "main": "index.js",
   "directories": {
@@ -79,7 +79,7 @@
     "coveralls": "3.0.0",
     "dashify": "0.2.2",
     "dependency-check": "2.9.1",
-    "eslint": "4.10.0",
+    "eslint": "4.11.0",
     "git-repo-info": "1.4.1",
     "github-markdown-css": "2.9.0",
     "jsonfile": "4.0.0",
@@ -119,8 +119,6 @@
     "is-stream": "1.1.0",
     "line-column": "1.0.2",
     "p-memoize": "1.0.0",
-    "parent-module": "0.1.0",
-    "read-pkg-up": "3.0.0",
     "string-argv": "0.0.2",
     "temp-write": "3.3.0"
   },

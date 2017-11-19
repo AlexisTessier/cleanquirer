@@ -7,21 +7,15 @@ const isStream = require('is-stream');
 const isGlob = require('is-glob');
 const glob = require('glob');
 
-// get parent module version
-const readPkgUp = require('read-pkg-up');
-const parentModule = require('parent-module');
-
 const msg = require('@alexistessier/msg');
 
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 class CleanquirerCommandImplementationError extends Error{}
 
-const defaultVersion = readPkgUp.sync({cwd: path.dirname(parentModule())}).pkg.version;
-
 function cleanquirer({
 	name,
-	version = defaultVersion,
+	version = 'unversioned',
 	options = {},
 	commands = []
 } = {}) {
@@ -39,6 +33,14 @@ function cleanquirer({
 	assert(typeof name === 'string', unvalidNameError);
 	name = name.trim();
 	assert(name.length > 0, unvalidNameError);
+
+	const unvalidVersionError = msg(
+		`You must provide a not empty string or a number`,
+		`as valid version parameter for your cli tool.`
+	);
+	assert(typeof version === 'string' || typeof version === 'number', unvalidVersionError);
+	version = `${version}`.trim();
+	assert(version.length > 0, unvalidVersionError);
 
 	assert(options && typeof options === 'object' && !(options instanceof Array),
 		`You must provide an object as options parameter for your cli tool.`

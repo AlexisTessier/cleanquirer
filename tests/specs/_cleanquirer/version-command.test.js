@@ -18,6 +18,39 @@ test('version option', async t => {
 	t.is(myCli.version, '2.8.1');
 });
 
+test('version option with trimable string', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'version-cli',
+		version: ' version name		'
+	});
+
+	t.is(myCli.version, 'version name');
+});
+
+test('version option with a integer', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'version-cli',
+		version: 42
+	});
+
+	t.is(myCli.version, '42');
+});
+
+test('version option with a float', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'version-cli',
+		version: 42.42
+	});
+
+	t.is(myCli.version, '42.42');
+});
+
 test('version command', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -46,7 +79,6 @@ test('version command', async t => {
 
 test('default version option', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
-	const pkg = requireFromIndex('package.json');
 
 	const buffer = [];
 	const stdout = new stream.Writable({
@@ -62,14 +94,14 @@ test('default version option', async t => {
 		}
 	});
 
-	t.is(myCli.version, pkg.version);
+	t.is(myCli.version, 'unversioned');
 
 	const versionFromCommand = await myCli(['version']);
 
-	t.is(buffer.join(''), `v-cli version ${pkg.version}\n`);
+	t.is(buffer.join(''), `v-cli version unversioned\n`);
 
-	t.is(myCli.version, pkg.version);
-	t.is(versionFromCommand, pkg.version);
+	t.is(myCli.version, 'unversioned');
+	t.is(versionFromCommand, 'unversioned');
 });
 
 test('throws error if trying to modify the cli.version property', t => {
@@ -148,3 +180,34 @@ test('override version command from glob', async t => {
 	t.is(myCli.version, 'start version');
 	t.is(version, 'override version from glob');
 });
+
+function unvalidVersionMacro(t, unvalidValue) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const unvalidVersionError = t.throws(() => {
+		cleanquirer({
+			name: 'wrong-version-cli',
+			version: unvalidValue
+		});
+	});
+
+	t.is(unvalidVersionError.message, `You must provide a not empty string or a number as valid version parameter for your cli tool.`);
+}
+
+unvalidVersionMacro.title = providedTitle => (
+	`version option with unvalid value - ${providedTitle}`
+);
+
+test('boolean true', unvalidVersionMacro, true);
+test('boolean false', unvalidVersionMacro, false);
+test('null', unvalidVersionMacro, null);
+test('empty string', unvalidVersionMacro, '');
+test('blank string', unvalidVersionMacro, '	 ');
+test('blank string 2', unvalidVersionMacro, '  \n');
+test('empty array', unvalidVersionMacro, []);
+test('empty object', unvalidVersionMacro, {});
+test('array', unvalidVersionMacro, ['hello']);
+test('object', unvalidVersionMacro, {key: 'value'});
+test('symbol', unvalidVersionMacro, Symbol('hello'));
+test('empty symbol', unvalidVersionMacro, Symbol());
+test('function', unvalidVersionMacro, function hello(){return;});
