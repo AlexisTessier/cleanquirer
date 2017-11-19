@@ -115,8 +115,6 @@
     "is-stream": "1.1.0",
     "line-column": "1.0.2",
     "p-memoize": "1.0.0",
-    "parent-module": "0.1.0",
-    "read-pkg-up": "2.0.0",
     "temp-write": "3.3.0"
   },
   "optionalDependencies": {

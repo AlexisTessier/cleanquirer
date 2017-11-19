@@ -7,20 +7,14 @@ const isStream = require('is-stream');
 const isGlob = require('is-glob');
 const glob = require('glob');
 
-// get parent module version
-const readPkgUp = require('read-pkg-up');
-const parentModule = require('parent-module');
-
 const msg = require('./msg');
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
 class CleanquirerCommandImplementationError extends Error{}
 
-const defaultVersion = readPkgUp.sync({cwd: path.dirname(parentModule())}).pkg.version;
-
 function cleanquirer({
 	name,
-	version = defaultVersion,
+	version = 'unversioned',
 	options = {},
 	commands = []
 } = {}) {
