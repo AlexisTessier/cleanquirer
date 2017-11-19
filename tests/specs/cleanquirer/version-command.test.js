@@ -180,3 +180,34 @@ test('override version command from glob', async t => {
 	t.is(myCli.version, 'start version');
 	t.is(version, 'override version from glob');
 });
+
+function unvalidVersionMacro(t, unvalidValue) {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const unvalidVersionError = t.throws(() => {
+		cleanquirer({
+			name: 'wrong-version-cli',
+			version: unvalidValue
+		});
+	});
+
+	t.is(unvalidVersionError.message, `You must provide a not empty string or a number as valid version parameter for your cli tool.`);
+}
+
+unvalidVersionMacro.title = providedTitle => (
+	`version option with unvalid value - ${providedTitle}`
+);
+
+test('boolean true', unvalidVersionMacro, true);
+test('boolean false', unvalidVersionMacro, false);
+test('null', unvalidVersionMacro, null);
+test('empty string', unvalidVersionMacro, '');
+test('blank string', unvalidVersionMacro, '	 ');
+test('blank string 2', unvalidVersionMacro, '  \n');
+test('empty array', unvalidVersionMacro, []);
+test('empty object', unvalidVersionMacro, {});
+test('array', unvalidVersionMacro, ['hello']);
+test('object', unvalidVersionMacro, {key: 'value'});
+test('symbol', unvalidVersionMacro, Symbol('hello'));
+test('empty symbol', unvalidVersionMacro, Symbol());
+test('function', unvalidVersionMacro, function hello(){return;});
