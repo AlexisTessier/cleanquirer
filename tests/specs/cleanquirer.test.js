@@ -5,6 +5,7 @@ const test = require('ava');
 const fs = require('fs');
 const path = require('path');
 
+const pathFromIndex = require('../utils/path-from-index');
 const requireFromIndex = require('../utils/require-from-index');
 
 function featureHasTestFileMacro(t, testFilename) {
@@ -60,3 +61,19 @@ test('Provide a default version command', featureHasTestFileMacro, 'version-comm
 test('Commands options support', featureHasTestFileMacro, 'command-options');
 
 /*---------------------------*/
+
+test.cb('acorn error should not happen - using set as key name in object patter', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const cli = cleanquirer({
+		name: 'mycli',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/acorn-command-with-set-in-pattern-object')
+		]
+	});
+
+	cli(['acorn-command-with-set-in-pattern-object']).then(value => {
+		t.is(value, 'mock set value');
+		t.end();
+	});
+});

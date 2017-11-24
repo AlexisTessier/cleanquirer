@@ -75,7 +75,7 @@
     "@alexistessier/node-module-starterkit-release-dep": "1.7.4",
     "ava": "0.23.0",
     "capitalize": "1.0.0",
-    "concurrently": "3.5.0",
+    "concurrently": "3.5.1",
     "coveralls": "3.0.0",
     "dashify": "0.2.2",
     "dependency-check": "2.9.1",
