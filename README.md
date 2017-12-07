@@ -16,7 +16,6 @@ Create a cli tool from a documented javascript API 💻
 
 -   [Introduction](#introduction)
 -   [Get started](#get-started)
--   [Roadmap](#roadmap)
 -   [Documentation](#documentation)
 -   [License](#license)
 
@@ -94,28 +93,6 @@ And fill the bin field in your module package.json
     "bin": {
       "cli-name": "path/to/bin/myCli"
     }
-
-## Roadmap
-
--   command options support (automaticaly deduced from files comments and/or function signature)
-
-
--   provide a prompt method (like inquirer) in order to allow easy user interactions
-
-
--   automaticaly prompt the missing options when user uses a command
-
-
--   help command/flag support
-
-
--   options aliases support
-
-
--   global options support
-
-
--   commands aliases support
 
 ## Documentation
 
