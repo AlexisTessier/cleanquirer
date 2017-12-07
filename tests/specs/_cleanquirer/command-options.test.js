@@ -42,6 +42,86 @@ test('from object - ordered usage - one option', t => {
 	t.is(actionOptions.optionA, 'option-a-value');
 });
 
+test('@match from object with multiple commands and calls - ordered usage - one option', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionA = sinon.spy();
+	const actionB = sinon.spy();
+
+	const cli = cleanquirer({
+		name: 'cli-test',
+		commands: [
+			{
+				name: 'test',
+				action: actionA,
+				options: [{
+					name: 'optionA'
+				}]
+			},
+			{
+				name: 'commandbis',
+				action: actionB,
+				options: [{
+					name: 'optionB'
+				}]
+			}
+		]
+	});
+
+	cli(argv('commandbis option-b-value'));
+	t.true(actionA.notCalled);
+	t.true(actionB.calledOnce);
+	let actionOptions = actionB.getCall(0).args[0];
+	t.deepEqual(Object.keys(actionOptions).sort(), [
+		'cli',
+		'optionB',
+		'stderr',
+		'stdin',
+		'stdout'
+	]);
+	t.is(actionOptions.optionB, 'option-b-value');
+
+	cli(argv('test option-a-value'));
+	t.true(actionA.calledOnce);
+	t.true(actionB.calledOnce);
+	actionOptions = actionA.getCall(0).args[0];
+	t.deepEqual(Object.keys(actionOptions).sort(), [
+		'cli',
+		'optionA',
+		'stderr',
+		'stdin',
+		'stdout'
+	]);
+	t.is(actionOptions.optionA, 'option-a-value');
+
+	cli(argv('test option-a-value2'));
+	t.true(actionA.calledTwice);
+	t.true(actionB.calledOnce);
+	actionOptions = actionA.getCall(1).args[0];
+	t.deepEqual(Object.keys(actionOptions).sort(), [
+		'cli',
+		'optionA',
+		'stderr',
+		'stdin',
+		'stdout'
+	]);
+	t.is(actionOptions.optionA, 'option-a-value2');
+
+	cli(argv('commandbis option-b-value-bis'));
+	t.true(actionA.calledTwice);
+	t.true(actionB.calledTwice);
+	actionOptions = actionB.getCall(1).args[0];
+	t.deepEqual(Object.keys(actionOptions).sort(), [
+		'cli',
+		'optionB',
+		'stderr',
+		'stdin',
+		'stdout'
+	]);
+	t.is(actionOptions.optionB, 'option-b-value-bis');
+});
+
+test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - multiple option', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -85,6 +165,7 @@ test('from object - ordered usage - multiple option', t => {
 	t.is(actionOptions.optionC, 'option c value');
 });
 
+test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - one option - missing option handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -110,6 +191,7 @@ test('from object - ordered usage - one option - missing option handling', t => 
 	t.is(missingOptionError.message, `cli-test-2 command-one requires a missing option "optionA".`);
 });
 
+test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - multiple option - missing option handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -141,6 +223,7 @@ test('from object - ordered usage - multiple option - missing option handling', 
 	t.is(missingOptionError.message, `cli-test command requires a missing option "option_c".`);
 });
 
+test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - no option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -166,6 +249,7 @@ test('from object - ordered usage - no option - too much options handling', t =>
 	));
 });
 
+test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - one option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -194,6 +278,7 @@ test('from object - ordered usage - one option - too much options handling', t =
 	));
 });
 
+test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - multiple option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -228,15 +313,6 @@ test('from object - ordered usage - multiple option - too much options handling'
 	));
 });
 
-test.todo('variations with multiple commands');
-test.todo('variations with multiple calls');
-
-test.todo('variations with multiple commands - missing options');
-test.todo('variations with multiple calls - missing options');
-
-test.todo('variations with multiple commands - too much options');
-test.todo('variations with multiple calls - too much options');
-
 /*-------------*/
 
 test.todo('from object - option hasDefaultValue');
@@ -249,6 +325,7 @@ test.todo('from object - option type - object');
 test.todo('from object - unvalid options parameter');
 test.todo('from object - unvalid option');
 test.todo('from object - unvalid option name');
+test.todo('from object - unvalid option hasDefaultValue');
 test.todo('from object - unvalid option type');
 test.todo('from object - duplicate option');
 
