@@ -315,26 +315,26 @@ test('from object - ordered usage - multiple option - too much options handling'
 
 /*-------------*/
 
-test.todo('from object - option hasDefaultValue');
-test.todo('from object - option type - default');
-test.todo('from object - option type - string');
-test.todo('from object - option type - number');
-test.todo('from object - option type - boolean');
-test.todo('from object - option type - object');
+test.todo('v0.2 from object - option hasDefaultValue');
+test.todo('v0.2 from object - option type - default');
+test.todo('v0.2 from object - option type - string');
+test.todo('v0.2 from object - option type - number');
+test.todo('v0.2 from object - option type - boolean');
+test.todo('v0.2 from object - option type - object');
 
-test.todo('from object - unvalid options parameter');
-test.todo('from object - unvalid option');
-test.todo('from object - unvalid option name');
-test.todo('from object - unvalid option hasDefaultValue');
-test.todo('from object - unvalid option type');
-test.todo('from object - duplicate option');
+test.todo('v0.2 from object - unvalid options parameter');
+test.todo('v0.2 from object - unvalid option');
+test.todo('v0.2 from object - unvalid option name');
+test.todo('v0.2 from object - unvalid option hasDefaultValue');
+test.todo('v0.2 from object - unvalid option type');
+test.todo('v0.2 from object - duplicate option');
 
 /* - deduce option from documented file - */
 
-test.todo('variations options from file');
-test.todo('from file - option count detect inconsistency');
-test.todo('from file - option hasDefaultValue detect inconsistency');
-test.todo('from file - option type detect inconsistency');
+test.todo('v0.2 variations options from file');
+test.todo('v0.2 from file - option count detect inconsistency');
+test.todo('v0.2 from file - option hasDefaultValue detect inconsistency');
+test.todo('v0.2 from file - option type detect inconsistency');
 
 /*------------*/
 
