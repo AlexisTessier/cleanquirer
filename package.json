@@ -92,7 +92,7 @@
     "remarkable": "1.7.1",
     "serve-here": "3.2.0",
     "shelljs": "0.7.8",
-    "sinon": "4.1.2"
+    "sinon": "4.1.3"
   },
   "ava": {
     "source": [
