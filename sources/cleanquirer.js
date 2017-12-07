@@ -335,12 +335,14 @@ function cleanquirer({
 		}
 
 		optionsDefinitions.forEach(optionDefinition => {
-			if (inputs.length === 0) {
+			if (inputs.length > 0) {
+				actionOptions[optionDefinition.name] = inputs.shift();
+			}
+			else if (!optionDefinition.hasDefaultValue) {
 				throw new Error(
 					`${name} ${command} requires a missing option "${optionDefinition.name}".`
 				);
 			}
-			actionOptions[optionDefinition.name] = inputs.shift();
 		});
 
 		try{
