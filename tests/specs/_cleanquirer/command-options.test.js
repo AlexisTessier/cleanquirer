@@ -395,125 +395,22 @@ test('from object - ordered usage - multiple option - too much options handling'
 
 /*-------------*/
 
-test('from object - option hasDefaultValue setted to true - 1 option not missing', t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
+//  variations for hasDefaultValue
+//  ------------------------------
+//  1) true / option missing / default defined
+// 	2) true / option missing / default not defined
+// 	3) true / option not missing / default defined
+// 	4) true / option not missing / default not defined
+// 	5) false / option missing / default defined
+// 	6) false / option missing / default not defined
+// 	7) false / option not missing / default defined
+// 	8) false / option not missing / default not defined
 
-	const actionDetect = sinon.spy();
-	let optionValue = null;
+test.todo('v0.2 variations with 2 options');
+test.todo('v0.2 variations with 3 options');
+test.todo('v0.2 variations with multiple commands and calls');
 
-	const cli = cleanquirer({
-		name: 'cli-test-y',
-		commands: [
-			{
-				name: 'command-with-no-default-option',
-				action({
-					anOption = 'default option value'
-				}){
-					actionDetect();
-					optionValue = anOption;
-				},
-				options: [{
-					name: 'anOption',
-					hasDefaultValue: true
-				}]
-			}
-		]
-	});
-
-	cli(argv('command-with-no-default-option expectedValue'));
-	t.true(actionDetect.calledOnce);
-	t.is(optionValue, 'expectedValue');
-});
-test('from object - option hasDefaultValue setted to false - 1 option not missing', t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const actionDetect = sinon.spy();
-	let optionValue = null;
-
-	const cli = cleanquirer({
-		name: 'cli-test-y',
-		commands: [
-			{
-				name: 'command-with-no-default-option',
-				action({
-					rockOption
-				}){
-					actionDetect();
-					optionValue = rockOption;
-				},
-				options: [{
-					name: 'rockOption',
-					hasDefaultValue: false
-				}]
-			}
-		]
-	});
-
-	cli(argv('command-with-no-default-option expectedValue'));
-	t.true(actionDetect.calledOnce);
-	t.is(optionValue, 'expectedValue');
-});
-
-test('from object - option hasDefaultValue setted to true - 1 option not missing and no default defined', t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const actionDetect = sinon.spy();
-	let optionValue = null;
-
-	const cli = cleanquirer({
-		name: 'cli-test-y',
-		commands: [
-			{
-				name: 'command-test',
-				action({
-					aoption
-				}){
-					actionDetect();
-					optionValue = aoption;
-				},
-				options: [{
-					name: 'aoption',
-					hasDefaultValue: true
-				}]
-			}
-		]
-	});
-
-	cli(argv('command-test expectedValue2'));
-	t.true(actionDetect.calledOnce);
-	t.is(optionValue, 'expectedValue2');
-});
-test('from object - option hasDefaultValue setted to false - 1 option not missing but default defined', t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const actionDetect = sinon.spy();
-	let optionValue = null;
-
-	const cli = cleanquirer({
-		name: 'cli-test-y',
-		commands: [
-			{
-				name: 'command-with-no-default-option',
-				action({
-					rockOption = 'unexpected value'
-				}){
-					actionDetect();
-					optionValue = rockOption;
-				},
-				options: [{
-					name: 'rockOption',
-					hasDefaultValue: false
-				}]
-			}
-		]
-	});
-
-	cli(argv('command-with-no-default-option expectedValue'));
-	t.true(actionDetect.calledOnce);
-	t.is(optionValue, 'expectedValue');
-});
-
-test('from object - option hasDefaultValue setted to true - 1 option missing', t => {
+test('1) from object - hasDefaultValue with 1 option - true / option missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionDetect = sinon.spy();
@@ -542,7 +439,38 @@ test('from object - option hasDefaultValue setted to true - 1 option missing', t
 	t.true(actionDetect.calledOnce);
 	t.is(optionValue, 'default expected value');
 });
-test('from object - option hasDefaultValue setted to false - 1 option missing', t => {
+
+test('2) from object - hasDefaultValue with 1 option - true / option missing / default not defined', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-default-option',
+				action({
+					softOption
+				}){
+					actionDetect();
+					optionValue = softOption;
+				},
+				options: [{
+					name: 'softOption',
+					hasDefaultValue: true
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-default-option'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, undefined);
+});
+
+test('3) from object - hasDefaultValue with 1 option - true / option not missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionDetect = sinon.spy();
@@ -554,30 +482,55 @@ test('from object - option hasDefaultValue setted to false - 1 option missing', 
 			{
 				name: 'command-with-no-default-option',
 				action({
-					rockOption
+					anOption = 'default option value'
 				}){
 					actionDetect();
-					optionValue = rockOption;
+					optionValue = anOption;
 				},
 				options: [{
-					name: 'rockOption',
-					hasDefaultValue: false
+					name: 'anOption',
+					hasDefaultValue: true
 				}]
 			}
 		]
 	});
 
-	const missingOptionError = t.throws(()=>{
-		cli(argv('command-with-no-default-option'));
-	});
-
-	t.is(missingOptionError.message,
-		`cli-test-y command-with-no-default-option requires a missing option "rockOption".`
-	);
+	cli(argv('command-with-no-default-option expectedValue'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue');
 });
 
-test.todo('from object - option hasDefaultValue setted to true - 1 option missing but no default defined');
-test('from object - option hasDefaultValue setted to false - 1 option missing but default defined', t => {
+test('4) from object - hasDefaultValue with 1 option - true / option not missing / default not defined', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-test',
+				action({
+					aoption
+				}){
+					actionDetect();
+					optionValue = aoption;
+				},
+				options: [{
+					name: 'aoption',
+					hasDefaultValue: true
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-test expectedValue2'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue2');
+});
+
+test('5) from object - hasDefaultValue with 1 option - false / option missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionDetect = sinon.spy();
@@ -611,26 +564,101 @@ test('from object - option hasDefaultValue setted to false - 1 option missing bu
 	);
 });
 
-test.todo('variation with true');
-test.skip('v0.2 from object - option hasDefaultValue setted to false - 2 options', t => {
+test('6) from object - hasDefaultValue with 1 option - false / option missing / default not defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
+	const actionDetect = sinon.spy();
+	let optionValue = null;
 
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	const missingOptionError = t.throws(()=>{
+		cli(argv('command-with-no-default-option'));
+	});
+
+	t.is(missingOptionError.message,
+		`cli-test-y command-with-no-default-option requires a missing option "rockOption".`
+	);
 });
 
-test.todo('variation with true');
-test.skip('v0.2 from object - option hasDefaultValue setted to false - 3 options', t => {
+test('7) from object - hasDefaultValue with 1 option - false / option not missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
+	const actionDetect = sinon.spy();
+	let optionValue = null;
 
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption = 'unexpected value'
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-no-default-option expectedValue'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue');
 });
 
-test.todo('variation with true');
-test.skip('v0.2 from object - option hasDefaultValue setted to false - multiple commands and calls', t => {
+test('8) from object - hasDefaultValue with 1 option - false / option not missing / default not defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
+	const actionDetect = sinon.spy();
+	let optionValue = null;
 
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-no-default-option expectedValue'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue');
 });
+
+/*-----------------------------------*/
 
 test.todo('v0.2 from object - option type - default');
 test.todo('v0.2 from object - option type - string');
