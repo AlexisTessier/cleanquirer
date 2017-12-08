@@ -675,6 +675,11 @@ test.todo('v0.2 from object - duplicate option');
 
 /* - deduce option from documented file - */
 
+test.todo('v0.2 variations options from action function');
+test.todo('v0.2 from action function - option count detect inconsistency');
+test.todo('v0.2 from action function - option hasDefaultValue detect inconsistency');
+test.todo('v0.2 from action function - option type detect inconsistency');
+
 test.todo('v0.2 variations options from file');
 test.todo('v0.2 from file - option count detect inconsistency');
 test.todo('v0.2 from file - option hasDefaultValue detect inconsistency');
