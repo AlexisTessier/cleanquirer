@@ -3,10 +3,13 @@
 const test = require('ava');
 
 const msg = require('@alexistessier/msg');
+const stringable = require('stringable');
 
 const requireFromIndex = require('../../utils/require-from-index');
 
 const mockFunction = require('../../mocks/mock-function');
+
+const logs = requireFromIndex('sources/settings/logs');
 
 /*---------------------------*/
 
@@ -18,15 +21,12 @@ function unvalidConfigMacro(t, unvalidConfig) {
 	});
 
 	if (unvalidConfig !== null) {
-		t.is(unvalidConfigError.message, msg(
-			`You must provide a valid configuration object to cleanquirer.`,
-			`${typeof unvalidConfig} is not a valid type for a cleanquirer configuration.`
-		));
+		t.is(unvalidConfigError.message, logs.unvalidConfigurationObject({config: unvalidConfig}));
 	}
 }
 
 unvalidConfigMacro.title = (providedTitle, conf) => (
-	`${providedTitle} - need a valid config like ${typeof conf} - ${typeof conf === 'object' ? JSON.stringify(conf) : typeof conf}`);
+	`${providedTitle} - need a valid config like ${stringable(conf)}`);
 
 /*---------------------------*/
 
@@ -37,11 +37,11 @@ function noNameParameterMacro(t, configWithNoName) {
 		cleanquirer(configWithNoName);
 	});
 
-	t.is(noValidNameError.message, `You must provide a not empty string as valid name parameter for your cli tool.`);
+	t.is(noValidNameError.message, logs.unvalidNameParameter());
 }
 
 noNameParameterMacro.title = (providedTitle, data) => (
-	`${providedTitle} - need a name parameter or throw an error with config like ${JSON.stringify(data)}`);
+	`${providedTitle} - need a name parameter or throw an error with config like ${stringable(data)}`);
 
 /*---------------------------*/
 

@@ -11,6 +11,11 @@ const msg = require('@alexistessier/msg');
 
 const deduceCommandObjectFromFile = require('./deduce-command-object-from-file');
 
+const {
+	unvalidConfigurationObject: UNV_CON,
+	unvalidNameParameter: UNV_NAM
+} = require('./settings/logs');
+
 class CleanquirerCommandImplementationError extends Error{}
 
 function cleanquirer({
@@ -19,20 +24,14 @@ function cleanquirer({
 	options = {},
 	commands = []
 } = {}) {
-	const configType = typeof arguments[0];
+	const config = arguments[0];
+	const configType = typeof config;
 
-	assert(configType === 'object' && !Array.isArray(arguments[0]), msg(
-		`You must provide a valid configuration object to cleanquirer.`,
-		`${configType} is not a valid type for a cleanquirer configuration.`
-	));
+	assert(configType === 'object' && !Array.isArray(config), UNV_CON({config}));
 
-	const unvalidNameError = msg(
-		`You must provide a not empty string`,
-		`as valid name parameter for your cli tool.`
-	);
-	assert(typeof name === 'string', unvalidNameError);
+	assert(typeof name === 'string', UNV_NAM());
 	name = name.trim();
-	assert(name.length > 0, unvalidNameError);
+	assert(name.length > 0, UNV_NAM());
 
 	const unvalidVersionError = msg(
 		`You must provide a not empty string or a number`,
