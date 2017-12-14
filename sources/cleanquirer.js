@@ -13,7 +13,8 @@ const deduceCommandObjectFromFile = require('./deduce-command-object-from-file')
 
 const {
 	unvalidConfigurationObject: UNV_CON,
-	unvalidNameParameter: UNV_NAM
+	unvalidName: UNV_NAM,
+	unvalidVersion: UNV_VER
 } = require('./settings/logs');
 
 class CleanquirerCommandImplementationError extends Error{}
@@ -33,13 +34,9 @@ function cleanquirer({
 	name = name.trim();
 	assert(name.length > 0, UNV_NAM());
 
-	const unvalidVersionError = msg(
-		`You must provide a not empty string or a number`,
-		`as valid version parameter for your cli tool.`
-	);
-	assert(typeof version === 'string' || typeof version === 'number', unvalidVersionError);
+	assert(typeof version === 'string' || typeof version === 'number', UNV_VER());
 	version = `${version}`.trim();
-	assert(version.length > 0, unvalidVersionError);
+	assert(version.length > 0, UNV_VER());
 
 	assert(options && typeof options === 'object' && !(options instanceof Array),
 		`You must provide an object as options parameter for your cli tool.`

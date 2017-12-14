@@ -37,7 +37,7 @@ function noNameParameterMacro(t, configWithNoName) {
 		cleanquirer(configWithNoName);
 	});
 
-	t.is(noValidNameError.message, logs.unvalidNameParameter());
+	t.is(noValidNameError.message, logs.unvalidName());
 }
 
 noNameParameterMacro.title = (providedTitle, data) => (

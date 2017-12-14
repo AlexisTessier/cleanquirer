@@ -16,7 +16,8 @@ test('Type and content', t => {
 
 	t.deepEqual(Object.keys(logs).sort(), [
 		'unvalidConfigurationObject',
-		'unvalidNameParameter',
+		'unvalidName',
+		'unvalidVersion'
 	].sort());
 });
 
@@ -35,11 +36,20 @@ test('unvalidConfigurationObject', t => {
 	));
 });
 
-test('unvalidNameParameter', t => {
+test('unvalidName', t => {
 	const logs = requireFromIndex('sources/settings/logs');
 
-	t.is(typeof logs.unvalidNameParameter, 'function');
-	t.is(logs.unvalidNameParameter({ configType: 'test type' }), (
+	t.is(typeof logs.unvalidName, 'function');
+	t.is(logs.unvalidName(), (
 		`You must provide a not empty string as valid name parameter for your cli tool.`
+	));
+});
+
+test('unvalidVersion', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidVersion, 'function');
+	t.is(logs.unvalidVersion(), (
+		`You must provide a not empty string or a number as valid version parameter for your cli tool.`
 	));
 });

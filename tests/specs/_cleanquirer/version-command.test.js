@@ -7,6 +7,8 @@ const stream = require('stream');
 const pathFromIndex = require('../../utils/path-from-index');
 const requireFromIndex = require('../../utils/require-from-index');
 
+const logs = requireFromIndex('sources/settings/logs');
+
 test('version option', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -162,25 +164,6 @@ test('override version command from file', async t => {
 	t.is(version, 'override version from file');
 });
 
-test('override version command from glob', async t => {
-	const cleanquirer = requireFromIndex('sources/cleanquirer');
-
-	const myCli = cleanquirer({
-		name: 'cli-version-override',
-		version: 'start version',
-		commands: [
-			pathFromIndex('tests/mocks/mock-commands/from-glob/override-version-command/*.js')
-		]
-	});
-
-	t.is(myCli.version, 'start version');
-
-	const version = await myCli(['version']);
-
-	t.is(myCli.version, 'start version');
-	t.is(version, 'override version from glob');
-});
-
 function unvalidVersionMacro(t, unvalidValue) {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -191,7 +174,7 @@ function unvalidVersionMacro(t, unvalidValue) {
 		});
 	});
 
-	t.is(unvalidVersionError.message, `You must provide a not empty string or a number as valid version parameter for your cli tool.`);
+	t.is(unvalidVersionError.message, logs.unvalidVersion());
 }
 
 unvalidVersionMacro.title = providedTitle => (
@@ -211,3 +194,22 @@ test('object', unvalidVersionMacro, {key: 'value'});
 test('symbol', unvalidVersionMacro, Symbol('hello'));
 test('empty symbol', unvalidVersionMacro, Symbol());
 test('function', unvalidVersionMacro, function hello(){return;});
+
+test('override version command from glob', async t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const myCli = cleanquirer({
+		name: 'cli-version-override',
+		version: 'start version',
+		commands: [
+			pathFromIndex('tests/mocks/mock-commands/from-glob/override-version-command/*.js')
+		]
+	});
+
+	t.is(myCli.version, 'start version');
+
+	const version = await myCli(['version']);
+
+	t.is(myCli.version, 'start version');
+	t.is(version, 'override version from glob');
+});
