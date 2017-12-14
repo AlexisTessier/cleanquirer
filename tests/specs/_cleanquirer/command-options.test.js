@@ -163,6 +163,7 @@ test('from object - ordered usage - multiple option', t => {
 
 	t.is(actionOptions.optionC, 'option c value');
 });
+
 test('from object - ordered usage - multiple - with multiple commands and calls', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -245,7 +246,6 @@ test('from object - ordered usage - multiple - with multiple commands and calls'
 	t.is(actionOptions.optionC, '222');
 });
 
-test.todo('variations with multiple commands and calls');
 test('from object - ordered usage - one option - missing option handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -271,7 +271,77 @@ test('from object - ordered usage - one option - missing option handling', t => 
 	t.is(missingOptionError.message, `cli-test-2 command-one requires a missing option "optionA".`);
 });
 
-test.todo('variations with multiple commands and calls');
+test('from object - ordered usage - one option - missing option handling - with multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionA = sinon.spy();
+	const actionB = sinon.spy();
+	const actionC = sinon.spy();
+
+	const cli = cleanquirer({
+		name: 'multi',
+		commands: [
+			{
+				name: 'command-a',
+				action: actionA,
+				options: [{
+					name: 'optionA'
+				}]
+			},
+			{
+				name: 'b',
+				action: actionB,
+				options: [{
+					name: 'bo'
+				}]
+			},
+			{
+				name: 'cc',
+				action: actionC,
+				options: [{
+					name: 'C'
+				}]
+			}
+		]
+	});
+
+	let missingOptionError = t.throws(()=>{
+		cli(argv('command-a'));
+	});
+	t.is(missingOptionError.message, `multi command-a requires a missing option "optionA".`);
+
+	missingOptionError = t.throws(()=>{
+		cli(argv('cc'));
+	});
+	t.is(missingOptionError.message, `multi cc requires a missing option "C".`);
+
+	missingOptionError = t.throws(()=>{
+		cli(argv('cc'));
+	});
+	t.is(missingOptionError.message, `multi cc requires a missing option "C".`);
+
+	missingOptionError = t.throws(()=>{
+		cli(argv('b'));
+	});
+	t.is(missingOptionError.message, `multi b requires a missing option "bo".`);
+
+	missingOptionError = t.throws(()=>{
+		cli(argv('cc'));
+	});
+	t.is(missingOptionError.message, `multi cc requires a missing option "C".`);
+
+	missingOptionError = t.throws(()=>{
+		cli(argv('command-a'));
+	});
+	t.is(missingOptionError.message, `multi command-a requires a missing option "optionA".`);
+
+	missingOptionError = t.throws(()=>{
+		cli(argv('b'));
+	});
+	t.is(missingOptionError.message, `multi b requires a missing option "bo".`);
+});
+
+test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - multiple option - missing option handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -303,7 +373,7 @@ test('from object - ordered usage - multiple option - missing option handling', 
 	t.is(missingOptionError.message, `cli-test command requires a missing option "option_c".`);
 });
 
-test.todo('variations with multiple commands and calls');
+test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - no option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -329,7 +399,7 @@ test('from object - ordered usage - no option - too much options handling', t =>
 	));
 });
 
-test.todo('variations with multiple commands and calls');
+test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - one option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -358,7 +428,7 @@ test('from object - ordered usage - one option - too much options handling', t =
 	));
 });
 
-test.todo('variations with multiple commands and calls');
+test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - multiple option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -406,8 +476,7 @@ test('from object - ordered usage - multiple option - too much options handling'
 // 	7) false / option not missing / default defined
 // 	8) false / option not missing / default not defined
 
-test.todo('v0.2 variations with 2 options');
-test.todo('v0.2 variations with 3 options');
+test.todo('v0.2 variations with 2 options. yet done: 1)');
 test.todo('v0.2 variations with multiple commands and calls');
 
 test('1) from object - hasDefaultValue with 1 option - true / option missing / default defined', t => {
@@ -438,6 +507,60 @@ test('1) from object - hasDefaultValue with 1 option - true / option missing / d
 	cli(argv('command-with-default-option'));
 	t.true(actionDetect.calledOnce);
 	t.is(optionValue, 'default expected value');
+});
+
+test('1) from object - hasDefaultValue with 2 options - true / option missing / default defined', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect1 = sinon.spy();
+	const actionDetect2 = sinon.spy();
+	let optionValue1 = null;
+	let optionValue2 = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-default-option',
+				action({
+					rockOption = 'default expected value'
+				}){
+					actionDetect1();
+					optionValue1 = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: true
+				}]
+			},
+			{
+				name: 'command-2',
+				action({
+					upOpt = 'def opt val'
+				}){
+					actionDetect2();
+					optionValue2 = upOpt;
+				},
+				options: [{
+					name: 'upOpt',
+					hasDefaultValue: true
+				}]
+			}
+		]
+	});
+
+	t.true(actionDetect1.notCalled);
+	t.true(actionDetect2.notCalled);
+
+	cli(argv('command-with-default-option'));
+	t.true(actionDetect1.calledOnce);
+	t.true(actionDetect2.notCalled);
+	t.is(optionValue1, 'default expected value');
+
+	cli(argv('command-2'));
+	t.true(actionDetect1.calledOnce);
+	t.true(actionDetect2.calledOnce);
+	t.is(optionValue2, 'def opt val');
 });
 
 test('2) from object - hasDefaultValue with 1 option - true / option missing / default not defined', t => {
