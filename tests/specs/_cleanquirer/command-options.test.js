@@ -617,9 +617,6 @@ test('from object - ordered usage - multiple option - too much options handling'
 // 	7) false / option not missing / default defined
 // 	8) false / option not missing / default not defined
 
-test.todo('v0.2 variations with 2 options. yet done: 1)');
-test.todo('v0.2 variations with multiple commands and calls. yet done: 1)');
-
 test('1) from object - hasDefaultValue with 1 option - true / option missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -830,6 +827,36 @@ test.skip('2) from object - hasDefaultValue with 2 options - true / option missi
 	t.is(optionValue, undefined);
 });
 
+test.skip('2) from object - hasDefaultValue with 2 options - true / option missing / default not defined - multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-default-option',
+				action({
+					softOption
+				}){
+					actionDetect();
+					optionValue = softOption;
+				},
+				options: [{
+					name: 'softOption',
+					hasDefaultValue: true
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-default-option'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, undefined);
+});
+
 test('3) from object - hasDefaultValue with 1 option - true / option not missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -861,6 +888,36 @@ test('3) from object - hasDefaultValue with 1 option - true / option not missing
 });
 
 test.skip('3) from object - hasDefaultValue with 2 options - true / option not missing / default defined', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					anOption = 'default option value'
+				}){
+					actionDetect();
+					optionValue = anOption;
+				},
+				options: [{
+					name: 'anOption',
+					hasDefaultValue: true
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-no-default-option expectedValue'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue');
+});
+
+test.skip('3) from object - hasDefaultValue with 2 options - true / option not missing / default defined - multiple commands and calls', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionDetect = sinon.spy();
@@ -950,6 +1007,36 @@ test.skip('4) from object - hasDefaultValue with 2 options - true / option not m
 	t.is(optionValue, 'expectedValue2');
 });
 
+test.skip('4) from object - hasDefaultValue with 2 options - true / option not missing / default not defined - multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-test',
+				action({
+					aoption
+				}){
+					actionDetect();
+					optionValue = aoption;
+				},
+				options: [{
+					name: 'aoption',
+					hasDefaultValue: true
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-test expectedValue2'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue2');
+});
+
 test('5) from object - hasDefaultValue with 1 option - false / option missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -985,6 +1072,40 @@ test('5) from object - hasDefaultValue with 1 option - false / option missing / 
 });
 
 test.skip('5) from object - hasDefaultValue with 2 options - false / option missing / default defined', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption = 'a default value'
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	const missingOptionError = t.throws(()=>{
+		cli(argv('command-with-no-default-option'));
+	});
+
+	t.is(missingOptionError.message,
+		`cli-test-y command-with-no-default-option requires a missing option "rockOption".`
+	);
+});
+
+test.skip('5) from object - hasDefaultValue with 2 options - false / option missing / default defined - multiple commands and calls', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionDetect = sinon.spy();
@@ -1086,6 +1207,40 @@ test.skip('6) from object - hasDefaultValue with 2 options - false / option miss
 	);
 });
 
+test.skip('6) from object - hasDefaultValue with 2 options - false / option missing / default not defined - multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	const missingOptionError = t.throws(()=>{
+		cli(argv('command-with-no-default-option'));
+	});
+
+	t.is(missingOptionError.message,
+		`cli-test-y command-with-no-default-option requires a missing option "rockOption".`
+	);
+});
+
 test('7) from object - hasDefaultValue with 1 option - false / option not missing / default defined', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -1117,6 +1272,36 @@ test('7) from object - hasDefaultValue with 1 option - false / option not missin
 });
 
 test.skip('7) from object - hasDefaultValue with 2 options - false / option not missing / default defined', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption = 'unexpected value'
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-no-default-option expectedValue'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue');
+});
+
+test.skip('7) from object - hasDefaultValue with 2 options - false / option not missing / default defined - multiple commands and calls', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionDetect = sinon.spy();
@@ -1206,6 +1391,35 @@ test.skip('8) from object - hasDefaultValue with 2 options - false / option not 
 	t.is(optionValue, 'expectedValue');
 });
 
+test.skip('8) from object - hasDefaultValue with 2 options - false / option not missing / default not defined - multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionDetect = sinon.spy();
+	let optionValue = null;
+
+	const cli = cleanquirer({
+		name: 'cli-test-y',
+		commands: [
+			{
+				name: 'command-with-no-default-option',
+				action({
+					rockOption
+				}){
+					actionDetect();
+					optionValue = rockOption;
+				},
+				options: [{
+					name: 'rockOption',
+					hasDefaultValue: false
+				}]
+			}
+		]
+	});
+
+	cli(argv('command-with-no-default-option expectedValue'));
+	t.true(actionDetect.calledOnce);
+	t.is(optionValue, 'expectedValue');
+});
 
 /*-----------------------------------*/
 
