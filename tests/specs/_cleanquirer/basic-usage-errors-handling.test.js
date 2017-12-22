@@ -55,11 +55,11 @@ function unvalidOptionsParameterMacro(t, unvalidOptionsParameter) {
 		});
 	});
 
-	t.is(unvalidOptionsParameterError.message, `You must provide an object as options parameter for your cli tool.`);
+	t.is(unvalidOptionsParameterError.message, logs.unvalidOptions());
 }
 
 unvalidOptionsParameterMacro.title = (providedTitle, data) => (
-	`${providedTitle} - need an object as options parameter or throw an error with options object like ${JSON.stringify(data)}`);
+	`${providedTitle} - need an object as options parameter or throw an error with options object like ${stringable(data)}`);
 
 /*---------------------------*/
 

@@ -432,7 +432,6 @@ test('from object - ordered usage - multiple option - missing option handling - 
 	t.is(missingOptionError.message, `cli-err c2 requires a missing option "2A".`);
 });
 
-test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - no option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -452,9 +451,92 @@ test('from object - ordered usage - no option - too much options handling', t =>
 		cli(argv('command-a unknow'));
 	});
 
+	t.true(action.notCalled)
+
 	t.is(tooMuchOptionError.message, msg(
 		`cli-test-3 command-a requires no option`,
 		`but found value "unknow" for an unknow option at position 1.`
+	));
+});
+
+test('from object - ordered usage - no option - too much options handling - with multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const actionOne = sinon.spy();
+	const actionTwo = sinon.spy();
+
+	const cli = cleanquirer({
+		name: 'jarjar',
+		commands: [
+			{
+				name: 'one',
+				action: actionOne
+			},
+			{
+				name: 'two',
+				action: actionTwo
+			}
+		]
+	});
+
+	let tooMuchOptionError = t.throws(()=>{
+		cli(argv('one 2'));
+	});
+
+	t.true(actionOne.notCalled)
+	t.true(actionTwo.notCalled)
+
+	t.is(tooMuchOptionError.message, msg(
+		`jarjar one requires no option`,
+		`but found value "2" for an unknow option at position 1.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('one 9 8'));
+	});
+
+	t.true(actionOne.notCalled)
+	t.true(actionTwo.notCalled)
+
+	t.is(tooMuchOptionError.message, msg(
+		`jarjar one requires no option`,
+		`but found value "9" for an unknow option at position 1.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('two 42'));
+	});
+
+	t.true(actionOne.notCalled)
+	t.true(actionTwo.notCalled)
+
+	t.is(tooMuchOptionError.message, msg(
+		`jarjar two requires no option`,
+		`but found value "42" for an unknow option at position 1.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('one 42.7'));
+	});
+
+	t.true(actionOne.notCalled)
+	t.true(actionTwo.notCalled)
+
+	t.is(tooMuchOptionError.message, msg(
+		`jarjar one requires no option`,
+		`but found value "42.7" for an unknow option at position 1.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('two hello world'));
+	});
+
+	t.true(actionOne.notCalled)
+	t.true(actionTwo.notCalled)
+
+	t.is(tooMuchOptionError.message, msg(
+		`jarjar two requires no option`,
+		`but found value "hello" for an unknow option at position 1.`
 	));
 });
 

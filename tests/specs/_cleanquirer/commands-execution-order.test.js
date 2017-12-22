@@ -10,7 +10,7 @@ const mockFunction = require('../../mocks/mock-function');
 let cleanquirerTestGetCallIndex = 0;
 global.cleanquirerTestGetCallIndex = () => (++cleanquirerTestGetCallIndex)
 
-test('Check the execution order of multiple commands defined from objects', t => {
+test.skip('Check the execution order of multiple commands defined from objects', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionOne = mockFunction();
@@ -43,7 +43,7 @@ test('Check the execution order of multiple commands defined from objects', t =>
 	t.true(actionThree.calledAfter(actionTwo));
 });
 
-test('Check the execution order of multiple commands defined from objects with multiple uses of commands', t => {
+test.skip('Check the execution order of multiple commands defined from objects with multiple uses of commands', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionOne = mockFunction();
@@ -92,7 +92,7 @@ test('Check the execution order of multiple commands defined from objects with m
 
 /*-------------------------------------------*/
 
-test('Check the execution order of multiple commands defined from files', async t => {
+test.skip('Check the execution order of multiple commands defined from files', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files/simple/normal-size-file.js');
@@ -131,7 +131,7 @@ test('Check the execution order of multiple commands defined from files', async 
 	t.true(bigFileCallIndex > giantFileCallIndex);
 });
 
-test('Check the execution order of multiple commands defined from files with multiple uses of commands', async t => {
+test.skip('Check the execution order of multiple commands defined from files with multiple uses of commands', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files/multiple/normal-size-file.js');
@@ -189,7 +189,7 @@ test('Check the execution order of multiple commands defined from files with mul
 
 /*-------------------------------------------*/
 
-test('Check the execution order of multiple commands defined from globs', async t => {
+test.skip('Check the execution order of multiple commands defined from globs', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const glob = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-glob/simple/*.js');
@@ -228,7 +228,7 @@ test('Check the execution order of multiple commands defined from globs', async 
 	t.true(bigFileCallIndex > giantFileCallIndex);
 });
 
-test('Check the execution order of multiple commands defined from globs with multiple uses of commands', async t => {
+test.skip('Check the execution order of multiple commands defined from globs with multiple uses of commands', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const glob = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-glob/multiple/*.js');
@@ -286,7 +286,7 @@ test('Check the execution order of multiple commands defined from globs with mul
 
 /*-------------------------------------------*/
 
-test('Check the execution order of multiple commands defined from files and objects', async t => {
+test.skip('Check the execution order of multiple commands defined from files and objects', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-objects/simple/normal-size-file.js');
@@ -353,7 +353,7 @@ test('Check the execution order of multiple commands defined from files and obje
 	t.true(giantFileCallIndex > commandOneCallIndex);
 });
 
-test('Check the execution order of multiple commands defined from files and objects with multiple uses of commands', async t => {
+test.skip('Check the execution order of multiple commands defined from files and objects with multiple uses of commands', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-objects/multiple/normal-size-file.js');
@@ -451,7 +451,7 @@ test('Check the execution order of multiple commands defined from files and obje
 
 /*-------------------------------------------*/
 
-test('Check the execution order of multiple commands defined from files and globs', async t => {
+test.skip('Check the execution order of multiple commands defined from files and globs', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-glob--files/simple/normal-size-file.js');
@@ -514,7 +514,7 @@ test('Check the execution order of multiple commands defined from files and glob
 	t.true(bigFileCallIndex > giantFileGlobCallIndex);
 });
 
-test('Check the execution order of multiple commands defined from files and globs with multiple uses of commands', async t => {
+test.skip('Check the execution order of multiple commands defined from files and globs with multiple uses of commands', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-and-glob--files/multiple/normal-size-file.js');
@@ -608,7 +608,7 @@ test('Check the execution order of multiple commands defined from files and glob
 
 /*-------------------------------------------*/
 
-test('Check the execution order of multiple commands defined from globs and objects', async t => {
+test.skip('Check the execution order of multiple commands defined from globs and objects', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const glob = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-glob-and-objects/simple/*.js');
@@ -675,7 +675,7 @@ test('Check the execution order of multiple commands defined from globs and obje
 	t.true(giantFileGlobCallIndex > actionFromObjectOneCallIndex);
 });
 
-test('Check the execution order of multiple commands defined from globs and objects with multiple uses of commands', async t => {
+test.skip('Check the execution order of multiple commands defined from globs and objects with multiple uses of commands', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const glob = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-glob-and-objects/multiple/*.js');
@@ -773,7 +773,7 @@ test('Check the execution order of multiple commands defined from globs and obje
 
 /*-------------------------------------------*/
 
-test('Check the execution order of multiple commands defined from files, globs and objects', async t => {
+test.skip('Check the execution order of multiple commands defined from files, globs and objects', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-globs-and-objects--files/simple/normal-size-file.js');
@@ -887,7 +887,7 @@ test('Check the execution order of multiple commands defined from files, globs a
 	t.true(actionFromGlobTwoCallIndex > actionFromGlobOneCallIndex);
 });
 
-test('Check the execution order of multiple commands defined from files, globs and objects with multiple uses of commands', async t => {
+test.skip('Check the execution order of multiple commands defined from files, globs and objects with multiple uses of commands', async t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const actionPathFromTinyFile = pathFromIndex('tests/mocks/mock-commands/execution-order-tests/from-files-globs-and-objects--files/multiple/normal-size-file.js');

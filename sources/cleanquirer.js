@@ -14,11 +14,24 @@ const deduceCommandObjectFromFile = require('./deduce-command-object-from-file')
 const {
 	unvalidConfigurationObject: UNV_CON,
 	unvalidName: UNV_NAM,
-	unvalidVersion: UNV_VER
+	unvalidVersion: UNV_VER,
+	unvalidOptions: UNV_OPS,
+	unvalidStdin: UNV_STD_IN,
+	unvalidStdout: UNV_STD_OUT,
+	unvalidStderr: UNV_STD_ERR
 } = require('./settings/logs');
+
+const defaultVersionCommand = require('./default-commands/version');
 
 class CleanquirerCommandImplementationError extends Error{}
 
+/**
+ * @name cleanquirer
+ *
+ * @description Create a cli function to call with an argv array in a bin file.
+ * @description It provide a way to organize complex cli tools in multiple command files,
+ * @description and use the documentation from these files to generate some help or other input handling.
+ */
 function cleanquirer({
 	name,
 	version = 'unversioned',
@@ -38,23 +51,13 @@ function cleanquirer({
 	version = `${version}`.trim();
 	assert(version.length > 0, UNV_VER());
 
-	assert(options && typeof options === 'object' && !(options instanceof Array),
-		`You must provide an object as options parameter for your cli tool.`
-	);
+	assert(options && typeof options === 'object' && !(options instanceof Array), UNV_OPS());
 
 	/*----------------*/
 
-	assert(options.stdin === undefined || isStream.readable(options.stdin),
-		`You must provide a readable stream as stdin option for your cli tool.`
-	);
-
-	assert(options.stdout === undefined || isStream.writable(options.stdout),
-		`You must provide a writable stream as stdout option for your cli tool.`
-	);
-
-	assert(options.stderr === undefined || isStream.writable(options.stderr),
-		`You must provide a writable stream as stderr option for your cli tool.`
-	);
+	assert(options.stdin === undefined || isStream.readable(options.stdin), UNV_STD_IN());
+	assert(options.stdout === undefined || isStream.writable(options.stdout), UNV_STD_OUT());
+	assert(options.stderr === undefined || isStream.writable(options.stderr), UNV_STD_ERR());
 
 	const stdin = options.stdin || process.stdin;
 	const stdout = options.stdout || process.stdout;
@@ -62,16 +65,9 @@ function cleanquirer({
 
 	/*----------------*/
 
-	const defaultCommands = [{
-		name: 'version',
-		action({
-			stdout
-		}){
-			stdout.write(`${name} version ${version}\n`);
-
-			return version;
-		}
-	}].reduce((hashmap, command) => {
+	const defaultCommands = [
+		defaultVersionCommand({name, version})
+	].reduce((hashmap, command) => {
 		hashmap[command.name] = command;
 		return hashmap;
 	}, {});

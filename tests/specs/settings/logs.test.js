@@ -17,7 +17,11 @@ test('Type and content', t => {
 	t.deepEqual(Object.keys(logs).sort(), [
 		'unvalidConfigurationObject',
 		'unvalidName',
-		'unvalidVersion'
+		'unvalidVersion',
+		'unvalidOptions',
+		'unvalidStdin',
+		'unvalidStdout',
+		'unvalidStderr'
 	].sort());
 });
 
@@ -51,5 +55,41 @@ test('unvalidVersion', t => {
 	t.is(typeof logs.unvalidVersion, 'function');
 	t.is(logs.unvalidVersion(), (
 		`You must provide a not empty string or a number as valid version parameter for your cli tool.`
+	));
+});
+
+test('unvalidOptions', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidOptions, 'function');
+	t.is(logs.unvalidOptions(), (
+		`You must provide an object as options parameter for your cli tool.`
+	));
+});
+
+test('unvalidStdin', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidStdin, 'function');
+	t.is(logs.unvalidStdin(), (
+		`You must provide a readable stream as stdin option for your cli tool.`
+	));
+});
+
+test('unvalidStdout', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidStdout, 'function');
+	t.is(logs.unvalidStdout(), (
+		`You must provide a writable stream as stdout option for your cli tool.`
+	));
+});
+
+test('unvalidStderr', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidStderr, 'function');
+	t.is(logs.unvalidStderr(), (
+		`You must provide a writable stream as stderr option for your cli tool.`
 	));
 });

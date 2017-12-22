@@ -4,10 +4,14 @@ const test = require('ava');
 
 const isStream = require('is-stream');
 
+const stringable = require('stringable');
+
 const requireFromIndex = require('../../utils/require-from-index');
 
 const mockWritableStream = requireFromIndex('tests/mocks/mock-writable-stream');
 const mockReadableStream = requireFromIndex('tests/mocks/mock-readable-stream');
+
+const logs = requireFromIndex('sources/settings/logs');
 
 test.cb('stdout is passed in the options object', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
@@ -227,11 +231,11 @@ function unvalidCustomStdoutStreamMacro(t, unvalidStdout) {
 		});
 	});
 
-	t.is(unvalidStdoutError.message, `You must provide a writable stream as stdout option for your cli tool.`);
+	t.is(unvalidStdoutError.message, logs.unvalidStdout());
 }
 
 unvalidCustomStdoutStreamMacro.title = (providedTitle, unvalidStream) => (
-	`${providedTitle} - an unvalidStdout stream should throw an error with (${typeof unvalidStream}) - ${JSON.stringify(unvalidStream)}`)
+	`${providedTitle} - an unvalidStdout stream should throw an error with ${stringable(unvalidStream)}`)
 
 test('not writable stream', unvalidCustomStdoutStreamMacro, mockReadableStream());
 test('Array', unvalidCustomStdoutStreamMacro, []);
@@ -261,11 +265,11 @@ function unvalidCustomStdinStreamMacro(t, unvalidStdin) {
 		});
 	});
 
-	t.is(unvalidStdinError.message, `You must provide a readable stream as stdin option for your cli tool.`);
+	t.is(unvalidStdinError.message, logs.unvalidStdin());
 }
 
 unvalidCustomStdinStreamMacro.title = (providedTitle, unvalidStream) => (
-	`${providedTitle} - an unvalidStdin stream should throw an error with (${typeof unvalidStream}) - ${JSON.stringify(unvalidStream)}`)
+	`${providedTitle} - an unvalidStdin stream should throw an error with ${stringable(unvalidStream)}`)
 
 test('not readable stream', unvalidCustomStdinStreamMacro, mockWritableStream());
 test('Array', unvalidCustomStdinStreamMacro, []);
@@ -295,11 +299,11 @@ function unvalidCustomStderrStreamMacro(t, unvalidStderr) {
 		});
 	});
 
-	t.is(unvalidStderrError.message, `You must provide a writable stream as stderr option for your cli tool.`);
+	t.is(unvalidStderrError.message, logs.unvalidStderr());
 }
 
 unvalidCustomStderrStreamMacro.title = (providedTitle, unvalidStream) => (
-	`${providedTitle} - an unvalidStderr stream should throw an error with (${typeof unvalidStream}) - ${JSON.stringify(unvalidStream)}`)
+	`${providedTitle} - an unvalidStderr stream should throw an error with ${stringable(unvalidStream)}`)
 
 test('not writable stream', unvalidCustomStderrStreamMacro, mockReadableStream());
 test('Array', unvalidCustomStderrStreamMacro, []);
