@@ -29,8 +29,18 @@ class CleanquirerCommandImplementationError extends Error{}
  * @name cleanquirer
  *
  * @description Create a cli function to call with an argv array in a bin file.
- * @description It provide a way to organize complex cli tools in multiple command files,
- * @description and use the documentation from these files to generate some help or other input handling.
+ * It provide a way to organize complex cli tools in multiple command files,
+ * and use the documentation from these files to generate some help or other input handling.
+ *
+ * @param {string} name The name of the cli tool.
+ * @param {string|number=} version The current version of the cli tool. Used to provide a default version command.
+ * @param {object=} options An object containing some options.
+ * @param {ReadableStream=process.stdin} stdin The stdin stream used by the cli.
+ * @param {WritableStream=process.stdout} stdout The stdout stream used by the cli.
+ * @param {WritableStream=process.stderr} stderr The stderr stream used by the cli.
+ * @param {CommandDefinition[]} commands An array of commands definitions. Use it to define the commands of your cli.
+ *
+ * @return {CliFunction} A function you can call passing an argv like array. It will run the cli.
  */
 function cleanquirer({
 	name,
