@@ -21,7 +21,10 @@ test('Type and content', t => {
 		'unvalidOptions',
 		'unvalidStdin',
 		'unvalidStdout',
-		'unvalidStderr'
+		'unvalidStderr',
+		'unvalidCommandType',
+		'unvalidCommandName',
+		'unvalidCommandAction'
 	].sort());
 });
 
@@ -91,5 +94,62 @@ test('unvalidStderr', t => {
 	t.is(typeof logs.unvalidStderr, 'function');
 	t.is(logs.unvalidStderr(), (
 		`You must provide a writable stream as stderr option for your cli tool.`
+	));
+});
+
+test('unvalidCommandType', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidCommandType, 'function');
+	t.is(logs.unvalidCommandType({}), msg(
+		`The provided undefined command object at index undefined`,
+		`must be an object. Currently, it's of type undefined.`
+	));
+
+	t.is(logs.unvalidCommandType({name: 'cli', index: 56, type: 'object'}), msg(
+		`The provided cli command object at index 56`,
+		`must be an object. Currently, it's of type object.`
+	));
+
+	t.is(logs.unvalidCommandType({name: 'clitest', index: 4, type: 'function'}), msg(
+		`The provided clitest command object at index 4`,
+		`must be an object. Currently, it's of type function.`
+	));
+});
+
+test('unvalidCommandName', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidCommandName, 'function');
+	t.is(logs.unvalidCommandName({}), (
+		`The provided undefined command object at index undefined has no name.`
+	));
+
+	t.is(logs.unvalidCommandName({name: 'cli', index: 6}), (
+		`The provided cli command object at index 6 has no name.`
+	));
+
+	t.is(logs.unvalidCommandName({name: 'logcli', index: 42}), (
+		`The provided logcli command object at index 42 has no name.`
+	));
+});
+
+test('unvalidCommandAction', t => {
+	const logs = requireFromIndex('sources/settings/logs');
+
+	t.is(typeof logs.unvalidCommandAction, 'function');
+	t.is(logs.unvalidCommandAction({}), msg(
+		`The provided undefined command object at index undefined`,
+		`has no action defined. A valid action must be a function.`
+	));
+
+	t.is(logs.unvalidCommandAction({name: 'test', index: 5}), msg(
+		`The provided test command object at index 5`,
+		`has no action defined. A valid action must be a function.`
+	));
+
+	t.is(logs.unvalidCommandAction({name: 'cli', index: 8}), msg(
+		`The provided cli command object at index 8`,
+		`has no action defined. A valid action must be a function.`
 	));
 });

@@ -100,7 +100,26 @@ And fill the bin field in your module package.json
 
 #### Table of Contents
 
+-   [CleanquirerCommandImplementationError](#cleanquirercommandimplementationerror)
+-   [CliOptionsObject](#clioptionsobject)
 -   [cleanquirer](#cleanquirer)
+
+### CleanquirerCommandImplementationError
+
+**Extends Error**
+
+An error thrown when a command seems to have an implementation issue.
+
+### CliOptionsObject
+
+An object containing the options which will be used by default in the cli commands actions.
+
+**Parameters**
+
+-   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `options.stdin`   (optional, default `process.stdin`)
+    -   `options.stdout`   (optional, default `process.stdout`)
+    -   `options.stderr`   (optional, default `process.stderr`)
 
 ### cleanquirer
 
@@ -110,10 +129,11 @@ and use the documentation from these files to generate some help or other input 
 
 **Parameters**
 
--   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the cli tool.
--   `version` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number))?** The current version of the cli tool. Used to provide a default version command.
--   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** An object containing some options.
--   `commands` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;CommandDefinition>** An array of commands definitions. Use it to define the commands of your cli.
+-   `config` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `config.name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the cli tool.
+    -   `config.version` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number))** The current version of the cli tool. Used to provide a default version command. (optional, default `'unversioned'`)
+    -   `config.options` **[CliOptionsObject](#clioptionsobject)**  (optional, default `{}`)
+    -   `config.commands` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;CommandDefinition>** An array of commands definitions. Use it to define the commands of your cli. (optional, default `[]`)
 
 Returns **CliFunction** A function you can call passing an argv like array. It will run the cli.
 

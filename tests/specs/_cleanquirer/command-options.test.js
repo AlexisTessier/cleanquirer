@@ -540,7 +540,6 @@ test('from object - ordered usage - no option - too much options handling - with
 	));
 });
 
-test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - one option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -566,6 +565,87 @@ test('from object - ordered usage - one option - too much options handling', t =
 	t.is(tooMuchOptionError.message, msg(
 		`cli-test-x command-b requires only 1 option`,
 		`but found value "35" for an unknow option at position 2.`
+	));
+});
+
+test('from object - ordered usage - one option - too much options handling - with multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const action = sinon.spy();
+	const action2 = sinon.spy();
+	const actionValid = sinon.spy();
+
+	const cli = cleanquirer({
+		name: 'cli-y',
+		commands: [
+			{
+				name: 'base',
+				action,
+				options: [{
+					name: 'optionA'
+				}]
+			},
+			{
+				name: 'other',
+				action: action2,
+				options: [{
+					name: 'last'
+				}]
+			},
+			{
+				name: 'valid',
+				action: actionValid,
+				options: [{
+					name: 'last'
+				}, {
+					name: 'arf'
+				}]
+			}
+		]
+	});
+
+	let tooMuchOptionError = t.throws(()=>{
+		cli(argv('base 42 14'));
+	});
+	t.is(tooMuchOptionError.message, msg(
+		`cli-y base requires only 1 option`,
+		`but found value "14" for an unknow option at position 2.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('base hello 16 68'));
+	});
+	t.is(tooMuchOptionError.message, msg(
+		`cli-y base requires only 1 option`,
+		`but found value "16" for an unknow option at position 2.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('other damn ekk'));
+	});
+	t.is(tooMuchOptionError.message, msg(
+		`cli-y other requires only 1 option`,
+		`but found value "ekk" for an unknow option at position 2.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('base yo man'));
+	});
+	t.is(tooMuchOptionError.message, msg(
+		`cli-y base requires only 1 option`,
+		`but found value "man" for an unknow option at position 2.`
+	));
+
+	t.true(actionValid.notCalled)
+	cli(argv('valid world arg'));
+	t.true(actionValid.calledOnce);
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('other world arg'));
+	});
+	t.is(tooMuchOptionError.message, msg(
+		`cli-y other requires only 1 option`,
+		`but found value "arg" for an unknow option at position 2.`
 	));
 });
 

@@ -27,6 +27,17 @@ const logs = {
 	),
 	unvalidStderr: () => (
 		`You must provide a writable stream as stderr option for your cli tool.`
+	),
+	unvalidCommandType: ({name, index, type}) => msg(
+		`The provided ${name} command object at index ${index} must be an object.`,
+		`Currently, it's of type ${type}.`
+	),
+	unvalidCommandName: ({name, index}) => (
+		`The provided ${name} command object at index ${index} has no name.`
+	),
+	unvalidCommandAction: ({name, index}) => msg(
+		`The provided ${name} command object at index ${index} has no action defined.`,
+		`A valid action must be a function.`
 	)
 };
 

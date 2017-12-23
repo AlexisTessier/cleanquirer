@@ -18,28 +18,49 @@ const {
 	unvalidOptions: UNV_OPS,
 	unvalidStdin: UNV_STD_IN,
 	unvalidStdout: UNV_STD_OUT,
-	unvalidStderr: UNV_STD_ERR
+	unvalidStderr: UNV_STD_ERR,
+	unvalidCommandType: UNV_CMD_TYP,
+	unvalidCommandName: UNV_CMD_NAM,
+	unvalidCommandAction: UNV_CMD_ACT
 } = require('./settings/logs');
 
 const defaultVersionCommand = require('./default-commands/version');
 
+/**
+ * @description An error thrown when a command seems to have an implementation issue.
+ */
 class CleanquirerCommandImplementationError extends Error{}
 
 /**
- * @name cleanquirer
+ * @description An object containing the options which will be used by default in the cli commands actions.
  *
+ * @param options
+ * @param {ReadableStream=process.stdin} options.stdin The stdin stream used by the cli.
+ * @param {WritableStream=process.stdout} options.stdout The stdout stream used by the cli.
+ * @param {WritableStream=process.stderr} options.stderr The stderr stream used by the cli.
+ */
+function CliOptionsObject({
+	stdin = process.stdin,
+	stdout = process.stdout,
+	stderr = process.stderr
+}) {
+	assert(stdin === undefined || isStream.readable(stdin), UNV_STD_IN());
+	assert(stdout === undefined || isStream.writable(stdout), UNV_STD_OUT());
+	assert(stderr === undefined || isStream.writable(stderr), UNV_STD_ERR());
+
+	return { stdin, stdout, stderr }
+}
+
+/**
  * @description Create a cli function to call with an argv array in a bin file.
  * It provide a way to organize complex cli tools in multiple command files,
  * and use the documentation from these files to generate some help or other input handling.
  *
- * @param {string} name The name of the cli tool.
- * @param {string|number=} version The current version of the cli tool. Used to provide a default version command.
- * @param {object=} options An object containing some options.
- * @param {ReadableStream=process.stdin} stdin The stdin stream used by the cli.
- * @param {WritableStream=process.stdout} stdout The stdout stream used by the cli.
- * @param {WritableStream=process.stderr} stderr The stderr stream used by the cli.
- * @param {CommandDefinition[]} commands An array of commands definitions. Use it to define the commands of your cli.
- *
+ * @param config
+ * @param {string} config.name The name of the cli tool.
+ * @param {string|number} config.version The current version of the cli tool. Used to provide a default version command.
+ * @param {CliOptionsObject} config.options
+ * @param {CommandDefinition[]} config.commands An array of commands definitions. Use it to define the commands of your cli.
  * @return {CliFunction} A function you can call passing an argv like array. It will run the cli.
  */
 function cleanquirer({
@@ -62,16 +83,7 @@ function cleanquirer({
 	assert(version.length > 0, UNV_VER());
 
 	assert(options && typeof options === 'object' && !(options instanceof Array), UNV_OPS());
-
-	/*----------------*/
-
-	assert(options.stdin === undefined || isStream.readable(options.stdin), UNV_STD_IN());
-	assert(options.stdout === undefined || isStream.writable(options.stdout), UNV_STD_OUT());
-	assert(options.stderr === undefined || isStream.writable(options.stderr), UNV_STD_ERR());
-
-	const stdin = options.stdin || process.stdin;
-	const stdout = options.stdout || process.stdout;
-	const stderr = options.stderr || process.stderr;
+	const { stdin, stdout, stderr } = CliOptionsObject(options);
 
 	/*----------------*/
 
@@ -87,22 +99,10 @@ function cleanquirer({
 	const actions = {};
 	const duplicateCommandDetectionAddActionCache = {};
 	function addAction(commandObject, index) {
-		assert(typeof commandObject === 'object', msg(
-			`The provided ${name} command object`,
-			`at index ${index} must be an object.`,
-			`Currently, it's of type ${typeof commandObject}.`
-		));
-
-		assert(typeof commandObject.name === 'string', msg(
-			`The provided ${name} command object`,
-			`at index ${index} has no name.`
-		));
-
-		assert(typeof commandObject.action === 'function', msg(
-			`The provided ${name} command object`,
-			`at index ${index} has no action defined.`,
-			`A valid action must be a function.`
-		));
+		const type = typeof commandObject;
+		assert(type === 'object', UNV_CMD_TYP({ name, index, type }));
+		assert(typeof commandObject.name === 'string', UNV_CMD_NAM({ name, index }));
+		assert(typeof commandObject.action === 'function', UNV_CMD_ACT({ name, index }));
 
 		if (typeof actions[commandObject.name] !== 'undefined') {
 			const sortedIndex = [index, duplicateCommandDetectionAddActionCache[commandObject.name]].sort();
