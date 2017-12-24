@@ -62,7 +62,7 @@ test('Commands options support', featureHasTestFileMacro, 'command-options');
 
 /*---------------------------*/
 
-test.cb('acorn error should not happen - using set as key name in object patter', t => {
+test.cb('acorn error should not happen - using set as key name in object pattern', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
 	const cli = cleanquirer({

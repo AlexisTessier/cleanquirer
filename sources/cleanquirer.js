@@ -24,7 +24,8 @@ const {
 	unvalidCommandAction: UNV_CMD_ACT
 } = require('./settings/logs');
 
-const defaultVersionCommand = require('./default-commands/version');
+const makeDefaultCommands = require('./tools/make-default-commands');
+const getTypedValue = require('./tools/get-typed-value');
 
 /**
  * @description An error thrown when a command seems to have an implementation issue.
@@ -87,12 +88,7 @@ function cleanquirer({
 
 	/*----------------*/
 
-	const defaultCommands = [
-		defaultVersionCommand({name, version})
-	].reduce((hashmap, command) => {
-		hashmap[command.name] = command;
-		return hashmap;
-	}, {});
+	const defaultCommands = makeDefaultCommands({cliName: name, version});
 
 	/*----------------*/
 
@@ -337,12 +333,18 @@ function cleanquirer({
 		}
 
 		optionsDefinitions.forEach(optionDefinition => {
+			const {
+				name: optionName,
+				hasDefaultValue,
+				type
+			} = optionDefinition;
+
 			if (inputs.length > 0) {
-				actionOptions[optionDefinition.name] = inputs.shift();
+				actionOptions[optionName] = getTypedValue(inputs.shift(), type);
 			}
-			else if (!optionDefinition.hasDefaultValue) {
+			else if (!hasDefaultValue) {
 				throw new Error(
-					`${name} ${command} requires a missing option "${optionDefinition.name}".`
+					`${name} ${command} requires a missing option "${optionName}".`
 				);
 			}
 		});

@@ -594,7 +594,12 @@ test('from object - ordered usage - one option - too much options handling - wit
 			},
 			{
 				name: 'valid',
-				action: actionValid,
+				action({
+					last,
+					arf
+				}){
+					actionValid(last, arf);
+				},
 				options: [{
 					name: 'last'
 				}, {
@@ -639,6 +644,7 @@ test('from object - ordered usage - one option - too much options handling - wit
 	t.true(actionValid.notCalled)
 	cli(argv('valid world arg'));
 	t.true(actionValid.calledOnce);
+	t.true(actionValid.withArgs('world', 'arg').calledOnce);
 
 	tooMuchOptionError = t.throws(()=>{
 		cli(argv('other world arg'));
@@ -649,7 +655,6 @@ test('from object - ordered usage - one option - too much options handling - wit
 	));
 });
 
-test.skip('variations with multiple commands and calls', t => t);
 test('from object - ordered usage - multiple option - too much options handling', t => {
 	const cleanquirer = requireFromIndex('sources/cleanquirer');
 
@@ -683,6 +688,76 @@ test('from object - ordered usage - multiple option - too much options handling'
 		`but found value "unknow value" for an unknow option at position 5.`
 	));
 });
+
+test('from object - ordered usage - multiple option - too much options handling - with multiple commands and calls', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	const action = sinon.spy();
+	const action2 = sinon.spy();
+
+	const cli = cleanquirer({
+		name: 'multiple',
+		commands: [
+			{
+				name: 'one',
+				action,
+				options: [{
+					name: 'optA'
+				}, {
+					name: 'optB'
+				}, {
+					name: 'optC'
+				}]
+			},
+			{
+				name: 'two',
+				action: action2,
+				options: [{
+					name: 'optA2'
+				}, {
+					name: 'optB2'
+				}]
+			}
+		]
+	});
+
+	let tooMuchOptionError = t.throws(()=>{
+		cli(argv('one "option value A" 35 hello unknow 12'));
+	});
+
+	t.is(tooMuchOptionError.message, msg(
+		`multiple one requires only 3 options`,
+		`but found value "unknow" for an unknow option at position 4.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('two 67 35 hello unknow 12'));
+	});
+
+	t.is(tooMuchOptionError.message, msg(
+		`multiple two requires only 2 options`,
+		`but found value "hello" for an unknow option at position 3.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('one 1 2 3 4'));
+	});
+
+	t.is(tooMuchOptionError.message, msg(
+		`multiple one requires only 3 options`,
+		`but found value "4" for an unknow option at position 4.`
+	));
+
+	tooMuchOptionError = t.throws(()=>{
+		cli(argv('two 1 2 3 4'));
+	});
+
+	t.is(tooMuchOptionError.message, msg(
+		`multiple two requires only 2 options`,
+		`but found value "3" for an unknow option at position 3.`
+	));
+});
+
 
 /*-------------*/
 
@@ -1503,11 +1578,155 @@ test.skip('8) from object - hasDefaultValue with 2 options - false / option not 
 
 /*-----------------------------------*/
 
-test.todo('v0.2 from object - option type - default');
-test.todo('v0.2 from object - option type - string');
-test.todo('v0.2 from object - option type - number');
+test('from object - option type - string', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	let stringOptionValue = null;
+
+	const cli = cleanquirer({
+		name: 'typed',
+		commands: [
+			{
+				name: 'tc',
+				action({
+					stringOption
+				}){
+					stringOptionValue = stringOption;
+				},
+				options: [{
+					name: 'stringOption',
+					type: 'string'
+				}]
+			}
+		]
+	});
+
+	cli(argv('tc hello-world'));
+	t.is(stringOptionValue, "hello-world");
+
+	cli(argv('tc 23'));
+	t.is(stringOptionValue, "23");
+
+	cli(argv('tc "42"'));
+	t.is(stringOptionValue, "42");
+
+	cli(argv('tc "hello dolly"'));
+	t.is(stringOptionValue, "hello dolly");
+
+	cli(argv(`tc 'billy wood'`));
+	t.is(stringOptionValue, "billy wood");
+});
+
+test('v0.2 from object - option type - number', t => {
+	const cleanquirer = requireFromIndex('sources/cleanquirer');
+
+	let numberOptionValue = null;
+
+	const cli = cleanquirer({
+		name: 'typed-number',
+		commands: [
+			{
+				name: 'tcn',
+				action({
+					numberOption
+				}){
+					numberOptionValue = numberOption;
+				},
+				options: [{
+					name: 'numberOption',
+					type: 'number'
+				}]
+			}
+		]
+	});
+
+	cli(argv('tcn 23'));
+	t.is(numberOptionValue, 23);
+
+	cli(argv('tcn "42"'));
+	t.is(numberOptionValue, 42);
+
+	cli(argv(`tcn '78'`));
+	t.is(numberOptionValue, 78);
+
+	cli(argv('tcn 42.98'));
+	t.is(numberOptionValue, 42.98);
+
+	cli(argv('tcn "98.87"'));
+	t.is(numberOptionValue, 98.87);
+
+	cli(argv(`tcn '56.90068'`));
+	t.is(numberOptionValue, 56.90068);
+
+	cli(argv('tcn -12'));
+	t.is(numberOptionValue, -12);
+
+	cli(argv('tcn "-432"'));
+	t.is(numberOptionValue, -432);
+
+	cli(argv(`tcn '-7'`));
+	t.is(numberOptionValue, -7);
+
+	cli(argv('tcn -2.8'));
+	t.is(numberOptionValue, -2.8);
+
+	cli(argv('tcn "-0.56"'));
+	t.is(numberOptionValue, -0.56);
+
+	cli(argv(`tcn '-6.8753'`));
+	t.is(numberOptionValue, -6.8753);
+
+	cli(argv('tcn 0'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn -0'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn "0"'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn "-0"'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv(`tcn '0'`));
+	t.is(numberOptionValue, 0);
+
+	cli(argv(`tcn '-0'`));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn 0.00'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn -0.00'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn "0.00"'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv('tcn "-0.00"'));
+	t.is(numberOptionValue, 0);
+
+	cli(argv(`tcn '0.00'`));
+	t.is(numberOptionValue, 0);
+
+	cli(argv(`tcn '-0.00'`));
+	t.is(numberOptionValue, 0);
+});
+test.todo('v0.2 from object - option type - number - unvalid number error');
 test.todo('v0.2 from object - option type - boolean');
+test.todo('v0.2 from object - option type - boolean - unvalid boolean error');
+test.todo('v0.2 from object - option type - regex');
+test.todo('v0.2 from object - option type - regex - unvalid regex error');
+test.todo('v0.2 from object - option type - array');
+test.todo('v0.2 from object - option type - array of string');
+test.todo('v0.2 from object - option type - array of number');
+test.todo('v0.2 from object - option type - array of boolean');
+test.todo('v0.2 from object - option type - array of regex');
 test.todo('v0.2 from object - option type - object');
+test.todo('v0.2 from object - option type - object - pattern');
+test.todo('v0.2 from object - option type - default');
+
+test.todo('v0.2 options types and default values');
 
 test.todo('v0.2 from object - unvalid options parameter');
 test.todo('v0.2 from object - unvalid option');
